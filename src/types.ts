@@ -1,0 +1,213 @@
+import type { Json } from "./db/database.types";
+
+// Common Types
+
+export interface PaginationDto {
+  total: number;
+  page: number;
+  limit: number;
+  pages: number;
+}
+
+export interface ErrorResponseDto {
+  error: {
+    code: string;
+    message: string;
+    details?: Record<string, unknown>;
+  };
+}
+
+// User Profile DTOs
+
+export interface UserProfileDto {
+  id: string;
+  email: string; // Note: Added from auth context, not in profiles table
+  firstName: string;
+  lastName: string | null;
+  timezone: string;
+  lastLoginAt: string | null;
+  projectsLimit: number;
+  createdAt: string;
+}
+
+export interface UpdateUserProfileRequestDto {
+  firstName?: string;
+  lastName?: string | null;
+  timezone?: string;
+}
+
+export interface UpdateUserProfileResponseDto {
+  id: string;
+  firstName: string;
+  lastName: string | null;
+  timezone: string;
+  updatedAt: string;
+}
+
+export interface DeleteUserAccountRequestDto {
+  password: string;
+}
+
+export interface DeleteUserAccountResponseDto {
+  message: string;
+}
+
+// Project DTOs
+
+export interface ProjectSummaryDto {
+  id: string;
+  name: string;
+  description: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ListProjectsResponseDto {
+  data: ProjectSummaryDto[];
+  pagination: PaginationDto;
+}
+
+export interface ProjectDto {
+  id: string;
+  name: string;
+  description: string | null;
+  assumptions: Json | null;
+  functionalBlocks: Json | null;
+  schedule: Json | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateProjectRequestDto {
+  name: string;
+  description?: string | null;
+}
+
+export interface CreateProjectResponseDto {
+  id: string;
+  name: string;
+  description: string | null;
+  createdAt: string;
+}
+
+export interface UpdateProjectRequestDto {
+  name?: string;
+  description?: string | null;
+  assumptions?: Json | null;
+  functionalBlocks?: Json | null;
+  schedule?: Json | null;
+}
+
+export interface UpdateProjectResponseDto {
+  id: string;
+  name: string;
+  description: string | null;
+  assumptions: Json | null;
+  functionalBlocks: Json | null;
+  schedule: Json | null;
+  updatedAt: string;
+}
+
+export interface DeleteProjectResponseDto {
+  message: string;
+}
+
+// AI-Assisted Feature DTOs
+
+export interface FeedbackItemDto {
+  field: string;
+  message: string;
+  severity: string;
+}
+
+export interface SuggestionDto {
+  id: string;
+  field?: string;
+  type?: string;
+  content?: string;
+  suggestion?: string;
+  reason: string;
+}
+
+export interface ValidateProjectAssumptionsResponseDto {
+  isValid: boolean;
+  feedback: FeedbackItemDto[];
+  suggestions: SuggestionDto[];
+}
+
+export interface GetProjectSuggestionsRequestDto {
+  focus?: string;
+}
+
+export interface GetProjectSuggestionsResponseDto {
+  suggestions: SuggestionDto[];
+}
+
+export interface FunctionalBlockDto {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  dependencies: string[];
+  order: number;
+}
+
+export interface GenerateFunctionalBlocksResponseDto {
+  functionalBlocks: {
+    blocks: FunctionalBlockDto[];
+  };
+}
+
+export interface ScheduleStageDto {
+  id: string;
+  name: string;
+  description: string;
+  dependencies: string[];
+  relatedBlocks: string[];
+  order: number;
+}
+
+export interface GenerateScheduleResponseDto {
+  schedule: {
+    stages: ScheduleStageDto[];
+  };
+}
+
+// AI Feedback DTOs
+
+export interface SubmitAIFeedbackRequestDto {
+  suggestionContext: string;
+  suggestionHash: string;
+  isHelpful: boolean;
+  feedbackText?: string | null;
+}
+
+export interface SubmitAIFeedbackResponseDto {
+  id: string;
+  suggestionContext: string;
+  isHelpful: boolean;
+  createdAt: string;
+}
+
+// User Activity DTOs
+
+export interface RecordUserActivityRequestDto {
+  activityType: string;
+  durationSeconds?: number | null;
+  metadata?: Record<string, unknown> | null;
+}
+
+export interface RecordUserActivityResponseDto {
+  id: string;
+  activityType: string;
+  createdAt: string;
+}
+
+export interface SessionHeartbeatResponseDto {
+  sessionId: string;
+  isActive: boolean;
+}
+
+// Export Formats
+
+export type ExportFormat = "json";
