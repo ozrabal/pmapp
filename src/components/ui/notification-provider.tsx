@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, type ReactNode, useEffect } from "react";
 import { NotificationToast } from "@/components/ui/notification-toast";
 
 type NotificationType = "success" | "error" | "warning" | "info";
@@ -45,6 +45,22 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
   const removeNotification = useCallback((id: string) => {
     setNotifications(prev => prev.filter(notification => notification.id !== id));
   }, []);
+
+  // Add event listener for custom toast events
+  useEffect(() => {
+    const handleToastEvent = (event: CustomEvent) => {
+      const { message, type } = event.detail;
+      if (message && type) {
+        showNotification(message, type);
+      }
+    };
+
+    document.addEventListener('toast', handleToastEvent as EventListener);
+    
+    return () => {
+      document.removeEventListener('toast', handleToastEvent as EventListener);
+    };
+  }, [showNotification]);
 
   return (
     <NotificationContext.Provider value={{ notifications, showNotification, removeNotification }}>

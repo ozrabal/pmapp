@@ -1,0 +1,421 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import Avatar from "@/components/Avatar";
+import Select from "@/components/Select";
+import Dialog from "@/components/Dialog";
+import { AlertCircle, CheckCircle, InfoIcon } from "lucide-react";
+import { ProjectCardExample } from "@/components/dashboard/ProjectCardExample";
+import { NotificationButton } from "@/components/NotificationButton";
+
+const showNotification = `
+  (function() {
+    const notification = {
+      message: "To jest przykładowe powiadomienie",
+      type: "success"
+    };
+    
+    document.dispatchEvent(new CustomEvent('toast', { 
+      detail: notification 
+    }));
+  })()
+`;
+---
+
+<Layout title="Kitchen Sink | Plan My App">
+  <main class="container py-12">
+    <header class="mb-10">
+      <h1 class="text-4xl font-bold tracking-tight mb-3">Kitchen Sink</h1>
+      <p class="text-muted-foreground text-lg">
+        Zbiór wszystkich komponentów UI używanych w projekcie
+      </p>
+    </header>
+
+    <section class="mb-16">
+      <h2 class="text-2xl font-semibold mb-6 pb-2 border-b">Przyciski</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="flex flex-col gap-3">
+          <h3 class="text-lg font-medium">Default</h3>
+          <div class="flex flex-wrap gap-3">
+            <Button>Default</Button>
+            <Button disabled>Disabled</Button>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-3">
+          <h3 class="text-lg font-medium">Secondary</h3>
+          <div class="flex flex-wrap gap-3">
+            <Button variant="secondary">Secondary</Button>
+            <Button variant="secondary" disabled>Disabled</Button>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-3">
+          <h3 class="text-lg font-medium">Outline</h3>
+          <div class="flex flex-wrap gap-3">
+            <Button variant="outline">Outline</Button>
+            <Button variant="outline" disabled>Disabled</Button>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-3">
+          <h3 class="text-lg font-medium">Ghost</h3>
+          <div class="flex flex-wrap gap-3">
+            <Button variant="ghost">Ghost</Button>
+            <Button variant="ghost" disabled>Disabled</Button>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-3">
+          <h3 class="text-lg font-medium">Destructive</h3>
+          <div class="flex flex-wrap gap-3">
+            <Button variant="destructive">Destructive</Button>
+            <Button variant="destructive" disabled>Disabled</Button>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-3">
+          <h3 class="text-lg font-medium">Rozmiary</h3>
+          <div class="flex flex-wrap gap-3 items-center">
+            <Button size="sm">Small</Button>
+            <Button>Default</Button>
+            <Button size="lg">Large</Button>
+          </div>
+        </div>
+        
+        <div class="flex flex-col gap-3">
+          <h3 class="text-lg font-medium">Z ikoną</h3>
+          <div class="flex flex-wrap gap-3">
+            <Button>
+              <CheckCircle className="mr-2 h-4 w-4" />
+              Z ikoną
+            </Button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mb-16">
+      <h2 class="text-2xl font-semibold mb-6 pb-2 border-b">Karty</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Podstawowa karta</CardTitle>
+            <CardDescription>Opis karty i dodatkowe informacje</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p>
+              To jest treść karty. Tutaj możesz umieścić dowolne informacje, które chcesz przekazać użytkownikowi.
+            </p>
+          </CardContent>
+          <CardFooter className="flex justify-between">
+            <Button variant="outline">Anuluj</Button>
+            <Button>Zapisz</Button>
+          </CardFooter>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Karta z formularzem</CardTitle>
+            <CardDescription>Przykład karty z prostym formularzem</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div class="grid gap-4">
+              <div class="grid gap-2">
+                <label for="name" class="text-sm font-medium">Nazwa</label>
+                <input
+                  id="name"
+                  type="text"
+                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  placeholder="Wprowadź nazwę"
+                />
+              </div>
+              <div class="grid gap-2">
+                <label for="description" class="text-sm font-medium">Opis</label>
+                <textarea
+                  id="description"
+                  class="flex h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  placeholder="Wprowadź opis"
+                ></textarea>
+              </div>
+            </div>
+          </CardContent>
+          <CardFooter className="flex justify-between">
+            <Button variant="outline">Anuluj</Button>
+            <Button>Zapisz</Button>
+          </CardFooter>
+        </Card>
+      </div>
+    </section>
+
+    <section class="mb-16">
+      <h2 class="text-2xl font-semibold mb-6 pb-2 border-b">Awatary</h2>
+      <div class="flex flex-wrap gap-6">
+        <div class="flex flex-col items-center gap-2">
+          <Avatar
+            image="https://i.pravatar.cc/150?u=1"
+            alt="Avatar użytkownika"
+            fallback="JP"
+            className="size-16"
+            client:load
+          />
+          <span class="text-sm">Z obrazem</span>
+        </div>
+        <div class="flex flex-col items-center gap-2">
+          <Avatar
+            image=""
+            alt="Avatar użytkownika"
+            fallback="MB"
+            className="size-16"
+            client:load
+          />
+          <span class="text-sm">Fallback</span>
+        </div>
+        <div class="flex flex-col items-center gap-2">
+          <Avatar
+            image="https://i.pravatar.cc/150?u=2"
+            alt="Avatar użytkownika"
+            fallback="SM"
+            className="size-10"
+            client:load
+          />
+          <span class="text-sm">Mniejszy</span>
+        </div>
+        <div class="flex flex-col items-center gap-2">
+          <Avatar
+            image="https://i.pravatar.cc/150?u=3"
+            alt="Avatar użytkownika"
+            fallback="LG"
+            className="size-24"
+            client:load
+          />
+          <span class="text-sm">Większy</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="mb-16">
+      <h2 class="text-2xl font-semibold mb-6 pb-2 border-b">Alerty</h2>
+      <div class="grid gap-6">
+        <Alert>
+          <InfoIcon className="h-4 w-4" />
+          <AlertTitle>Informacja</AlertTitle>
+          <AlertDescription>
+            To jest standardowy alert informacyjny.
+          </AlertDescription>
+        </Alert>
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Błąd</AlertTitle>
+          <AlertDescription>
+            Wystąpił błąd podczas wykonywania operacji.
+          </AlertDescription>
+        </Alert>
+      </div>
+    </section>
+
+    <section class="mb-16">
+      <h2 class="text-2xl font-semibold mb-6 pb-2 border-b">Dialogi (Modalne)</h2>
+      <div class="flex flex-wrap gap-6">
+        <div>
+          <h3 class="text-lg font-medium mb-4">Standardowy dialog</h3>
+          <Button id="open-standard-dialog">Otwórz dialog</Button>
+          
+          <Dialog 
+            client:load
+            title="Czy jesteś pewien?"
+            description="Ta akcja nie może zostać cofnięta. Czy na pewno chcesz kontynuować?"
+            triggerSelector="#open-standard-dialog"
+            onCancel={() => console.log('Dialog anulowany')}
+            onConfirm={() => console.log('Dialog potwierdzony')}
+          />
+        </div>
+
+        <div>
+          <h3 class="text-lg font-medium mb-4">Dialog z niestandardowymi akcjami</h3>
+          <Button id="open-actions-dialog" variant="secondary">Dialog z opcjami</Button>
+          
+          <Dialog 
+            client:load
+            title="Wybierz opcję"
+            description="Wybierz jedną z dostępnych opcji"
+            triggerSelector="#open-actions-dialog"
+            actions={[
+              { label: "Opcja 1", onClick: () => console.log("Wybrano opcję 1"), variant: "outline" },
+              { label: "Opcja 2", onClick: () => console.log("Wybrano opcję 2"), variant: "outline" },
+              { label: "Zamknij", onClick: () => console.log("Zamknięto dialog"), variant: "default" }
+            ]}
+          />
+        </div>
+
+        <div>
+          <h3 class="text-lg font-medium mb-4">Dialog destrukcyjny</h3>
+          <Button id="open-destructive-dialog" variant="destructive">Usuń element</Button>
+          
+          <Dialog 
+            client:load
+            title="Usuń element"
+            description="Czy na pewno chcesz usunąć ten element? Ta operacja jest nieodwracalna."
+            triggerSelector="#open-destructive-dialog"
+            confirmLabel="Usuń"
+            cancelLabel="Anuluj"
+            onCancel={() => console.log('Anulowano usuwanie')}
+            onConfirm={() => console.log('Potwierdzono usuwanie')}
+            confirmVariant="destructive"
+          />
+        </div>
+
+        <div>
+          <h3 class="text-lg font-medium mb-4">Dialog z treścią</h3>
+          <Button id="open-content-dialog" variant="outline">Pokaż szczegóły</Button>
+          
+          <Dialog 
+            client:load
+            title="Szczegóły elementu"
+            triggerSelector="#open-content-dialog"
+            onCancel={() => console.log('Zamknięto dialog')}
+            contentHTML={`
+              <div class="py-4">
+                <p class="mb-4">To jest przykładowa treść dialogu z dodatkowymi informacjami.</p>
+                <div class="grid grid-cols-2 gap-2 text-sm">
+                  <div class="font-medium">Nazwa:</div>
+                  <div>Przykładowy element</div>
+                  <div class="font-medium">Data utworzenia:</div>
+                  <div>15 kwietnia 2025</div>
+                  <div class="font-medium">Autor:</div>
+                  <div>Jan Kowalski</div>
+                </div>
+              </div>
+            `}
+            cancelLabel="Zamknij"
+          />
+        </div>
+      </div>
+    </section>
+
+    <section class="mb-16">
+      <h2 class="text-2xl font-semibold mb-6 pb-2 border-b">Select</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <h3 class="text-lg font-medium mb-4">Prosty select</h3>
+          <Select 
+            options={[
+              { value: "option1", label: "Opcja 1" },
+              { value: "option2", label: "Opcja 2" },
+              { value: "option3", label: "Opcja 3" },
+            ]}
+            placeholder="Wybierz opcję"
+            width="w-[240px]"
+            client:load
+          />
+        </div>
+        <div>
+          <h3 class="text-lg font-medium mb-4">Select z grupami</h3>
+          <Select 
+            options={[
+              {
+                label: "Owoce",
+                options: [
+                  { value: "apple", label: "Jabłko" },
+                  { value: "banana", label: "Banan" },
+                  { value: "orange", label: "Pomarańcza" },
+                ]
+              },
+              {
+                label: "Warzywa",
+                options: [
+                  { value: "carrot", label: "Marchewka" },
+                  { value: "potato", label: "Ziemniak" },
+                  { value: "tomato", label: "Pomidor" },
+                ]
+              }
+            ]}
+            placeholder="Wybierz owoc lub warzywo"
+            width="w-[240px]"
+            isGroup={true}
+            client:load
+          />
+        </div>
+      </div>
+    </section>
+
+    <section class="mb-16">
+      <h2 class="text-2xl font-semibold mb-6 pb-2 border-b">Skeleton (Placeholdery)</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-6 w-1/2 mb-2" />
+            <Skeleton className="h-4 w-3/4" />
+          </CardHeader>
+          <CardContent>
+            <Skeleton className="h-4 w-full mb-2" />
+            <Skeleton className="h-4 w-full mb-2" />
+            <Skeleton className="h-4 w-2/3" />
+          </CardContent>
+          <CardFooter>
+            <Skeleton className="h-8 w-24 mr-2" />
+            <Skeleton className="h-8 w-24" />
+          </CardFooter>
+        </Card>
+
+        <div class="flex items-center space-x-4">
+          <Skeleton className="size-16 rounded-full" />
+          <div class="space-y-2">
+            <Skeleton className="h-4 w-[200px]" />
+            <Skeleton className="h-4 w-[160px]" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mb-16">
+      <h2 class="text-2xl font-semibold mb-6 pb-2 border-b">Powiadomienia</h2>
+      <div class="flex gap-6">
+        <NotificationButton client:load />
+        <NotificationButton 
+          client:load
+          type="error" 
+          message="Wystąpił błąd podczas wykonywania operacji"
+          variant="destructive"
+        >
+          Pokaż błąd
+        </NotificationButton>
+        <NotificationButton 
+          client:load
+          type="info" 
+          message="To jest informacja systemowa"
+          variant="secondary"
+        >
+          Pokaż info
+        </NotificationButton>
+      </div>
+    </section>
+
+    <section class="mb-16">
+      <h2 class="text-2xl font-semibold mb-6 pb-2 border-b">Komponenty dashboardu</h2>
+      <div class="space-y-8">
+        <div>
+          <h3 class="text-lg font-medium mb-4">Karty projektów</h3>
+          <p class="text-muted-foreground mb-6">
+            Przykładowe karty projektów wykorzystywane w dashboardzie aplikacji. 
+            Pierwszy przykład pokazuje standardowy wygląd, drugi z widocznymi przyciskami akcji.
+          </p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <ProjectCardExample client:load />
+            <ProjectCardExample variant="hover" client:load />
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>
