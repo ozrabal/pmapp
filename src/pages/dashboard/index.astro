@@ -1,0 +1,27 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import DashboardHeader from "@/components/dashboard/DashboardHeader.astro";
+import { ProjectsListContainer } from "@/components/dashboard/ProjectsListContainer";
+import { ErrorBoundary } from "@/components/dashboard/ErrorBoundary";
+
+// In a real implementation, check auth state from server context
+// const user = Astro.locals.supabase.auth.user();
+const isLoggedIn = true; // Simplified for implementation
+
+// Redirect if not logged in
+if (!isLoggedIn) {
+  return Astro.redirect("/login?redirect=/dashboard");
+}
+---
+
+<Layout title="Dashboard - Moje projekty | Plan My App">
+  <main class="container py-8">
+    <DashboardHeader />
+    
+    <div class="dashboard-content">
+      <ErrorBoundary client:load>
+        <ProjectsListContainer client:load />
+      </ErrorBoundary>
+    </div>
+  </main>
+</Layout>

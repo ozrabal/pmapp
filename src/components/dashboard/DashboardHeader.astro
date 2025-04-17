@@ -1,0 +1,23 @@
+---
+import { Button } from "@/components/ui/button";
+import { PlusIcon } from "lucide-react";
+---
+
+<div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+  <div>
+    <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">Moje projekty</h1>
+    <p class="text-muted-foreground mt-1 text-sm sm:text-base">
+      Zarządzaj swoimi projektami, twórz nowe i śledź postępy
+    </p>
+  </div>
+  
+  <div class="flex-shrink-0">
+    <Button asChild className="gap-2 w-full sm:w-auto">
+      <a href="/dashboard/projects/new" class="flex items-center">
+        <span>Utwórz nowy projekt</span>
+      <PlusIcon className="h-4 w-4" />
+      <span>Nowy projekt</span>
+      </a>
+    </Button>
+  </div>
+</div>

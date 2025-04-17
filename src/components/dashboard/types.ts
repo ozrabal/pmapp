@@ -1,0 +1,46 @@
+import type { ProjectSummaryDto, PaginationDto } from "../../types";
+
+// Enum statusów projektu
+export enum ProjectStatusType {
+  ALL = "all",
+  ACTIVE = "active",
+  ARCHIVED = "archived",
+  COMPLETED = "completed"
+}
+
+// Enum opcji sortowania
+export enum ProjectSortOption {
+  NEWEST = "createdAt:desc",
+  OLDEST = "createdAt:asc",
+  NAME_ASC = "name:asc",
+  NAME_DESC = "name:desc",
+  UPDATED = "updatedAt:desc"
+}
+
+// Rozszerzony model projektu na potrzeby UI
+export interface ProjectViewModel {
+  id: string;
+  name: string;
+  description: string | null;
+  status: ProjectStatusType;
+  createdAt: string;
+  formattedCreatedAt: string; // np. "12 kwi 2025"
+  updatedAt: string;
+  formattedUpdatedAt: string; // np. "12 kwi 2025"
+}
+
+// Stan filtrów i paginacji
+export interface ProjectFiltersState {
+  status: ProjectStatusType;
+  sort: ProjectSortOption;
+  page: number;
+  limit: number;
+}
+
+// Parametry zapytania API
+export interface ProjectApiQueryParams {
+  status?: string;
+  page?: number;
+  limit?: number;
+  sort?: string;
+}

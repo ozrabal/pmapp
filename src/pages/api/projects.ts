@@ -22,7 +22,6 @@ export async function GET(context: APIContext): Promise<Response> {
   try {
     // Validate and parse query parameters
     const result = listProjectsSchema.safeParse(Object.fromEntries(context.url.searchParams));
-
     // If validation fails, return 400 Bad Request
     if (!result.success) {
       const errorResponse: ErrorResponseDto = {
