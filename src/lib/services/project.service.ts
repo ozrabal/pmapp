@@ -10,7 +10,8 @@ import type {
   UpdateProjectResponseDto,
   DeleteProjectResponseDto,
   ValidateProjectAssumptionsResponseDto,
-  SuggestionDto
+  SuggestionDto,
+  GetProjectSuggestionsResponseDto
 } from "../../types";
 import type { ListProjectsQueryParams } from "../schemas/project.schema";
 import { ProjectAssumptionsSchema } from "../schemas/assumptions.schema";
