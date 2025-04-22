@@ -56,7 +56,8 @@ export class ProjectService {
     let query = this.supabase
       .from("projects")
       .select("id, name, description, created_at, updated_at", { count: "exact" })
-      .eq("user_id", userId);
+      .eq("user_id", userId)
+      .is("deleted_at", null);
 
     // Apply status filter if provided
     if (status) {
@@ -113,6 +114,7 @@ export class ProjectService {
       .select("*")
       .eq("id", projectId)
       .eq("user_id", userId)
+      .is("deleted_at", null)
       .single();
 
     if (error) {
@@ -189,6 +191,7 @@ export class ProjectService {
       .update(updateData)
       .eq("id", projectId)
       .eq("user_id", userId)
+      .is("deleted_at", null)
       .select()
       .single();
 
@@ -208,21 +211,35 @@ export class ProjectService {
   }
 
   /**
-   * Delete a project
+   * Delete a project (soft delete)
    *
    * @param userId - The ID of the user who owns the project
    * @param projectId - The ID of the project to delete
    * @returns A promise that resolves to a DeleteProjectResponseDto
    */
   async deleteProject(userId: string, projectId: string): Promise<DeleteProjectResponseDto> {
-    const { error } = await this.supabase
+    // Check if project exists and if user is the owner
+    const { data: existingProject, error: fetchError } = await this.supabase
       .from("projects")
-      .delete()
+      .select("id")
+      .eq("id", projectId)
+      .eq("user_id", userId)
+      .is("deleted_at", null)
+      .single();
+
+    if (fetchError || !existingProject) {
+      throw new Error(`Project not found or you don't have permission to delete it`);
+    }
+
+    // Update the deleted_at field instead of removing the record
+    const { error: updateError } = await this.supabase
+      .from("projects")
+      .update({ deleted_at: new Date().toISOString() })
       .eq("id", projectId)
       .eq("user_id", userId);
 
-    if (error) {
-      throw new Error(`Failed to delete project: ${error.message}`);
+    if (updateError) {
+      throw new Error(`Failed to delete project: ${updateError.message}`);
     }
 
     return {

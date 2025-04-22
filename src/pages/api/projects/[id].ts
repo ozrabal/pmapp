@@ -5,7 +5,8 @@ import type {
   ErrorResponseDto,
   ProjectDto,
   UpdateProjectRequestDto,
-  UpdateProjectResponseDto
+  UpdateProjectResponseDto,
+  DeleteProjectResponseDto
 } from "../../../types";
 import { DEFAULT_USER_ID } from "../../../db/supabase.client";
 
@@ -259,6 +260,86 @@ export async function PATCH(context: APIContext): Promise<Response> {
       error: {
         code: "server_error",
         message: "An error occurred while updating the project",
+      },
+    };
+
+    return new Response(JSON.stringify(errorResponse), {
+      status: 500,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  }
+}
+
+/**
+ * DELETE handler for soft-deleting a project by ID
+ *
+ * @param context - The Astro API context containing request data and locals
+ * @returns Response with success message or error
+ */
+export async function DELETE({ params, locals }: APIContext): Promise<Response> {
+  const { supabase } = locals;
+  
+  // Validate project ID format
+  const result = projectIdSchema.safeParse(params.id);
+  
+  if (!result.success) {
+    const errorResponse: ErrorResponseDto = {
+      error: {
+        code: "validation/invalid-id",
+        message: "Invalid project ID format",
+        details: result.error.format(),
+      },
+    };
+
+    return new Response(JSON.stringify(errorResponse), {
+      status: 400,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  }
+
+  try {
+    const projectService = new ProjectService(supabase);
+    // Using DEFAULT_USER_ID instead of user.id
+    const response = await projectService.deleteProject(DEFAULT_USER_ID, result.data);
+    
+    return new Response(JSON.stringify(response), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (error) {
+    console.error("Error deleting project:", error);
+    
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    
+    // Handle specific error types
+    if (errorMessage.includes("not found") || errorMessage.includes("permission")) {
+      const errorResponse: ErrorResponseDto = {
+        error: {
+          code: errorMessage.includes("not found") ? "project/not-found" : "auth/forbidden",
+          message: errorMessage,
+        },
+      };
+      
+      return new Response(JSON.stringify(errorResponse), {
+        status: errorMessage.includes("not found") ? 404 : 403,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    }
+    
+    // Handle general server error
+    const errorResponse: ErrorResponseDto = {
+      error: {
+        code: "server/error",
+        message: "Failed to delete project",
+        details: { originalError: errorMessage },
       },
     };
 
