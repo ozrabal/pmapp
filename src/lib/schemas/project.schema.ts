@@ -72,3 +72,28 @@ export const createProjectSchema = z.object({
 });
 
 export type CreateProjectInput = z.infer<typeof createProjectSchema>;
+
+/**
+ * Validation schema for project updates
+ */
+export const updateProjectSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(1, { message: "Project name is required" })
+    .max(200, { message: "Project name must be 200 characters or less" })
+    .optional(),
+  
+  description: z
+    .string()
+    .trim()
+    .max(2000, { message: "Description must be 2000 characters or less" })
+    .nullable()
+    .optional(),
+  
+  assumptions: z.any().optional(),
+  functionalBlocks: z.any().optional(),
+  schedule: z.any().optional(),
+});
+
+export type UpdateProjectInput = z.infer<typeof updateProjectSchema>;
