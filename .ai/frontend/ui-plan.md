@@ -127,6 +127,21 @@ Kluczowe założenia architektury UI:
   - Dostępne przyciski akcji
   - Obsługa klawiatury (Tab, Enter)
 
+#### Formularz edycji projektu
+- **Ścieżka:** `/projects/:id/edit`
+- **Główny cel:** Umożliwienie użytkownikowi edycji istniejącego projektu
+- **Kluczowe informacje:** Formularz z polami: nazwa projektu, opis
+- **Kluczowe komponenty:**
+  - Nagłówek "Edycja projektu"
+  - Pole nazwy projektu
+  - Pole opisu projektu
+  - Przyciski "Anuluj" i "Zapisz zmiany"
+- **UX i dostępność:**
+  - Walidacja pól w czasie rzeczywistym
+  - Wskaźnik liczby znaków dla opisu
+  - Dostępne przyciski akcji
+  - Obsługa klawiatury (Tab, Enter)
+
 #### Widok edycji projektu - zakładka założeń projektu
 - **Ścieżka:** `/projects/:id/assumptions`
 - **Główny cel:** Definicja podstawowych założeń projektu z pomocą AI
