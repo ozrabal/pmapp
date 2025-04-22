@@ -1,6 +1,15 @@
 import { z } from "zod";
 
 /**
+ * Validation schema for project ID parameter
+ */
+export const projectIdSchema = z.string().uuid({
+  message: "Invalid project ID format. Must be a valid UUID",
+});
+
+export type ProjectIdParam = z.infer<typeof projectIdSchema>;
+
+/**
  * Validation schema for list projects query parameters
  */
 export const listProjectsSchema = z.object({
