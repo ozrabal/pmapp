@@ -41,3 +41,25 @@ export const listProjectsSchema = z.object({
 });
 
 export type ListProjectsQueryParams = z.infer<typeof listProjectsSchema>;
+
+/**
+ * Validation schema for project creation
+ */
+export const createProjectSchema = z.object({
+  // Project name - required, with maximum length of 200 characters
+  name: z
+    .string()
+    .trim()
+    .min(1, { message: "Project name is required" })
+    .max(200, { message: "Project name must be 200 characters or less" }),
+  
+  // Project description - optional, can be null
+  description: z
+    .string()
+    .trim()
+    .max(2000, { message: "Description must be 2000 characters or less" })
+    .nullable()
+    .optional(),
+});
+
+export type CreateProjectInput = z.infer<typeof createProjectSchema>;
