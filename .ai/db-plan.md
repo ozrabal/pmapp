@@ -26,6 +26,7 @@ Przechowuje informacje o projektach użytkowników.
 | user_id | UUID | NOT NULL, REFERENCES profiles(id) | ID użytkownika będącego właścicielem projektu |
 | name | VARCHAR(200) | NOT NULL | Nazwa projektu |
 | description | TEXT | | Opis projektu |
+| status | VARCHAR(50) | NOT NULL, DEFAULT 'active' | Status projektu (np. 'active', 'archived', 'completed') |
 | assumptions | JSONB | | Podstawowe założenia projektu jako struktura JSON |
 | functional_blocks | JSONB | | Bloki funkcjonalne projektu jako zagnieżdżona struktura JSON |
 | schedule | JSONB | | Harmonogram projektu jako serializowany obiekt JSON |
