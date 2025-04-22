@@ -8,9 +8,12 @@ import type {
   CreateProjectResponseDto,
   UpdateProjectRequestDto,
   UpdateProjectResponseDto,
-  DeleteProjectResponseDto
+  DeleteProjectResponseDto,
+  ValidateProjectAssumptionsResponseDto
 } from "../../types";
 import type { ListProjectsQueryParams } from "../schemas/project.schema";
+import { ProjectAssumptionsSchema } from "../schemas/assumptions.schema";
+import { aiService } from "./ai.service";
 
 /**
  * Service for handling project-related database operations
@@ -246,6 +249,54 @@ export class ProjectService {
       message: "Project deleted successfully",
     };
   }
+
+  /**
+   * Validate project assumptions using AI
+   *
+   * @param projectId - The ID of the project whose assumptions to validate
+   * @param userId - The ID of the user who owns the project
+   * @returns A promise that resolves to a ValidateProjectAssumptionsResponseDto
+   * @throws Error if project is not found, user doesn't have access, or assumptions are not defined
+   */
+  async validateProjectAssumptions(
+    projectId: string, 
+    userId: string
+  ): Promise<ValidateProjectAssumptionsResponseDto> {
+    // Get project with assumptions
+    const { data: project, error } = await this.supabase
+      .from("projects")
+      .select("assumptions")
+      .eq("id", projectId)
+      .eq("user_id", userId)
+      .is("deleted_at", null)
+      .single();
+    
+    if (error) {
+      console.error(`Error fetching project: ${error.message}`);
+      throw new Error('Project not found or access denied');
+    }
+    
+    if (!project.assumptions) {
+      throw new Error('Project assumptions not defined');
+    }
+    
+    // Validate assumptions schema
+    const parsedAssumptions = ProjectAssumptionsSchema.safeParse(project.assumptions);
+    
+    if (!parsedAssumptions.success) {
+      throw new Error('Invalid assumptions format');
+    }
+    
+    // Use AI service to validate assumptions
+    const validationResult = await aiService.validateProjectAssumptions(parsedAssumptions.data);
+    
+    // Return the validation result
+    return {
+      isValid: validationResult.isValid,
+      feedback: validationResult.feedback,
+      suggestions: validationResult.suggestions
+    };
+  }
 }
 
 /**
@@ -361,6 +412,28 @@ export class ProjectClientService {
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData?.error?.message || `Failed to delete project with ID: ${id}`);
+    }
+    
+    return response.json();
+  }
+  
+  /**
+   * Validate the assumptions of a project using AI
+   * 
+   * @param id - The ID of the project to validate assumptions for
+   * @returns A promise that resolves to a ValidateProjectAssumptionsResponseDto
+   */
+  static async validateProjectAssumptions(id: string): Promise<ValidateProjectAssumptionsResponseDto> {
+    const response = await fetch(`${this.API_BASE_PATH}/${id}/assumptions/validate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData?.error?.message || `Failed to validate project assumptions for project with ID: ${id}`);
     }
     
     return response.json();
