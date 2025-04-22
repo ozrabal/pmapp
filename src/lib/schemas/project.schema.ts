@@ -97,3 +97,17 @@ export const updateProjectSchema = z.object({
 });
 
 export type UpdateProjectInput = z.infer<typeof updateProjectSchema>;
+
+/**
+ * Validation schema for project suggestions request
+ */
+export const projectSuggestionsSchema = z.object({
+  // Optional focus parameter to specify the area for suggestions
+  focus: z
+    .string()
+    .trim()
+    .max(100, { message: "Focus parameter must be 100 characters or less" })
+    .optional(),
+});
+
+export type ProjectSuggestionsInput = z.infer<typeof projectSuggestionsSchema>;

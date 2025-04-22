@@ -9,7 +9,8 @@ import type {
   UpdateProjectRequestDto,
   UpdateProjectResponseDto,
   DeleteProjectResponseDto,
-  ValidateProjectAssumptionsResponseDto
+  ValidateProjectAssumptionsResponseDto,
+  SuggestionDto
 } from "../../types";
 import type { ListProjectsQueryParams } from "../schemas/project.schema";
 import { ProjectAssumptionsSchema } from "../schemas/assumptions.schema";
@@ -297,6 +298,48 @@ export class ProjectService {
       suggestions: validationResult.suggestions
     };
   }
+
+  /**
+   * Generate AI-powered suggestions for a project
+   *
+   * @param projectId - The ID of the project to generate suggestions for
+   * @param userId - The ID of the user who owns the project
+   * @param focus - Optional focus area for suggestions
+   * @returns A promise that resolves to an array of SuggestionDto
+   * @throws Error if project is not found or user doesn't have access
+   */
+  async getProjectSuggestions(
+    projectId: string, 
+    userId: string,
+    focus?: string
+  ): Promise<SuggestionDto[]> {
+    // Get project with all data that might be relevant for suggestions
+    const { data: project, error } = await this.supabase
+      .from("projects")
+      .select("id, name, description, assumptions, functional_blocks, schedule")
+      .eq("id", projectId)
+      .eq("user_id", userId)
+      .is("deleted_at", null)
+      .single();
+    
+    if (error) {
+      console.error(`Error fetching project: ${error.message}`);
+      throw new Error('Project not found or access denied');
+    }
+    
+    // Prepare project context for AI suggestion generation
+    const projectContext = {
+      id: project.id,
+      name: project.name,
+      description: project.description,
+      assumptions: project.assumptions,
+      functionalBlocks: project.functional_blocks,
+      schedule: project.schedule
+    };
+    
+    // Use AI service to generate suggestions
+    return aiService.generateProjectSuggestions(projectContext, focus);
+  }
 }
 
 /**
@@ -434,6 +477,35 @@ export class ProjectClientService {
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData?.error?.message || `Failed to validate project assumptions for project with ID: ${id}`);
+    }
+    
+    return response.json();
+  }
+
+  /**
+   * Get AI-powered suggestions for a project
+   * 
+   * @param id - The ID of the project to get suggestions for
+   * @param focus - Optional focus area for suggestions
+   * @returns A promise that resolves to a GetProjectSuggestionsResponseDto
+   */
+  static async getProjectSuggestions(
+    id: string, 
+    focus?: string
+  ): Promise<GetProjectSuggestionsResponseDto> {
+    const requestBody = focus ? { focus } : {};
+    
+    const response = await fetch(`${this.API_BASE_PATH}/${id}/suggestions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody),
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData?.error?.message || `Failed to get suggestions for project with ID: ${id}`);
     }
     
     return response.json();
