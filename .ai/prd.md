@@ -112,7 +112,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
 - Jako zalogowany użytkownik, chcę utworzyć nowy projekt, aby rozpocząć planowanie mojej aplikacji
 - Kryteria akceptacji:
   1. Z widoku listy projektów, użytkownik może wybrać opcję utworzenia nowego projektu
-  2. System prezentuje formularz z podstawowymi polami (nazwa, opis, cel projektu)
+  2. System prezentuje formularz z podstawowymi polami (nazwa, opis)
   3. Po wypełnieniu wymaganych pól, projekt jest zapisywany w systemie
   4. Nowy projekt pojawia się na liście projektów użytkownika
 
@@ -140,13 +140,30 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   3. Po potwierdzeniu, projekt jest trwale usuwany z systemu
   4. Użytkownik otrzymuje potwierdzenie usunięcia projektu
 
+#### US-008: Przeglądanie szczegółów projektu
+- Jako zalogowany użytkownik, chcę przeglądać szczegóły mojego projektu, aby zobaczyć wszystkie jego elementy
+- Kryteria akceptacji:
+  1. Z listy projektów, użytkownik może wybrać projekt do przeglądania
+  2. System wyświetla szczegółowe informacje o projekcie (założenia, bloki funkcjonalne, harmonogram)
+  3. Użytkownik może przełączać się między różnymi sekcjami projektu
+  4. Użytkownik może wrócić do listy projektów w dowolnym momencie
+
+#### US-009: Eksportowanie projektu
+- Jako zalogowany użytkownik, chcę wyeksportować projekt do pliku, aby móc go wykorzystać poza aplikacją
+- Kryteria akceptacji:
+  1. Z widoku szczegółów projektu, użytkownik może wybrać opcję eksportu
+  2. System umożliwia wybór formatu eksportu (CSV, JSON)
+  3. Po wybraniu formatu, system generuje plik z danymi projektu
+  4. Użytkownik może pobrać wygenerowany plik
+  5. Wyeksportowany plik zawiera wszystkie informacje dostępne w aplikacji
+
 ### Definiowanie założeń projektu
 
 #### US-008: Wprowadzanie podstawowych założeń projektu
 - Jako zalogowany użytkownik, chcę wprowadzić podstawowe założenia mojego projektu, aby określić jego zakres
 - Kryteria akceptacji:
   1. Użytkownik ma dostęp do ustrukturyzowanego formularza z polami definiującymi założenia projektu
-  2. Formularz zawiera pola: cel projektu, grupę docelową, główne funkcjonalności, ograniczenia
+  2. Formularz zawiera pola: cel projektu, główne funkcjonalności, technologię
   3. System zapisuje wprowadzone dane w czasie rzeczywistym
   4. Użytkownik może edytować założenia w dowolnym momencie
 
@@ -157,6 +174,12 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   2. AI sprawdza kompletność, spójność i realność założeń
   3. Użytkownik otrzymuje informację o znalezionych problemach lub brakujących elementach
   4. System sugeruje potencjalne poprawki lub uzupełnienia
+  5. Każda sugestia odnosi się do konkretnego pola formularza
+  5. Użytkownik może zaakceptować lub odrzucić sugestie AI
+  6. Po zaakceptowaniu, system automatycznie przenosi focus użytkownika do odpowiedniego pola formularza
+  7. Użytkownik może wprowadzić poprawki do założeń na podstawie sugestii AI
+  8. System zapisuje zmiany w czasie rzeczywistym
+  9. Użytkownik może w dowolnym momencie ponownie poprosić AI o ponowną walidację założeń
 
 #### US-010: Uzyskiwanie sugestii dotyczących definicji projektu
 - Jako zalogowany użytkownik, chcę otrzymać sugestie od AI dotyczące mojego projektu, aby ulepszyć jego definicję
