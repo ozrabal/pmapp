@@ -50,7 +50,7 @@ export async function GET(context: APIContext): Promise<Response> {
 
     // Use DEFAULT_USER_ID as specified in feedback
     const response: ListProjectsResponseDto = await projectService.listProjects(DEFAULT_USER_ID, result.data);
-
+console.log("ProjectsListContainer", response);
     // Return successful response
     return new Response(JSON.stringify(response), {
       status: 200,

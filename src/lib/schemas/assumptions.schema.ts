@@ -1,29 +1,58 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 /**
- * Schema for project assumptions validation
- * Defines the expected structure of the project assumptions JSON data
+ * Schema for validating project assumptions
  */
-export const ProjectAssumptionsSchema = z.object({
-  marketAssumptions: z.object({
-    targetAudience: z.string().optional(),
-    marketSize: z.string().optional(),
-    competitors: z.array(z.string()).optional()
-  }).optional(),
-  technicalAssumptions: z.object({
-    platforms: z.array(z.string()).optional(),
-    technologies: z.array(z.string()).optional(),
-    architecture: z.string().optional()
-  }).optional(),
-  businessAssumptions: z.object({
-    revenue: z.string().optional(),
-    costs: z.string().optional(),
-    timeline: z.string().optional()
-  }).optional()
+export const assumptionsSchema = z.object({
+  projectGoal: z.string()
+    .min(10, { message: "Cel projektu musi zawierać co najmniej 10 znaków" })
+    .max(1000, { message: "Cel projektu nie może przekraczać 1000 znaków" }),
+    
+  targetAudience: z.string()
+    .min(10, { message: "Grupa docelowa musi zawierać co najmniej 10 znaków" })
+    .max(500, { message: "Grupa docelowa nie może przekraczać 500 znaków" }),
+    
+  functionalities: z.array(
+    z.string()
+      .min(3, { message: "Funkcjonalność musi zawierać co najmniej 3 znaki" })
+      .max(200, { message: "Funkcjonalność nie może przekraczać 200 znaków" })
+  )
+  .min(1, { message: "Projekt musi zawierać co najmniej jedną funkcjonalność" })
+  .max(10, { message: "Projekt nie może zawierać więcej niż 10 funkcjonalności" }),
+  
+  constraints: z.array(
+    z.string()
+      .min(3, { message: "Ograniczenie musi zawierać co najmniej 3 znaki" })
+      .max(200, { message: "Ograniczenie nie może przekraczać 200 znaków" })
+  )
+  .max(5, { message: "Projekt nie może zawierać więcej niż 5 ograniczeń" })
 });
 
 /**
- * Type representing the structure of project assumptions
- * Inferred from the Zod schema for type safety
+ * Schema for validating project assumptions in API requests
  */
-export type ProjectAssumptions = z.infer<typeof ProjectAssumptionsSchema>;
+export const assumptionsApiRequestSchema = z.object({
+  assumptions: assumptionsSchema.nullable().optional()
+});
+
+/**
+ * Schema for assumptions validation parameters
+ */
+export const assumptionsValidationRequestSchema = z.object({
+  projectId: z.string().uuid({ message: "Nieprawidłowy identyfikator projektu" }),
+});
+
+/**
+ * Type for assumptions data
+ */
+export type AssumptionsData = z.infer<typeof assumptionsSchema>;
+
+/**
+ * Default empty assumptions object
+ */
+export const emptyAssumptions: AssumptionsData = {
+  projectGoal: "",
+  targetAudience: "",
+  functionalities: [],
+  constraints: []
+};

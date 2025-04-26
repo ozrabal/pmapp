@@ -14,7 +14,7 @@ import type {
   GetProjectSuggestionsResponseDto
 } from "../../types";
 import type { ListProjectsQueryParams } from "../schemas/project.schema";
-import { ProjectAssumptionsSchema } from "../schemas/assumptions.schema";
+import { assumptionsSchema as ProjectAssumptionsSchema } from "../schemas/assumptions.schema";
 import { aiService } from "./ai.service";
 
 /**

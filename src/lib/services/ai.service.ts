@@ -108,11 +108,11 @@ export class AiService {
     // Basic suggestions based on project name and description
     suggestions.push({
       id: 'sugg-name-001',
-      type: 'name_improvement',
+      type: 'projectGoal',
       content: `Consider making the project name "${projectContext.name}" more specific to its purpose`,
       reason: 'More specific names help stakeholders understand the project scope at a glance'
     });
-    
+
     if (!projectContext.description || projectContext.description.length < 50) {
       suggestions.push({
         id: 'sugg-desc-001',
