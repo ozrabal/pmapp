@@ -1,0 +1,52 @@
+---
+import { Button } from "@/components/ui/button";
+import EditProjectButton from "./EditProjectButton";
+import BackToProjectsButton from "./BackToProjectsButton";
+import { SupabaseClient } from '@supabase/supabase-js';
+
+interface Props {
+  projectId: string;
+}
+
+const { projectId } = Astro.props;
+
+// Get the project name from Supabase
+let projectName = "";
+let isLoading = true;
+
+try {
+  const supabase = Astro.locals.supabase as SupabaseClient;
+  const { data, error } = await supabase
+    .from('projects')
+    .select('name')
+    .eq('id', projectId)
+    .single();
+
+  if (error) {
+    console.error('Error fetching project name:', error);
+  } else if (data) {
+    projectName = data.name;
+  }
+  
+  isLoading = false;
+} catch (err) {
+  console.error('Error in ProjectHeader:', err);
+  isLoading = false;
+}
+---
+
+<div class="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
+  <div>
+    {
+      isLoading ? (
+        <div class="h-8 w-64 bg-gray-200 animate-pulse rounded" />
+      ) : (
+        <h1 class="text-2xl font-bold tracking-tight">{projectName}</h1>
+      )
+    }
+  </div>
+  <div class="flex items-center gap-3">
+    <BackToProjectsButton client:load />
+    <EditProjectButton client:load projectId={projectId} disabled={isLoading} />
+  </div>
+</div>

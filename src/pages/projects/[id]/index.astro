@@ -1,0 +1,49 @@
+---
+import { z } from "zod";
+import Layout from "../../../layouts/Layout.astro";
+import ProjectDetailsContent from "../../../components/projects/detail/ProjectDetailsContent";
+import ProjectHeader from "../../../components/projects/detail/ProjectHeader.astro";
+import { ErrorBoundary } from "../../../components/dashboard/ErrorBoundary";
+
+// Get the project ID from the URL
+const { id } = Astro.params;
+
+// Validate the project ID (UUID format)
+const idSchema = z.string().uuid({
+  message: "Invalid project ID format",
+});
+
+// Validate the project ID
+const validationResult = idSchema.safeParse(id);
+const isValidId = validationResult.success;
+
+// Redirect to the dashboard if the ID is invalid
+if (!isValidId) {
+  return Astro.redirect("/dashboard", 302);
+}
+
+const projectId = id as string;
+---
+
+<Layout title="Project Details">
+  <div class="container mx-auto px-4 py-8">
+    {
+      isValidId ? (
+        <>
+          <ProjectHeader projectId={projectId} />
+          <ErrorBoundary client:load>
+            <ProjectDetailsContent client:load projectId={projectId} />
+          </ErrorBoundary>
+        </>
+      ) : (
+        <div class="text-center py-12">
+          <h2 class="text-2xl font-bold text-red-600">Invalid Project ID</h2>
+          <p class="mt-4">The project ID is not valid.</p>
+          <a href="/dashboard" class="mt-6 inline-block px-6 py-2 bg-primary text-white rounded-md hover:bg-primary/90">
+            Return to Dashboard
+          </a>
+        </div>
+      )
+    }
+  </div>
+</Layout>
