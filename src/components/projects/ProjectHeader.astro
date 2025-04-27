@@ -1,0 +1,28 @@
+---
+import { useProjectDetails } from './hooks';
+import { Skeleton } from '../ui/skeleton';
+import type { ProjectHeaderProps } from './types';
+
+const { projectId, projectName, isLoading = false } = Astro.props as ProjectHeaderProps;
+
+// If projectName is not provided as a prop, it will be fetched client-side by ProjectDetailsContent
+---
+
+<div class="space-y-2">
+  <h1 class="text-3xl font-bold tracking-tight">
+    {isLoading ? (
+      <Skeleton className="h-9 w-64" />
+    ) : projectName ? (
+      projectName
+    ) : (
+      <span class="opacity-0">Loading...</span> <!-- Hidden placeholder for consistent layout -->
+    )}
+  </h1>
+  <p class="text-muted-foreground">
+    {isLoading ? (
+      <Skeleton className="h-6 w-96" />
+    ) : (
+      <span>ID: <span class="font-mono text-sm">{projectId}</span></span>
+    )}
+  </p>
+</div>

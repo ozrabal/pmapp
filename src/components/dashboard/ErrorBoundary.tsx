@@ -1,10 +1,8 @@
-import { Component, type ErrorInfo, type ReactNode } from "react";
-import { AlertCircleIcon } from "lucide-react";
-
-interface ErrorBoundaryProps {
-  children: ReactNode;
-  fallback?: ReactNode;
-}
+import React, { Component } from 'react';
+import type { ReactNode, ErrorInfo } from 'react';
+import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
+import { Button } from '../ui/button';
+import type { ErrorBoundaryProps } from '../projects/types';
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -14,43 +12,64 @@ interface ErrorBoundaryState {
 export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
-    this.state = { hasError: false, error: null };
+    this.state = {
+      hasError: false,
+      error: null
+    };
   }
 
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {
-    return { hasError: true, error };
+    // Update state so the next render will show the fallback UI
+    return {
+      hasError: true,
+      error
+    };
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
-    // Log error to an error reporting service
-    console.error("Dashboard error:", error, errorInfo);
+  componentDidCatch(error: Error, info: ErrorInfo): void {
+    // Log the error to an error reporting service
+    console.error('ErrorBoundary caught an error:', error, info);
   }
 
-  render() {
+  resetErrorState = (): void => {
+    this.setState({
+      hasError: false,
+      error: null
+    });
+  };
+
+  render(): ReactNode {
     if (this.state.hasError) {
-      // Render fallback UI if provided
+      // Check for custom fallback component
       if (this.props.fallback) {
+        if (typeof this.props.fallback === 'function') {
+          return this.props.fallback(this.state.error as Error);
+        }
         return this.props.fallback;
       }
 
       // Default error UI
       return (
-        <div className="flex flex-col items-center justify-center p-8 bg-destructive/5 rounded-lg border border-destructive/20">
-          <AlertCircleIcon className="h-12 w-12 text-destructive mb-4" />
-          <h2 className="text-xl font-semibold mb-2">Coś poszło nie tak</h2>
-          <p className="text-muted-foreground mb-4 text-center">
-            Wystąpił błąd podczas ładowania widoku. Spróbuj odświeżyć stronę.
-          </p>
-          <p className="text-xs text-muted-foreground bg-background/80 p-2 rounded max-w-full overflow-auto">
-            {this.state.error?.message || "Nieznany błąd"}
-          </p>
-          <button
-            className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
-            onClick={() => window.location.reload()}
-          >
-            Odśwież stronę
-          </button>
-        </div>
+        <Alert variant="destructive" className="mb-6">
+          <AlertTitle>Something went wrong</AlertTitle>
+          <AlertDescription className="space-y-3">
+            <p>{this.state.error?.message || 'An unexpected error occurred'}</p>
+            <div className="flex space-x-2 mt-4">
+              <Button 
+                onClick={this.resetErrorState}
+                variant="destructive"
+              >
+                Try again
+              </Button>
+              <Button 
+                onClick={() => window.location.href = '/dashboard'}
+                variant="outline"
+              >
+                Back to Dashboard
+              </Button>
+            </div>
+          </AlertDescription>
+        </Alert>
       );
     }
 

@@ -1,0 +1,52 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { ErrorBoundary } from '../../../components/dashboard/ErrorBoundary';
+import { ProjectDetailsContent } from '../../../components/projects/ProjectDetailsContent';
+import { BackToProjectsButton } from '../../../components/projects/BackToProjectsButton';
+import { EditProjectButton } from '../../../components/projects/EditProjectButton';
+import { ExportButton } from '../../../components/projects/ExportButton';
+import ProjectTabsNavigation from '../../../components/projects/ProjectTabsNavigation';
+import  ProjectHeader  from '../../../components/projects/ProjectHeader.astro';
+import { useProjectDetails, useProjectTabs } from '../../../components/projects/hooks';
+
+// Page params validation using zod schema could be added here
+const { id } = Astro.params;
+
+// Redirect to projects list if ID is missing
+if (!id) {
+  return Astro.redirect('/projects');
+}
+
+// Initial fetch of project data could be done here for SSR
+// For MVP, we'll rely on client-side fetching
+---
+
+<Layout title="Project Details">
+  <div class="container mx-auto px-4 py-8">
+    <div class="mb-6">
+      <div class="flex justify-between items-center mb-4">
+        <BackToProjectsButton client:load />
+        <div class="flex gap-2">
+          <ExportButton 
+            projectId={id} 
+            formats={['json']} 
+            client:load
+          />
+          <EditProjectButton 
+            projectId={id} 
+            client:load
+          />
+        </div>
+      </div>
+      
+      <ProjectHeader projectId={id} />
+    </div>
+    
+    <ErrorBoundary client:load>
+      <ProjectDetailsContent
+        projectId={id}
+        client:load
+      />
+    </ErrorBoundary>
+  </div>
+</Layout>
