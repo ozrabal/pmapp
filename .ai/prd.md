@@ -144,7 +144,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
 - Jako zalogowany użytkownik, chcę przeglądać szczegóły mojego projektu, aby zobaczyć wszystkie jego elementy
 - Kryteria akceptacji:
   1. Z listy projektów, użytkownik może wybrać projekt do przeglądania
-  2. System wyświetla szczegółowe informacje o projekcie (założenia, bloki funkcjonalne, harmonogram)
+  2. System wyświetla szczegółowe informacje o projekcie (nazwę projektu, opis, założenia, bloki funkcjonalne, harmonogram)
   3. Użytkownik może przełączać się między różnymi sekcjami projektu
   4. Użytkownik może wrócić do listy projektów w dowolnym momencie
 

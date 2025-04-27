@@ -1,7 +1,7 @@
 # Plan implementacji widoku szczegółów projektu
 
 ## 1. Przegląd
-Widok szczegółów projektu umożliwia użytkownikowi przeglądanie kompleksowych informacji o projekcie podzielonych na sekcje: założenia, bloki funkcjonalne oraz harmonogram. Strona oferuje intuicyjną nawigację między sekcjami, opcje edycji projektu oraz eksportu danych projektu do zewnętrznych formatów.
+Widok szczegółów projektu umożliwia użytkownikowi przeglądanie kompleksowych informacji o projekcie podzielonych na sekcje: opis, założenia, bloki funkcjonalne oraz harmonogram. Strona oferuje intuicyjną nawigację między sekcjami, opcje edycji projektu oraz eksportu danych projektu do zewnętrznych formatów.
 
 ## 2. Routing widoku
 Widok będzie dostępny pod ścieżką: `/projects/:id`, gdzie `:id` to unikalny identyfikator projektu (UUID).
@@ -62,7 +62,7 @@ ProjectDetailsPage (Astro)
 
 ### ProjectTabsNavigation (React)
 - **Opis komponentu**: Komponent nawigacyjny umożliwiający przełączanie się między różnymi sekcjami projektu.
-- **Główne elementy**: Zakładki odpowiadające różnym sekcjom projektu (założenia, bloki funkcjonalne, harmonogram).
+- **Główne elementy**: Zakładki odpowiadające różnym sekcjom projektu (opis, założenia, bloki funkcjonalne, harmonogram).
 - **Obsługiwane interakcje**: Wybór zakładki, zmiana aktywnej sekcji.
 - **Obsługiwana walidacja**: Sprawdzanie, czy wybrana zakładka jest prawidłowa.
 - **Typy**: Wykorzystuje typy TabType, ProjectTabProps.
@@ -84,6 +84,16 @@ ProjectDetailsPage (Astro)
   - `project`: ProjectDto | null
   - `isLoading`: boolean
   - `error`: Error | null
+
+### ProjectDescriptionsPanel (React)
+- **Opis komponentu**: Panel wyświetlający opis projektu.
+- **Główne elementy**: Formatowana prezentacja opisu projektu.
+- **Obsługiwane interakcje**: Potencjalne akcje związane z opisem (tylko przeglądanie w tym widoku).
+- **Obsługiwana walidacja**: Sprawdzanie struktury danych założeń.
+- **Typy**: Wykorzystuje typ ProjectDescriptionViewModel.
+- **Propsy**: 
+  - `description`: ProjectDescriptionViewModel | null
+  - `isLoading`: boolean
 
 ### ProjectAssumptionsPanel (React)
 - **Opis komponentu**: Panel wyświetlający założenia projektu.
@@ -122,7 +132,7 @@ ProjectDetailsPage (Astro)
 - **Obsługiwana walidacja**: Brak specyficznej walidacji.
 - **Typy**: Proste typy konfiguracyjne.
 - **Propsy**: 
-  - `type`: 'assumptions' | 'functionalBlocks' | 'schedule'
+  - `type`: 'descriptions' | 'assumptions' | 'functionalBlocks' | 'schedule'
 
 ### ExportButton (React)
 - **Opis komponentu**: Przycisk umożliwiający eksport danych projektu.
@@ -149,7 +159,7 @@ ProjectDetailsPage (Astro)
 
 ```typescript
 // Typy związane z zakładkami
-export type TabType = 'assumptions' | 'functionalBlocks' | 'schedule';
+export type TabType = 'descriptions' | 'assumptions' | 'functionalBlocks' | 'schedule';
 
 export interface ProjectTabProps {
   id: TabType;
@@ -167,18 +177,18 @@ export interface ProjectViewModel extends ProjectDto {
 }
 
 // Typy dla poszczególnych sekcji
+export interface ProjectDescriptionViewModel {
+  description: string;
+}
+
 export interface AssumptionsViewModel {
   // Struktura zależna od dokładnego formatu danych założeń
   // Przykładowo:
-  projectGoals?: string[];
-  targetAudience?: string[];
-  keyFeatures?: string[];
-  technicalRequirements?: {
-    frontend?: string[];
-    backend?: string[];
-    infrastructure?: string[];
-  };
-  constraints?: string[];
+  projectGoals?: string;
+  targetAudience?: string;
+  keyFeatures?: string;
+  technologyStack?: string;
+  constraints?: string;
 }
 
 export interface FunctionalBlocksViewModel {
@@ -254,7 +264,7 @@ function useProjectTabs(initialTab: TabType = 'assumptions') {
   // Synchronizacja z URL za pomocą fragmentu hash
   useEffect(() => {
     const hash = window.location.hash.replace('#', '') as TabType;
-    if (hash && ['assumptions', 'functionalBlocks', 'schedule'].includes(hash)) {
+    if (hash && ['descriptions', 'assumptions', 'functionalBlocks', 'schedule'].includes(hash)) {
       setSelectedTab(hash);
     }
   }, []);
@@ -267,6 +277,12 @@ function useProjectTabs(initialTab: TabType = 'assumptions') {
   
   // Generowanie konfiguracji zakładek
   const tabs: ProjectTabProps[] = [
+    {
+      id: 'descriptions',
+      label: 'Opis',
+      isActive: selectedTab === 'descriptions',
+      onClick: () => handleTabChange('descriptions')
+    },
     {
       id: 'assumptions',
       label: 'Założenia',
@@ -374,7 +390,7 @@ Widok szczegółów projektu integruje się z następującymi endpointami:
 6. Domyślnie aktywna jest pierwsza zakładka (założenia)
 
 ### Interakcja 2: Nawigacja między zakładkami
-1. Użytkownik klika na wybraną zakładkę (założenia, bloki funkcjonalne, harmonogram)
+1. Użytkownik klika na wybraną zakładkę (opis, założenia, bloki funkcjonalne, harmonogram)
 2. System podświetla wybraną zakładkę jako aktywną
 3. Zawartość panelu zostaje zmieniona na odpowiednią dla wybranej zakładki
 4. URL zostaje zaktualizowany o odpowiedni fragment (np. `#functionalBlocks`)
@@ -413,7 +429,7 @@ Widok szczegółów projektu integruje się z następującymi endpointami:
 
 4. **Walidacja struktury danych sekcji**:
    - Warunek: Dane sekcji muszą mieć oczekiwaną strukturę
-   - Komponenty: ProjectAssumptionsPanel, ProjectFunctionalBlocksPanel, ProjectSchedulePanel
+   - Komponenty: ProjectDescriptionsPanel, ProjectAssumptionsPanel, ProjectFunctionalBlocksPanel, ProjectSchedulePanel
    - Efekt: Graceful degradation, wyświetlenie komunikatu o niepoprawnej strukturze danych
 
 ## 10. Obsługa błędów
@@ -470,6 +486,7 @@ Widok szczegółów projektu integruje się z następującymi endpointami:
 
 6. **Implementacja paneli sekcji**:
    - Implementacja ProjectDetailsContent jako koordynatora paneli
+   - Implementacja ProjectDescriptionsPanel
    - Implementacja ProjectAssumptionsPanel
    - Implementacja ProjectFunctionalBlocksPanel
    - Implementacja ProjectSchedulePanel
