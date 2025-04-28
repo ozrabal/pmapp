@@ -152,7 +152,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
 - Jako zalogowany użytkownik, chcę wyeksportować projekt do pliku, aby móc go wykorzystać poza aplikacją
 - Kryteria akceptacji:
   1. Z widoku szczegółów projektu, użytkownik może wybrać opcję eksportu
-  2. System umożliwia wybór formatu eksportu (CSV, JSON)
+  2. System umożliwia wybór formatu eksportu (JSON)
   3. Po wybraniu formatu, system generuje plik z danymi projektu
   4. Użytkownik może pobrać wygenerowany plik
   5. Wyeksportowany plik zawiera wszystkie informacje dostępne w aplikacji
@@ -177,6 +177,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   5. Każda sugestia odnosi się do konkretnego pola formularza
   5. Użytkownik może zaakceptować lub odrzucić sugestie AI
   6. Po zaakceptowaniu, system automatycznie przenosi focus użytkownika do odpowiedniego pola formularza
+  7. Użytkownik widzi sugestie obok odpowiednich pól formularza
   7. Użytkownik może wprowadzić poprawki do założeń na podstawie sugestii AI
   8. System zapisuje zmiany w czasie rzeczywistym
   9. Użytkownik może w dowolnym momencie ponownie poprosić AI o ponowną walidację założeń
