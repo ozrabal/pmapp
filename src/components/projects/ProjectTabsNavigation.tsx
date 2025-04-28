@@ -11,9 +11,15 @@ const ProjectTabsNavigation: React.FC<ProjectTabsNavigationProps> = ({
   isLoading = false,
   className,
 }) => {
-  // Handle tab change
+  // Handle tab change safely
   const handleTabChange = (value: string) => {
-    onSelectTab(value as TabType);
+    // Make sure onSelectTab exists and value is a valid TabType
+    if (typeof onSelectTab === 'function' && 
+        ['descriptions', 'assumptions', 'functionalBlocks', 'schedule'].includes(value)) {
+      onSelectTab(value as TabType);
+    } else {
+      console.error('Invalid tab selection or onSelectTab is not a function');
+    }
   };
 
   if (isLoading) {

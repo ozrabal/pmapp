@@ -46,19 +46,24 @@ export class AiService {
     };
     
     // Add mock feedback items based on actual assumptions data
-    if (assumptions.marketAssumptions?.targetAudience === '') {
+    if (assumptions.projectGoals) {
       result.isValid = false;
       result.feedback.push({
-        field: 'marketAssumptions.targetAudience',
-        message: 'Target audience should be defined for better project focus',
+        field: 'projectGoals',
+        message: 'Project goals should be defined to guide the project direction',
         severity: 'warning'
       });
+       result.feedback.push({
+         field: "projectGoals",
+          message: "Project goals are not specified, which may lead to misalignment",
+         severity: "warning",
+       });
     }
     
-    if (!assumptions.technicalAssumptions?.technologies?.length) {
+    if (!assumptions.targetAudience) {
       result.feedback.push({
-        field: 'technicalAssumptions.technologies',
-        message: 'Consider specifying technologies to be used in the project',
+        field: 'targetAudience',
+        message: 'Target audience is not specified, which may affect project focus',
         severity: 'info'
       });
     }
@@ -66,14 +71,14 @@ export class AiService {
     // Add some generic mock suggestions
     result.suggestions.push({
       id: 'sugg-001',
-      field: 'businessAssumptions.timeline',
+      field: 'timeline',
       suggestion: 'Consider breaking down the timeline into specific milestones',
       reason: 'Detailed timelines help in better project planning and tracking'
     });
     
     result.suggestions.push({
       id: 'sugg-002',
-      field: 'technicalAssumptions.architecture',
+      field: 'architecture',
       suggestion: 'Consider adding more details about the system architecture',
       reason: 'A well-defined architecture helps in identifying potential technical challenges early'
     });

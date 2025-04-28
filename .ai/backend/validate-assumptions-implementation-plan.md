@@ -45,21 +45,11 @@ Endpoint `/api/projects/{id}/assumptions/validate` służy do walidacji założe
   export const ProjectAssumptionsSchema = z.object({
     // Definicja schematu założeń projektu zgodna z oczekiwanym formatem JSON
     // To jest przykładowa definicja, która powinna być dopasowana do rzeczywistej struktury
-    marketAssumptions: z.object({
+     projectGoals: z.string().optional(),
       targetAudience: z.string().optional(),
-      marketSize: z.string().optional(),
-      competitors: z.array(z.string()).optional()
-    }).optional(),
-    technicalAssumptions: z.object({
-      platforms: z.array(z.string()).optional(),
-      technologies: z.array(z.string()).optional(),
-      architecture: z.string().optional()
-    }).optional(),
-    businessAssumptions: z.object({
-      revenue: z.string().optional(),
-      costs: z.string().optional(),
-      timeline: z.string().optional()
-    }).optional()
+      keyFeatures: z.string().optional(),
+      technologyStack: z.string().optional(),
+      constraints: z.string().optional()
   });
   
   export type ProjectAssumptions = z.infer<typeof ProjectAssumptionsSchema>;
