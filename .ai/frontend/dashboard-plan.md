@@ -427,7 +427,7 @@ Widok dashboard projektów obsługuje następujące interakcje użytkownika:
 ### Edycja projektu
 - **Interakcja:** Użytkownik klika przycisk edycji na karcie projektu
 - **Akcja:** System przekierowuje do strony edycji projektu
-- **Wynik:** Użytkownik zostaje przeniesiony na stronę `/projects/{id}/edit`
+- **Wynik:** Użytkownik zostaje przeniesiony na stronę `/projects/{id}/descriptions`
 
 ### Usuwanie projektu
 - **Interakcja:** Użytkownik klika przycisk usunięcia na karcie projektu
