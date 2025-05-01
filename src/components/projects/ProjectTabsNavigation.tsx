@@ -1,30 +1,48 @@
-import React from 'react';
-import { cn } from '../../lib/utils';
-import { Tabs, TabsList, TabsTrigger } from '../ui/tabs';
-import { Skeleton } from '../ui/skeleton';
-import type { ProjectTabsNavigationProps, TabType } from './types';
+import React, { useState, useEffect } from "react";
+import { cn } from "../../lib/utils";
+import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
+import { Skeleton } from "../ui/skeleton";
+import type { ProjectTabsNavigationProps, TabType } from "./types";
 
 const ProjectTabsNavigation: React.FC<ProjectTabsNavigationProps> = ({
   tabs,
-  activeTab,
-  onSelectTab,
+  activeTab: initialActiveTab,
   isLoading = false,
+  onSelectTab,
+  projectId,
   className,
 }) => {
-  // Handle tab change safely
+  const [activeTab, setActiveTab] = useState<TabType>(initialActiveTab);
+
+  // Keep internal state in sync with prop
+  useEffect(() => {
+    if (initialActiveTab !== activeTab) {
+      setActiveTab(initialActiveTab);
+    }
+  }, [initialActiveTab, activeTab]);
+
+  // Handle tab change internally
   const handleTabChange = (value: string) => {
-    // Make sure onSelectTab exists and value is a valid TabType
-    if (typeof onSelectTab === 'function' && 
-        ['descriptions', 'assumptions', 'functionalBlocks', 'schedule'].includes(value)) {
-      onSelectTab(value as TabType);
-    } else {
-      console.error('Invalid tab selection or onSelectTab is not a function');
+    const newTab = value as TabType;
+    setActiveTab(newTab);
+    if (onSelectTab) {
+      onSelectTab?.(newTab);
+    }
+    if (projectId && !onSelectTab) {
+      window.location.href = `/projects/${projectId}/${newTab}`;
+    }
+    // If no onSelectTab prop is provided, we can assume the tab change is handled internally
+
+    // Find the clicked tab and invoke its onClick handler if available
+    const selectedTab = tabs.find((tab) => tab.id === newTab);
+    if (selectedTab && typeof selectedTab.onClick === "function") {
+      selectedTab.onClick();
     }
   };
 
   if (isLoading) {
     return (
-      <div className={cn('w-full', className)} aria-busy="true" aria-live="polite">
+      <div className={cn("w-full", className)} aria-busy="true" aria-live="polite">
         <Skeleton className="h-10 w-full" />
       </div>
     );
@@ -34,7 +52,7 @@ const ProjectTabsNavigation: React.FC<ProjectTabsNavigationProps> = ({
     <Tabs
       value={activeTab}
       onValueChange={handleTabChange}
-      className={cn('w-full', className)}
+      className={cn("w-full", className)}
       defaultValue={activeTab}
       aria-label="Project content sections"
     >

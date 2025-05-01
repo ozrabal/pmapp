@@ -1,26 +1,26 @@
-import React from 'react';
-import { useProjectDetails, useProjectTabs } from './hooks';
-import ProjectTabsNavigation from './ProjectTabsNavigation';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
-import { Button } from '../ui/button';
-import { LoadingSkeleton } from './LoadingSkeleton';
+import React from "react";
+import { useProjectDetails, useProjectTabs } from "./hooks";
+import ProjectTabsNavigation from "./ProjectTabsNavigation";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
+import { Button } from "../ui/button";
+import { LoadingSkeleton } from "./LoadingSkeleton";
 import {
   ProjectDescriptionsPanel,
   ProjectAssumptionsPanel,
   ProjectFunctionalBlocksPanel,
-  ProjectSchedulePanel
-} from './panels';
-import { isSessionExpiredError, isPermissionError, isNotFoundError } from '../../lib/services/error.service';
-import type { ProjectDetailsContentProps, TabType } from './types';
+  ProjectSchedulePanel,
+} from "./panels";
+import { isSessionExpiredError, isPermissionError, isNotFoundError } from "../../lib/services/error.service";
+import type { ProjectDetailsContentProps } from "./types";
 
 export const ProjectDetailsContent: React.FC<ProjectDetailsContentProps> = ({
   projectId,
-  initialTab = 'descriptions',
+  initialTab = "descriptions",
 }) => {
   // Use project hooks with enhanced error handling
   const { project, isLoading, error, errorMessage, fetchProject } = useProjectDetails(projectId);
-  const { selectedTab, setSelectedTab, tabs } = useProjectTabs(initialTab);
+  const { selectedTab, tabs } = useProjectTabs(initialTab);
 
   // Handle different error scenarios
   if (error) {
@@ -29,54 +29,42 @@ export const ProjectDetailsContent: React.FC<ProjectDetailsContentProps> = ({
       // Session expired - handled by the hook through redirection
       return null;
     }
-    
+
     if (isPermissionError(error)) {
       return (
         <Alert variant="destructive" className="mb-6" role="alert">
           <AlertTitle>Access Denied</AlertTitle>
           <AlertDescription className="space-y-3">
-            <p>You don't have permission to view this project.</p>
-            <Button
-              onClick={() => window.location.href = '/dashboard'}
-              className="mt-2"
-              variant="outline"
-            >
+            <p>You don&apos;t have permission to view this project.</p>
+            <Button onClick={() => (window.location.href = "/dashboard")} className="mt-2" variant="outline">
               Back to Projects
             </Button>
           </AlertDescription>
         </Alert>
       );
     }
-    
+
     if (isNotFoundError(error)) {
       return (
         <Alert variant="destructive" className="mb-6" role="alert">
           <AlertTitle>Project Not Found</AlertTitle>
           <AlertDescription className="space-y-3">
-            <p>The requested project doesn't exist or has been deleted.</p>
-            <Button
-              onClick={() => window.location.href = '/dashboard'}
-              className="mt-2"
-              variant="outline"
-            >
+            <p>The requested project doesn&apos;t exist or has been deleted.</p>
+            <Button onClick={() => (window.location.href = "/dashboard")} className="mt-2" variant="outline">
               Back to Projects
             </Button>
           </AlertDescription>
         </Alert>
       );
     }
-    
+
     // Generic error with retry option
     return (
       <Alert variant="destructive" className="mb-6" role="alert">
         <AlertTitle>Error loading project</AlertTitle>
         <AlertDescription className="space-y-3">
-          <p>{errorMessage || 'An error occurred while loading the project.'}</p>
-          <Button
-            onClick={() => fetchProject()}
-            className="mt-2"
-            variant="destructive"
-          >
+          <p>{errorMessage || "An error occurred while loading the project."}</p>
+          <Button onClick={() => fetchProject()} className="mt-2" variant="destructive">
             Try again
           </Button>
         </AlertDescription>
@@ -85,53 +73,66 @@ export const ProjectDetailsContent: React.FC<ProjectDetailsContentProps> = ({
   }
 
   // Extract data for each panel from the project
-  const descriptionData = project ? { description: project.description || '' } : null;
-  const assumptionsData = project?.assumptions as Record<string, string> || null;
-  const functionalBlocksData = project?.functionalBlocks as { blocks: any[] } || null;
-  const scheduleData = project?.schedule as { stages: any[] } || null;
+  const descriptionData = project ? { description: project.description || "" } : null;
+  const assumptionsData = (project?.assumptions as Record<string, string>) || null;
+  const functionalBlocksData = (project?.functionalBlocks as { blocks: any[] }) || null;
+  const scheduleData = (project?.schedule as { stages: any[] }) || null;
 
   // Get tab title based on selected tab
   const getTabTitle = () => {
     switch (selectedTab) {
-      case 'descriptions': return 'Project Description';
-      case 'assumptions': return 'Project Assumptions';
-      case 'functionalBlocks': return 'Functional Blocks';
-      case 'schedule': return 'Project Schedule';
-      default: return 'Project Details';
+      case "descriptions":
+        return "Project Description";
+      case "assumptions":
+        return "Project Assumptions";
+      case "functionalBlocks":
+        return "Functional Blocks";
+      case "schedule":
+        return "Project Schedule";
+      default:
+        return "Project Details";
     }
   };
 
   // Render appropriate panel based on selected tab
   const renderPanel = () => {
     switch (selectedTab) {
-      case 'descriptions':
-        return isLoading ? 
-          <LoadingSkeleton type="descriptions" /> : 
+      case "descriptions":
+        return isLoading ? (
+          <LoadingSkeleton type="descriptions" />
+        ) : (
           <div id="descriptions-panel" role="tabpanel" aria-labelledby="tab-descriptions">
             <ProjectDescriptionsPanel description={descriptionData} isLoading={isLoading} />
-          </div>;
-          
-      case 'assumptions':
-        return isLoading ? 
-          <LoadingSkeleton type="assumptions" /> : 
+          </div>
+        );
+
+      case "assumptions":
+        return isLoading ? (
+          <LoadingSkeleton type="assumptions" />
+        ) : (
           <div id="assumptions-panel" role="tabpanel" aria-labelledby="tab-assumptions">
             <ProjectAssumptionsPanel assumptions={assumptionsData} isLoading={isLoading} />
-          </div>;
-          
-      case 'functionalBlocks':
-        return isLoading ? 
-          <LoadingSkeleton type="functionalBlocks" /> : 
+          </div>
+        );
+
+      case "functionalBlocks":
+        return isLoading ? (
+          <LoadingSkeleton type="functionalBlocks" />
+        ) : (
           <div id="functionalBlocks-panel" role="tabpanel" aria-labelledby="tab-functionalBlocks">
             <ProjectFunctionalBlocksPanel functionalBlocks={functionalBlocksData} isLoading={isLoading} />
-          </div>;
-          
-      case 'schedule':
-        return isLoading ? 
-          <LoadingSkeleton type="schedule" /> : 
+          </div>
+        );
+
+      case "schedule":
+        return isLoading ? (
+          <LoadingSkeleton type="schedule" />
+        ) : (
           <div id="schedule-panel" role="tabpanel" aria-labelledby="tab-schedule">
             <ProjectSchedulePanel schedule={scheduleData} isLoading={isLoading} />
-          </div>;
-          
+          </div>
+        );
+
       default:
         return <div>Unknown tab</div>;
     }
@@ -140,22 +141,14 @@ export const ProjectDetailsContent: React.FC<ProjectDetailsContentProps> = ({
   return (
     <div aria-busy={isLoading} className="project-details-content">
       {/* Tab navigation */}
-      <ProjectTabsNavigation
-        tabs={tabs}
-        activeTab={selectedTab}
-        onSelectTab={setSelectedTab}
-        isLoading={isLoading}
-        className="mb-6"
-      />
-      
+      <ProjectTabsNavigation tabs={tabs} activeTab={selectedTab} isLoading={isLoading} className="mb-6" />
+
       {/* Content panel */}
       <Card className="border shadow-sm">
         <CardHeader className="border-b">
           <CardTitle>{getTabTitle()}</CardTitle>
         </CardHeader>
-        <CardContent className="p-6">
-          {renderPanel()}
-        </CardContent>
+        <CardContent className="p-6">{renderPanel()}</CardContent>
       </Card>
 
       {/* Screen reader only status update */}

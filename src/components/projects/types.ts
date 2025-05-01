@@ -1,19 +1,14 @@
-import type { ReactNode } from 'react';
-import type {
-  ProjectDto,
-  FunctionalBlockDto,
-  ScheduleStageDto,
-  ExportFormat,
-} from '../../types';
+import type { ReactNode } from "react";
+import type { ProjectDto, FunctionalBlockDto, ScheduleStageDto, ExportFormat } from "../../types";
 
 // Types related to tabs
-export type TabType = 'descriptions' | 'assumptions' | 'functionalBlocks' | 'schedule';
+export type TabType = "descriptions" | "assumptions" | "functionalBlocks" | "schedule";
 
 export interface ProjectTabProps {
   id: TabType;
   label: string;
   isActive: boolean;
-  onClick: () => void;
+  onClick?: () => void;
   disabled?: boolean;
 }
 
@@ -84,7 +79,8 @@ export interface ExportButtonProps {
 export interface ProjectTabsNavigationProps {
   tabs: ProjectTabProps[];
   activeTab: TabType;
-  onSelectTab: (tab: TabType) => void;
+  projectId?: string;
+  onSelectTab?: (tab: TabType) => void;
   isLoading?: boolean;
   className?: string;
 }

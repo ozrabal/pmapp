@@ -1,47 +1,43 @@
 ---
-import Layout from '../../../layouts/Layout.astro';
-import ProjectHeader from '../../../components/projects/ProjectHeader.astro';
-import ProjectTabsNavigation from '../../../components/projects/ProjectTabsNavigation';
-import { AssumptionsForm } from '../../../components/projects/assumptions/AssumptionsForm';
-import { BackToProjectsButton } from '../../../components/projects/BackToProjectsButton';
-import type { ProjectTabProps, TabType } from '../../../components/projects/types';
+import Layout from "../../../layouts/Layout.astro";
+import ProjectHeader from "../../../components/projects/ProjectHeader.astro";
+import ProjectTabsNavigation from "../../../components/projects/ProjectTabsNavigation";
+import { AssumptionsForm } from "../../../components/projects/assumptions/AssumptionsForm";
+import { BackToProjectsButton } from "../../../components/projects/BackToProjectsButton";
+import type { ProjectTabProps, TabType } from "../../../components/projects/types";
 
 export const prerender = false;
 
 const { id } = Astro.params;
 
 if (!id) {
-  return Astro.redirect('/dashboard');
+  return Astro.redirect("/dashboard");
 }
 
 // Active tab is 'assumptions'
-const activeTab: TabType = 'assumptions';
+const activeTab: TabType = "assumptions";
 
-// Define tabs with proper typing
+// Define tabs with proper typing and navigation logic in onClick handlers
 const tabs: ProjectTabProps[] = [
   {
-    id: 'descriptions',
-    label: 'Overview',
+    id: "descriptions",
+    label: "Overview",
     isActive: false,
-    onClick: () => {},
   },
   {
-    id: 'assumptions',
-    label: 'Assumptions',
+    id: "assumptions",
+    label: "Assumptions",
     isActive: true,
-    onClick: () => {},
   },
   {
-    id: 'functionalBlocks',
-    label: 'Functional Blocks',
+    id: "functionalBlocks",
+    label: "Functional Blocks",
     isActive: false,
-    onClick: () => {},
   },
   {
-    id: 'schedule',
-    label: 'Schedule',
+    id: "schedule",
+    label: "Schedule",
     isActive: false,
-    onClick: () => {},
   },
 ];
 ---
@@ -51,18 +47,11 @@ const tabs: ProjectTabProps[] = [
     <div class="flex justify-between items-center">
       <BackToProjectsButton />
     </div>
-    
+
     <ProjectHeader projectId={id} />
-    
-    <ProjectTabsNavigation
-      client:load
-      tabs={tabs}
-      activeTab={activeTab}
-      onSelectTab={(tab: TabType) => {
-        window.location.href = `/projects/${id}/${tab}`;
-      }}
-    />
-    
+
+    <ProjectTabsNavigation projectId={id} client:load tabs={tabs} activeTab={activeTab} />
+
     <AssumptionsForm client:load projectId={id} />
   </div>
 </Layout>

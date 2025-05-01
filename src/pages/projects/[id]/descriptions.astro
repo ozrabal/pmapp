@@ -1,0 +1,65 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import ProjectHeader from "@/components/projects/ProjectHeader.astro";
+import ProjectTabsNavigation from "@/components/projects/ProjectTabsNavigation";
+import { ErrorBoundary } from "@/components/dashboard/ErrorBoundary";
+import EditProjectDescriptionsForm from "@/components/projects/EditProjectDescriptionsForm";
+import type { ProjectTabProps } from "../../../components/projects/types";
+
+// Get the project ID from URL params
+const { id } = Astro.params;
+
+if (!id) {
+  return Astro.redirect("/dashboard");
+}
+
+// Set page metadata
+const pageTitle = "Edycja opisu projektu";
+
+// Prepare tabs for the navigation with navigation logic in onClick handlers
+const tabs: ProjectTabProps[] = [
+  {
+    id: "descriptions",
+    label: "Opisy",
+    isActive: true,
+    disabled: false,
+  },
+  {
+    id: "assumptions",
+    label: "Założenia",
+    isActive: false,
+    disabled: false,
+  },
+  {
+    id: "functionalBlocks",
+    label: "Funkcjonalności",
+    isActive: false,
+    disabled: false,
+  },
+  {
+    id: "schedule",
+    label: "Harmonogram",
+    isActive: false,
+    disabled: false,
+  },
+];
+---
+
+<Layout title={pageTitle}>
+  <main class="container max-w-6xl mx-auto px-4 py-8">
+    <ProjectHeader projectId={id} />
+
+    <div class="mt-6 mb-8">
+      <ProjectTabsNavigation projectId={id} tabs={tabs} activeTab="descriptions" client:load />
+    </div>
+
+    <section aria-labelledby="edit-project-description-form" class="mt-8">
+      <h2 id="edit-project-description-form" class="sr-only">Formularz edycji opisu projektu</h2>
+      <div class="max-w-3xl mx-auto">
+        <ErrorBoundary client:load>
+          <EditProjectDescriptionsForm projectId={id} client:load />
+        </ErrorBoundary>
+      </div>
+    </section>
+  </main>
+</Layout>
