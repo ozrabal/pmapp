@@ -10,6 +10,7 @@ import type {
   AiTool,
   ToolCompletionResult,
   MessageRequest,
+  FunctionalBlockDto,
 } from "../../types";
 import { AiServiceError } from "./errors/ai-service.error";
 import type { ProjectAssumptions } from "../schemas/assumptions.schema";
@@ -34,6 +35,16 @@ export interface ProjectSuggestionContext {
   assumptions: unknown | null;
   functionalBlocks: unknown | null;
   schedule: unknown | null;
+}
+
+/**
+ * Project context for generating functional blocks with AI
+ */
+export interface ProjectFunctionalBlockContext {
+  id: string;
+  name: string;
+  description: string | null;
+  assumptions: unknown | null;
 }
 
 /**
@@ -199,6 +210,124 @@ export class AiService {
       this.handleError(error, "Failed to generate project suggestions");
       return this.getFallbackSuggestions();
     }
+  }
+
+  /**
+   * Generates functional blocks for a project based on its name, description and assumptions
+   *
+   * @param projectContext - The project context to generate functional blocks for
+   * @returns A promise resolving to an array of FunctionalBlockDto
+   */
+  async generateFunctionalBlocks(
+    projectContext: ProjectFunctionalBlockContext
+  ): Promise<{ blocks: FunctionalBlockDto[] }> {
+    this.ensureServerEnvironment();
+
+    // Validate input
+    if (!projectContext || !projectContext.id || !projectContext.name) {
+      throw new AiServiceError("Valid project context is required", "INVALID_INPUT");
+    }
+
+    try {
+      const systemMessage = this.getSystemPromptForFunctionalBlocks();
+      const userMessage = this.formatProjectContextForFunctionalBlocks(projectContext);
+
+      const functionalBlocksSchema = z.object({
+        blocks: z.array(
+          z.object({
+            id: z.string(),
+            name: z.string(),
+            description: z.string(),
+            category: z.string(),
+            dependencies: z.array(z.string()),
+            order: z.number(),
+          })
+        ),
+      });
+
+      const result = await this.completion({
+        model: this.defaultModel,
+        messages: [
+          { role: "system", content: systemMessage },
+          { role: "user", content: userMessage },
+        ],
+        structured: functionalBlocksSchema,
+        temperature: 1, // Balance between creativity and consistency
+        max_tokens: 3000,
+      });
+
+      return result;
+    } catch (error) {
+      this.handleError(error, "Failed to generate functional blocks");
+      return this.getFallbackFunctionalBlocks();
+    }
+  }
+
+  /**
+   * Creates fallback functional blocks for error cases
+   */
+  private getFallbackFunctionalBlocks(): { blocks: FunctionalBlockDto[] } {
+    return {
+      blocks: [
+        {
+          id: `fallback-${nanoid(6)}`,
+          name: "Core Functionality",
+          description:
+            "The essential functionality of the project. Please regenerate blocks for more specific details.",
+          category: "core",
+          dependencies: [],
+          order: 1,
+        },
+      ],
+    };
+  }
+
+  /**
+   * Gets the system prompt for functional blocks generation
+   */
+  private getSystemPromptForFunctionalBlocks(): string {
+    return `You are an expert project management assistant specialized in breaking down projects into functional blocks.
+Your task is to analyze the provided project information and generate a structured set of functional blocks.
+
+Each functional block should represent a distinct component or feature of the project.
+Categorize blocks appropriately (e.g., core, frontend, backend, infrastructure, etc.).
+Identify dependencies between blocks where applicable.
+
+Your response should follow this JSON structure exactly:
+{
+  "blocks": [
+    {
+      "id": "unique-identifier", 
+      "name": "Block Name",
+      "description": "Detailed description of the block's purpose and functionality",
+      "category": "Category name",
+      "dependencies": ["id-of-dependency-1", "id-of-dependency-2"],
+      "order": 1
+    }
+  ]
+}
+ 
+Important guidelines:
+1. Generate 5-15 blocks depending on project complexity
+2. Ensure each block has a unique ID (use short alphanumeric strings)
+3. Make descriptions specific and actionable
+4. Assign logical dependencies (avoid circular dependencies)
+5. Order blocks from 1 to N in a logical implementation sequence`;
+  }
+
+  /**
+   * Formats project context for functional blocks generation
+   */
+  private formatProjectContextForFunctionalBlocks(context: ProjectFunctionalBlockContext): string {
+    return `Please generate functional blocks for the following project:
+    
+Project Name: ${context.name}
+${context.description ? `Description: ${context.description}` : "No description provided."}
+
+${context.assumptions ? `Project Assumptions: ${JSON.stringify(context.assumptions, null, 2)}` : "No assumptions data available."}
+
+Create a comprehensive set of functional blocks that would be needed to implement this project.
+Include all necessary components across frontend, backend, and any other relevant areas.`;
   }
 
   /**

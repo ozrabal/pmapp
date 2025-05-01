@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "../../db/supabase.client";
-import type { 
-  ListProjectsResponseDto, 
-  PaginationDto, 
+import type {
+  ListProjectsResponseDto,
+  PaginationDto,
   ProjectSummaryDto,
   ProjectDto,
   CreateProjectRequestDto,
@@ -11,7 +11,8 @@ import type {
   DeleteProjectResponseDto,
   ValidateProjectAssumptionsResponseDto,
   SuggestionDto,
-  GetProjectSuggestionsResponseDto
+  GetProjectSuggestionsResponseDto,
+  FunctionalBlockDto,
 } from "../../types";
 import type { ListProjectsQueryParams } from "../schemas/project.schema";
 import { ProjectAssumptionsSchema } from "../schemas/assumptions.schema";
@@ -38,7 +39,7 @@ export class ProjectService {
 
     // Parse sort parameter
     const [sortField, sortDirection] = sort.split(":");
-    
+
     // Map frontend sort field names to database column names
     let dbSortField: string;
     switch (sortField) {
@@ -54,7 +55,7 @@ export class ProjectService {
       default:
         dbSortField = "created_at";
     }
-    
+
     const ascending = sortDirection === "asc";
 
     // Start building the query
@@ -260,10 +261,7 @@ export class ProjectService {
    * @returns A promise that resolves to a ValidateProjectAssumptionsResponseDto
    * @throws Error if project is not found, user doesn't have access, or assumptions are not defined
    */
-  async validateProjectAssumptions(
-    projectId: string, 
-    userId: string
-  ): Promise<ValidateProjectAssumptionsResponseDto> {
+  async validateProjectAssumptions(projectId: string, userId: string): Promise<ValidateProjectAssumptionsResponseDto> {
     // Get project with assumptions
     const { data: project, error } = await this.supabase
       .from("projects")
@@ -272,31 +270,31 @@ export class ProjectService {
       .eq("user_id", userId)
       .is("deleted_at", null)
       .single();
-    
+
     if (error) {
       console.error(`Error fetching project: ${error.message}`);
-      throw new Error('Project not found or access denied');
+      throw new Error("Project not found or access denied");
     }
-    
+
     if (!project.assumptions) {
-      throw new Error('Project assumptions not defined');
+      throw new Error("Project assumptions not defined");
     }
-    
+
     // Validate assumptions schema
     const parsedAssumptions = ProjectAssumptionsSchema.safeParse(project.assumptions);
-    
+
     if (!parsedAssumptions.success) {
-      throw new Error('Invalid assumptions format');
+      throw new Error("Invalid assumptions format");
     }
-    
+
     // Use AI service to validate assumptions
     const validationResult = await aiService.validateProjectAssumptions(parsedAssumptions.data);
-    
+
     // Return the validation result
     return {
       isValid: validationResult.isValid,
       feedback: validationResult.feedback,
-      suggestions: validationResult.suggestions
+      suggestions: validationResult.suggestions,
     };
   }
 
@@ -309,11 +307,7 @@ export class ProjectService {
    * @returns A promise that resolves to an array of SuggestionDto
    * @throws Error if project is not found or user doesn't have access
    */
-  async getProjectSuggestions(
-    projectId: string, 
-    userId: string,
-    focus?: string
-  ): Promise<SuggestionDto[]> {
+  async getProjectSuggestions(projectId: string, userId: string, focus?: string): Promise<SuggestionDto[]> {
     // Get project with all data that might be relevant for suggestions
     const { data: project, error } = await this.supabase
       .from("projects")
@@ -322,12 +316,12 @@ export class ProjectService {
       .eq("user_id", userId)
       .is("deleted_at", null)
       .single();
-    
+
     if (error) {
       console.error(`Error fetching project: ${error.message}`);
-      throw new Error('Project not found or access denied');
+      throw new Error("Project not found or access denied");
     }
-    
+
     // Prepare project context for AI suggestion generation
     const projectContext = {
       id: project.id,
@@ -335,180 +329,221 @@ export class ProjectService {
       description: project.description,
       assumptions: project.assumptions,
       functionalBlocks: project.functional_blocks,
-      schedule: project.schedule
+      schedule: project.schedule,
     };
-    
+
     // Use AI service to generate suggestions
     return aiService.generateProjectSuggestions(projectContext, focus);
+  }
+
+  /**
+   * Generate functional blocks for a project using AI
+   *
+   * @param projectId - The ID of the project to generate functional blocks for
+   * @param userId - The ID of the user who owns the project
+   * @returns A promise that resolves to an array of FunctionalBlockDto
+   * @throws Error if project is not found or user doesn't have access
+   */
+  async generateFunctionalBlocks(projectId: string, userId: string): Promise<{ blocks: FunctionalBlockDto[] }> {
+    // Get project with data needed for functional blocks generation
+    const { data: project, error } = await this.supabase
+      .from("projects")
+      .select("id, name, description, assumptions")
+      .eq("id", projectId)
+      .eq("user_id", userId)
+      .is("deleted_at", null)
+      .single();
+
+    if (error) {
+      console.error(`Error fetching project: ${error.message}`);
+      throw new Error("Project not found or access denied");
+    }
+
+    // Prepare project context for AI generation
+    const projectContext = {
+      id: project.id,
+      name: project.name,
+      description: project.description,
+      assumptions: project.assumptions,
+    };
+
+    // Use AI service to generate functional blocks
+    const functionalBlocks = await aiService.generateFunctionalBlocks(projectContext);
+    // Update the project with the generated functional blocks
+    // Convert functional blocks to JSON-compatible structure
+    await this.updateProject(userId, projectId, {
+      functionalBlocks: JSON.parse(JSON.stringify({ blocks: functionalBlocks.blocks })),
+    });
+
+    return functionalBlocks;
+    return functionalBlocks;
   }
 }
 
 /**
  * Client service for interacting with the project-related API endpoints
  */
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class ProjectClientService {
-  private static readonly API_BASE_PATH = '/api/projects';
+  private static readonly API_BASE_PATH = "/api/projects";
 
   /**
    * Get a list of projects with optional filtering and pagination
-   * 
+   *
    * @param params - Optional query parameters for filtering and pagination
    * @returns A promise that resolves to a ListProjectsResponseDto
    */
   static async listProjects(params: Record<string, string | number> = {}): Promise<ListProjectsResponseDto> {
     // Build query string from parameters
     const queryParams = new URLSearchParams();
-    
+
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         queryParams.append(key, String(value));
       }
     });
-    
-    const queryString = queryParams.toString() ? `?${queryParams.toString()}` : '';
-    
+
+    const queryString = queryParams.toString() ? `?${queryParams.toString()}` : "";
+
     // Make the API request
     const response = await fetch(`${this.API_BASE_PATH}${queryString}`);
-    
+
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData?.error?.message || 'Failed to fetch projects');
+      throw new Error(errorData?.error?.message || "Failed to fetch projects");
     }
-    
+
     return response.json();
   }
-  
+
   /**
    * Get a single project by ID
-   * 
+   *
    * @param id - The ID of the project to retrieve
    * @returns A promise that resolves to a ProjectDto
    */
   static async getProject(id: string): Promise<ProjectDto> {
     const response = await fetch(`${this.API_BASE_PATH}/${id}`);
-    
+
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData?.error?.message || `Failed to fetch project with ID: ${id}`);
     }
-    
+
     return response.json();
   }
-  
+
   /**
    * Create a new project
-   * 
+   *
    * @param projectData - The project data to create
    * @returns A promise that resolves to a CreateProjectResponseDto
    */
   static async createProject(projectData: CreateProjectRequestDto): Promise<CreateProjectResponseDto> {
     const response = await fetch(this.API_BASE_PATH, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(projectData),
     });
-    
+
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData?.error?.message || 'Failed to create project');
+      throw new Error(errorData?.error?.message || "Failed to create project");
     }
-    
+
     return response.json();
   }
-  
+
   /**
    * Update an existing project
-   * 
+   *
    * @param id - The ID of the project to update
    * @param projectData - The project data to update
    * @returns A promise that resolves to an UpdateProjectResponseDto
    */
   static async updateProject(id: string, projectData: UpdateProjectRequestDto): Promise<UpdateProjectResponseDto> {
     const response = await fetch(`${this.API_BASE_PATH}/${id}`, {
-      method: 'PATCH',
+      method: "PATCH",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(projectData),
     });
-    
+
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData?.error?.message || `Failed to update project with ID: ${id}`);
     }
-    
+
     return response.json();
   }
-  
+
   /**
    * Delete a project
-   * 
+   *
    * @param id - The ID of the project to delete
    * @returns A promise that resolves to a DeleteProjectResponseDto
    */
   static async deleteProject(id: string): Promise<DeleteProjectResponseDto> {
     const response = await fetch(`${this.API_BASE_PATH}/${id}`, {
-      method: 'DELETE',
+      method: "DELETE",
     });
-    
+
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData?.error?.message || `Failed to delete project with ID: ${id}`);
     }
-    
+
     return response.json();
   }
-  
+
   /**
    * Validate the assumptions of a project using AI
-   * 
+   *
    * @param id - The ID of the project to validate assumptions for
    * @returns A promise that resolves to a ValidateProjectAssumptionsResponseDto
    */
   static async validateProjectAssumptions(id: string): Promise<ValidateProjectAssumptionsResponseDto> {
     const response = await fetch(`${this.API_BASE_PATH}/${id}/assumptions/validate`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
-    
+
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData?.error?.message || `Failed to validate project assumptions for project with ID: ${id}`);
     }
-    
+
     return response.json();
   }
 
   /**
    * Get AI-powered suggestions for a project
-   * 
+   *
    * @param id - The ID of the project to get suggestions for
    * @param focus - Optional focus area for suggestions
    * @returns A promise that resolves to a GetProjectSuggestionsResponseDto
    */
-  static async getProjectSuggestions(
-    id: string, 
-    focus?: string
-  ): Promise<GetProjectSuggestionsResponseDto> {
+  static async getProjectSuggestions(id: string, focus?: string): Promise<GetProjectSuggestionsResponseDto> {
     const requestBody = focus ? { focus } : {};
-    
+
     const response = await fetch(`${this.API_BASE_PATH}/${id}/suggestions`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(requestBody),
     });
-    
+
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData?.error?.message || `Failed to get suggestions for project with ID: ${id}`);
     }
-    
+
     return response.json();
   }
 }

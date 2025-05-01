@@ -6,7 +6,7 @@ import type {
   ErrorResponseDto,
   GetProjectSuggestionsRequestDto,
   GetProjectSuggestionsResponseDto,
-  SuggestionDto
+  SuggestionDto,
 } from "../../../../../types";
 import { DEFAULT_USER_ID } from "../../../../../db/supabase.client";
 
@@ -27,7 +27,7 @@ export async function POST(context: APIContext): Promise<Response> {
   try {
     // Get project ID from path parameters
     const { id } = context.params;
-    
+
     // Validate project ID format
     const projectIdValidation = projectIdSchema.safeParse(id);
     if (!projectIdValidation.success) {
@@ -60,6 +60,7 @@ export async function POST(context: APIContext): Promise<Response> {
           requestBody = body;
         }
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       const errorResponse: ErrorResponseDto = {
         error: {
@@ -67,7 +68,7 @@ export async function POST(context: APIContext): Promise<Response> {
           message: "Invalid JSON in request body",
         },
       };
-      
+
       return new Response(JSON.stringify(errorResponse), {
         status: 400,
         headers: {
@@ -99,7 +100,7 @@ export async function POST(context: APIContext): Promise<Response> {
 
     // Create the project service
     const projectService = new ProjectService(supabase);
-    
+
     try {
       // Generate project suggestions
       const suggestions: SuggestionDto[] = await projectService.getProjectSuggestions(
@@ -107,12 +108,12 @@ export async function POST(context: APIContext): Promise<Response> {
         DEFAULT_USER_ID,
         focus
       );
-      
+
       // Format the response according to the DTO
       const response: GetProjectSuggestionsResponseDto = {
-        suggestions
+        suggestions,
       };
-      
+
       // Return suggestions
       return new Response(JSON.stringify(response), {
         status: 200,
@@ -130,7 +131,7 @@ export async function POST(context: APIContext): Promise<Response> {
               message: "Project not found",
             },
           };
-          
+
           return new Response(JSON.stringify(errorResponse), {
             status: 404,
             headers: {
@@ -138,7 +139,7 @@ export async function POST(context: APIContext): Promise<Response> {
             },
           });
         }
-        
+
         if (error.message.includes("access denied") || error.message.includes("permission")) {
           const errorResponse: ErrorResponseDto = {
             error: {
@@ -146,7 +147,7 @@ export async function POST(context: APIContext): Promise<Response> {
               message: "You don't have permission to access this project",
             },
           };
-          
+
           return new Response(JSON.stringify(errorResponse), {
             status: 403,
             headers: {
@@ -155,7 +156,7 @@ export async function POST(context: APIContext): Promise<Response> {
           });
         }
       }
-      
+
       // Re-throw other errors to be caught by the outer catch block
       throw error;
     }
