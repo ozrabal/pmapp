@@ -1,11 +1,11 @@
-import React, { useId, useEffect, useRef } from 'react';
-import { useCreateProjectForm } from './hooks/useCreateProjectForm';
-import ProjectNameInput from './ProjectNameInput';
-import ProjectDescriptionTextarea from './ProjectDescriptionTextarea';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle, Loader2, CheckIcon, RefreshCw } from 'lucide-react';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import React, { useId, useEffect, useRef } from "react";
+import { useCreateProjectForm } from "./hooks/useCreateProjectForm";
+import ProjectNameInput from "./ProjectNameInput";
+import ProjectDescriptionTextarea from "./ProjectDescriptionTextarea";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle, Loader2, CheckIcon, RefreshCw } from "lucide-react";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 export function CreateProjectForm() {
   // Generate unique IDs for form fields and form itself
@@ -13,19 +13,19 @@ export function CreateProjectForm() {
   const nameId = useId();
   const descriptionId = useId();
   const errorId = useId();
-  
+
   // Reference for submit button to manage focus
   const submitButtonRef = useRef<HTMLButtonElement>(null);
-  
+
   // Use custom form hook
   const { formState, actions, isValid } = useCreateProjectForm();
-  
+
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await actions.submit();
   };
-  
+
   // Focus management: On error, focus the submit button
   useEffect(() => {
     if (formState.serverError && submitButtonRef.current) {
@@ -33,29 +33,19 @@ export function CreateProjectForm() {
     }
   }, [formState.serverError]);
 
-  // Keyboard handler for better accessibility
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    // Allow Escape key to cancel the form
-    if (e.key === 'Escape' && !formState.isSubmitting) {
-      e.preventDefault();
-      actions.cancel();
-    }
-  };
-  
   // Determine retry message based on error type
   const getRetryAction = () => {
-    if (formState.serverError?.includes('połączyć z serwerem')) {
-      return 'Sprawdź połączenie i spróbuj ponownie';
+    if (formState.serverError?.includes("połączyć z serwerem")) {
+      return "Sprawdź połączenie i spróbuj ponownie";
     }
-    return 'Spróbuj ponownie';
+    return "Spróbuj ponownie";
   };
-  
+
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <form 
+    <Card className="w-full">
+      <form
         id={formId}
-        onSubmit={handleSubmit} 
-        onKeyDown={handleKeyDown}
+        onSubmit={handleSubmit}
         noValidate
         aria-labelledby={`${formId}-title`}
         aria-describedby={formState.serverError ? errorId : `${formId}-description`}
@@ -66,22 +56,17 @@ export function CreateProjectForm() {
             Wypełnij poniższy formularz, aby utworzyć nowy projekt. Pola oznaczone gwiazdką (*) są wymagane.
           </CardDescription>
         </CardHeader>
-        
+
         <CardContent className="space-y-6">
           {/* Error alert */}
           {formState.serverError && (
-            <Alert 
-              variant="destructive" 
-              className="mb-6"
-              id={errorId}
-              role="alert"
-            >
+            <Alert variant="destructive" className="mb-6" id={errorId} role="alert">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription className="flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
                 <span>{formState.serverError}</span>
-                <Button 
-                  variant="destructive" 
-                  size="sm" 
+                <Button
+                  variant="destructive"
+                  size="sm"
                   onClick={() => actions.reset()}
                   className="mt-2 sm:mt-0 flex gap-2 items-center whitespace-nowrap"
                   type="button"
@@ -92,7 +77,7 @@ export function CreateProjectForm() {
               </AlertDescription>
             </Alert>
           )}
-          
+
           {/* Project name field */}
           <ProjectNameInput
             id={nameId}
@@ -102,7 +87,7 @@ export function CreateProjectForm() {
             onBlur={actions.validateName}
             disabled={formState.isSubmitting}
           />
-          
+
           {/* Project description field */}
           <ProjectDescriptionTextarea
             id={descriptionId}
@@ -114,7 +99,7 @@ export function CreateProjectForm() {
             disabled={formState.isSubmitting}
           />
         </CardContent>
-        
+
         <CardFooter className="flex justify-between sm:justify-end gap-2 flex-wrap">
           <Button
             type="button"
@@ -125,7 +110,7 @@ export function CreateProjectForm() {
           >
             Anuluj
           </Button>
-          
+
           <Button
             ref={submitButtonRef}
             type="submit"

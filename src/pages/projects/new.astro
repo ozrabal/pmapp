@@ -1,9 +1,8 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import CreateProjectForm from "@/components/dashboard/CreateProjectForm";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
 import { ErrorBoundary } from "@/components/dashboard/ErrorBoundary";
+import { BackToProjectsButton } from "@/components/projects/BackToProjectsButton";
 
 // In a real implementation, check auth state from server context
 // const user = Astro.locals.supabase.auth.user();
@@ -19,28 +18,19 @@ export const prerender = false;
 ---
 
 <Layout title="Nowy projekt | Plan My App">
-  <main class="container py-8">
-    <!-- Page header -->
-    <div class="mb-8">
-      <div class="flex items-center gap-2 mb-2">
-        <Button asChild variant="ghost" size="sm" className="gap-1">
-          <a href="/dashboard" class="flex items-center">
-            <ArrowLeft className="h-4 w-4" />
-            <span>Powrót do projektów</span>
-          </a>
-        </Button>
-      </div>
-      <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">Nowy projekt</h1>
-      <p class="text-muted-foreground mt-1 text-sm sm:text-base">
-        Utwórz nowy projekt i rozpocznij planowanie swojej aplikacji
-      </p>
+  <div class="mb-6">
+    <div class="flex justify-between items-center mb-4">
+      <BackToProjectsButton client:load />
     </div>
-    
-    <!-- Form section -->
-    <div class="py-4">
-      <ErrorBoundary client:load>
-        <CreateProjectForm client:load />
-      </ErrorBoundary>
-    </div>
-  </main>
+
+    <h2 class="text-xl font-bold tracking-tight">Nowy projekt</h2>
+  </div>
+
+  <section aria-labelledby="edit-project-description-form" class="mt-8">
+    <h2 id="edit-project-description-form" class="sr-only">Formularz edycji opisu projektu</h2>
+
+    <ErrorBoundary client:load>
+      <CreateProjectForm client:load />
+    </ErrorBoundary>
+  </section>
 </Layout>

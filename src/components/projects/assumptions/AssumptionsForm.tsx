@@ -1,13 +1,13 @@
-import React from 'react';
-import { Alert, AlertDescription, AlertTitle } from '../../ui/alert';
-import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
-import { AlertCircle } from 'lucide-react';
-import { AssumptionField } from './AssumptionField';
-import { ValidateAssumptionsButton } from './ValidateAssumptionsButton';
-import { SuggestionsList } from './SuggestionsList';
-import { useProjectAssumptions } from './hooks/useProjectAssumptions';
-import type { AssumptionsViewModel } from '../types';
-import type { FeedbackItemViewModel } from './types';
+import React from "react";
+import { Alert, AlertDescription, AlertTitle } from "../../ui/alert";
+import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
+import { AlertCircle } from "lucide-react";
+import { AssumptionField } from "./AssumptionField";
+import { ValidateAssumptionsButton } from "./ValidateAssumptionsButton";
+import { SuggestionsList } from "./SuggestionsList";
+import { useProjectAssumptions } from "./hooks/useProjectAssumptions";
+import type { AssumptionsViewModel } from "../types";
+import type { FeedbackItemViewModel } from "./types";
 
 interface AssumptionsFormProps {
   projectId: string;
@@ -27,25 +27,25 @@ export function AssumptionsForm({ projectId, className }: AssumptionsFormProps) 
     acceptSuggestion,
     rejectSuggestion,
     submitFeedback,
-    focusField,
-    refreshProject
+    refreshProject,
   } = useProjectAssumptions(projectId);
 
   // Helper function to get suggestions for a specific field
   const getSuggestionsForField = (field: keyof AssumptionsViewModel) => {
-    return validationResult.suggestions.filter(s => s.field === field);
+    return validationResult.suggestions.filter((s) => s.field === field);
   };
-  
+
   // Helper function to get feedback for a specific field
   const getFeedbackForField = (field: keyof AssumptionsViewModel): FeedbackItemViewModel[] => {
-    return validationResult.feedback.filter(f => f.field === field);
+    return validationResult.feedback.filter((f) => f.field === field);
   };
 
   // Determine if the validation button should be disabled
-  const isValidateDisabled = !project?.assumptions || 
-    Object.values(project.assumptions).every(val => !val || val.trim() === '') ||
+  const isValidateDisabled =
+    !project?.assumptions ||
+    Object.values(project.assumptions).every((val) => !val || val.trim() === "") ||
     validationResult.isLoading;
-  
+
   if (project?.error) {
     return (
       <Alert variant="destructive" className={className}>
@@ -53,17 +53,14 @@ export function AssumptionsForm({ projectId, className }: AssumptionsFormProps) 
         <AlertTitle>Error loading project</AlertTitle>
         <AlertDescription>
           {project.error}
-          <button 
-            onClick={refreshProject}
-            className="ml-2 text-xs underline hover:no-underline"
-          >
+          <button onClick={refreshProject} className="ml-2 text-xs underline hover:no-underline">
             Try again
           </button>
         </AlertDescription>
       </Alert>
     );
   }
-
+  console.log("PROJECT", project);
   if (project?.isLoading) {
     return (
       <div className={`animate-pulse space-y-6 ${className}`}>
@@ -77,18 +74,16 @@ export function AssumptionsForm({ projectId, className }: AssumptionsFormProps) 
     );
   }
 
-  if (!project?.assumptions) {
+  if (!project?.assumptions && !project?.isLoading) {
     return (
       <Alert className={className}>
         <AlertCircle className="h-4 w-4" />
         <AlertTitle>No assumptions defined</AlertTitle>
-        <AlertDescription>
-          This project does not have any assumptions defined yet.
-        </AlertDescription>
+        <AlertDescription>This project does not have any assumptions defined yet.</AlertDescription>
       </Alert>
     );
   }
-console.log('PROJECT ASSUMPTIONS', project.assumptions);
+  console.log("PROJECT ASSUMPTIONS", project.assumptions);
   return (
     <div className={`space-y-6 ${className}`}>
       <Card>
@@ -99,58 +94,63 @@ console.log('PROJECT ASSUMPTIONS', project.assumptions);
           <AssumptionField
             id="projectGoals"
             label="Project Goals"
-            value={project.assumptions.projectGoals || ''}
-            onChange={value => updateAssumption('projectGoals', value)}
-            suggestions={getSuggestionsForField('projectGoals')}
-            feedback={getFeedbackForField('projectGoals')}
+            value={project.assumptions?.projectGoals || ""}
+            onChange={(value) => updateAssumption("projectGoals", value)}
+            suggestions={getSuggestionsForField("projectGoals")}
+            feedback={getFeedbackForField("projectGoals")}
             fieldRef={fieldRefs.projectGoals as React.RefObject<HTMLTextAreaElement>}
             maxLength={1000}
+            isLoading={validationResult.isLoading}
           />
-          
+
           <AssumptionField
             id="targetAudience"
             label="Target Audience"
-            value={project.assumptions.targetAudience || ''}
-            onChange={value => updateAssumption('targetAudience', value)}
-            suggestions={getSuggestionsForField('targetAudience')}
-            feedback={getFeedbackForField('targetAudience')}
+            value={project.assumptions?.targetAudience || ""}
+            onChange={(value) => updateAssumption("targetAudience", value)}
+            suggestions={getSuggestionsForField("targetAudience")}
+            feedback={getFeedbackForField("targetAudience")}
             fieldRef={fieldRefs.targetAudience as React.RefObject<HTMLTextAreaElement>}
             maxLength={500}
+            isLoading={validationResult.isLoading}
           />
-          
+
           <AssumptionField
             id="keyFeatures"
             label="Key Features"
-            value={project.assumptions.keyFeatures || ''}
-            onChange={value => updateAssumption('keyFeatures', value)}
-            suggestions={getSuggestionsForField('keyFeatures')}
-            feedback={getFeedbackForField('keyFeatures')}
+            value={project.assumptions?.keyFeatures || ""}
+            onChange={(value) => updateAssumption("keyFeatures", value)}
+            suggestions={getSuggestionsForField("keyFeatures")}
+            feedback={getFeedbackForField("keyFeatures")}
             fieldRef={fieldRefs.keyFeatures as React.RefObject<HTMLTextAreaElement>}
             maxLength={1000}
+            isLoading={validationResult.isLoading}
           />
-          
+
           <AssumptionField
             id="technologyStack"
             label="Technology Stack"
-            value={project.assumptions.technologyStack || ''}
-            onChange={value => updateAssumption('technologyStack', value)}
-            suggestions={getSuggestionsForField('technologyStack')}
-            feedback={getFeedbackForField('technologyStack')}
+            value={project.assumptions?.technologyStack || ""}
+            onChange={(value) => updateAssumption("technologyStack", value)}
+            suggestions={getSuggestionsForField("technologyStack")}
+            feedback={getFeedbackForField("technologyStack")}
             fieldRef={fieldRefs.technologyStack as React.RefObject<HTMLTextAreaElement>}
             maxLength={500}
+            isLoading={validationResult.isLoading}
           />
-          
+
           <AssumptionField
             id="constraints"
             label="Constraints"
-            value={project.assumptions.constraints || ''}
-            onChange={value => updateAssumption('constraints', value)}
-            suggestions={getSuggestionsForField('constraints')}
-            feedback={getFeedbackForField('constraints')}
+            value={project.assumptions?.constraints || ""}
+            onChange={(value) => updateAssumption("constraints", value)}
+            suggestions={getSuggestionsForField("constraints")}
+            feedback={getFeedbackForField("constraints")}
             fieldRef={fieldRefs.constraints as React.RefObject<HTMLTextAreaElement>}
             maxLength={500}
+            isLoading={validationResult.isLoading}
           />
-          
+
           <div className="flex justify-end pt-2">
             <ValidateAssumptionsButton
               onValidate={validateAssumptions}
@@ -160,23 +160,20 @@ console.log('PROJECT ASSUMPTIONS', project.assumptions);
           </div>
         </CardContent>
       </Card>
-      
+
       {validationResult.error && (
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Validation failed</AlertTitle>
           <AlertDescription>
             {validationResult.error}
-            <button 
-              onClick={validateAssumptions}
-              className="ml-2 text-xs underline hover:no-underline"
-            >
+            <button onClick={validateAssumptions} className="ml-2 text-xs underline hover:no-underline">
               Try again
             </button>
           </AlertDescription>
         </Alert>
       )}
-      
+
       {validationResult.suggestions.length > 0 && (
         <SuggestionsList
           suggestions={validationResult.suggestions}

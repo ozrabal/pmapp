@@ -13,6 +13,7 @@ import {
 } from "./panels";
 import { isSessionExpiredError, isPermissionError, isNotFoundError } from "../../lib/services/error.service";
 import type { ProjectDetailsContentProps } from "./types";
+import { Pen } from "lucide-react";
 
 export const ProjectDetailsContent: React.FC<ProjectDetailsContentProps> = ({
   projectId,
@@ -146,7 +147,16 @@ export const ProjectDetailsContent: React.FC<ProjectDetailsContentProps> = ({
       {/* Content panel */}
       <Card className="border shadow-sm">
         <CardHeader className="border-b">
-          <CardTitle>{getTabTitle()}</CardTitle>
+          <div className="justify-between flex items-center w-full">
+            <CardTitle>{getTabTitle()}</CardTitle>
+            <Button
+              onClick={() => (window.location.href = `/projects/${projectId}/${selectedTab}`)}
+              aria-label="Back to Projects"
+            >
+              <Pen className="h-4 w-4" />
+              Edit
+            </Button>
+          </div>
         </CardHeader>
         <CardContent className="p-6">{renderPanel()}</CardContent>
       </Card>

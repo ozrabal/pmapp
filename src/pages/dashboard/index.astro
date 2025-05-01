@@ -15,13 +15,8 @@ if (!isLoggedIn) {
 ---
 
 <Layout title="Dashboard - Moje projekty | Plan My App">
-  <main class="container py-8">
-    <DashboardHeader />
-    
-    <div class="dashboard-content">
-      <ErrorBoundary client:load>
-        <ProjectsListContainer client:load />
-      </ErrorBoundary>
-    </div>
-  </main>
+  <DashboardHeader />
+  <ErrorBoundary client:load>
+    <ProjectsListContainer client:load />
+  </ErrorBoundary>
 </Layout>

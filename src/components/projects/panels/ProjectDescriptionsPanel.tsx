@@ -1,8 +1,8 @@
-import React from 'react';
-import { Card, CardContent } from '../../ui/card';
-import { Alert, AlertDescription } from '../../ui/alert';
-import { LoadingSkeleton } from '../LoadingSkeleton';
-import type { ProjectDescriptionsPanelProps } from '../types';
+import React from "react";
+import { Card, CardContent } from "../../ui/card";
+import { Alert, AlertDescription } from "../../ui/alert";
+import { LoadingSkeleton } from "../LoadingSkeleton";
+import type { ProjectDescriptionsPanelProps } from "../types";
 
 export const ProjectDescriptionsPanel: React.FC<ProjectDescriptionsPanelProps> = ({
   description,
@@ -32,20 +32,16 @@ export const ProjectDescriptionsPanel: React.FC<ProjectDescriptionsPanelProps> =
   }
 
   // Format description text with proper line breaks
-  const formattedDescription = description.description
-    .split('\n')
-    .map((line, i) => (
-      <React.Fragment key={i}>
-        {line}
-        <br />
-      </React.Fragment>
-    ));
+  const formattedDescription = description.description.split("\n").map((line, i) => (
+    <React.Fragment key={i}>
+      {line}
+      <br />
+    </React.Fragment>
+  ));
 
   return (
     <div className={className}>
-      <div className="prose prose-sm max-w-none dark:prose-invert">
-        {formattedDescription}
-      </div>
+      <div className="prose prose-sm max-w-none dark:prose-invert">{formattedDescription}</div>
     </div>
   );
 };

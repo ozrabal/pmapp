@@ -5,6 +5,7 @@ import ProjectTabsNavigation from "@/components/projects/ProjectTabsNavigation";
 import { ErrorBoundary } from "@/components/dashboard/ErrorBoundary";
 import EditProjectDescriptionsForm from "@/components/projects/EditProjectDescriptionsForm";
 import type { ProjectTabProps } from "../../../components/projects/types";
+import { BackToProjectsButton } from "@/components/projects/BackToProjectsButton";
 
 // Get the project ID from URL params
 const { id } = Astro.params;
@@ -46,20 +47,23 @@ const tabs: ProjectTabProps[] = [
 ---
 
 <Layout title={pageTitle}>
-  <main class="container max-w-6xl mx-auto px-4 py-8">
-    <ProjectHeader projectId={id} />
-
-    <div class="mt-6 mb-8">
-      <ProjectTabsNavigation projectId={id} tabs={tabs} activeTab="descriptions" client:load />
+  <div class="mb-6">
+    <div class="flex justify-between items-center mb-4">
+      <BackToProjectsButton client:load />
     </div>
 
-    <section aria-labelledby="edit-project-description-form" class="mt-8">
-      <h2 id="edit-project-description-form" class="sr-only">Formularz edycji opisu projektu</h2>
-      <div class="max-w-3xl mx-auto">
-        <ErrorBoundary client:load>
-          <EditProjectDescriptionsForm projectId={id} client:load />
-        </ErrorBoundary>
-      </div>
-    </section>
-  </main>
+    <ProjectHeader projectId={id} />
+  </div>
+
+  <div class="mt-6 mb-8">
+    <ProjectTabsNavigation projectId={id} tabs={tabs} activeTab="descriptions" client:load />
+  </div>
+
+  <section aria-labelledby="edit-project-description-form" class="mt-8">
+    <h2 id="edit-project-description-form" class="sr-only">Formularz edycji opisu projektu</h2>
+
+    <ErrorBoundary client:load>
+      <EditProjectDescriptionsForm projectId={id} client:load />
+    </ErrorBoundary>
+  </section>
 </Layout>

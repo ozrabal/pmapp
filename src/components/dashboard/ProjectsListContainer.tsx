@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useProjectsList } from "./hooks/useProjectsList";
 import { useDeleteProject } from "./hooks/useDeleteProject";
 import { ProjectsFilters } from "./ProjectsFilters";
@@ -23,19 +23,10 @@ export function ProjectsListContainer() {
 function ProjectsListContainerContent() {
   // Reference to the container for focus management
   const containerRef = useRef<HTMLDivElement>(null);
-  
+
   // Use custom hooks for state management
-  const {
-    projects,
-    isLoading,
-    error,
-    filters,
-    pagination,
-    updateFilters,
-    resetFilters,
-    goToPage,
-    deleteProject
-  } = useProjectsList();
+  const { projects, isLoading, error, filters, pagination, updateFilters, resetFilters, goToPage, deleteProject } =
+    useProjectsList();
 
   // Hook for delete project modal management
   const {
@@ -45,16 +36,16 @@ function ProjectsListContainerContent() {
     error: deleteError,
     openModal,
     confirmDelete,
-    cancelDelete
+    cancelDelete,
   } = useDeleteProject(deleteProject);
-console.log("ProjectsListContainer", projects);
+  console.log("ProjectsListContainer", projects);
   // Handle delete button click on project card
   const handleDeleteClick = (project: ProjectViewModel) => {
     openModal(project);
   };
 
   // Memoize the projects count for performance
-  const projectsCount = useMemo(() => pagination.total, [pagination.total]);
+  // const projectsCount = useMemo(() => pagination.total, [pagination.total]);
 
   // Focus the container when the delete modal closes
   useEffect(() => {
@@ -70,10 +61,10 @@ console.log("ProjectsListContainer", projects);
   useEffect(() => {
     // In a real app, this would track analytics
     const pageViewData = {
-      page: 'dashboard',
+      page: "dashboard",
       filters: filters,
     };
-    console.log('Page view:', pageViewData);
+    console.log("Page view:", pageViewData);
   }, [filters]);
 
   // Show error state if there's an error loading projects
@@ -83,14 +74,9 @@ console.log("ProjectsListContainer", projects);
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Błąd</AlertTitle>
-          <AlertDescription>
-            {error.message || "Wystąpił błąd podczas ładowania projektów."}
-          </AlertDescription>
+          <AlertDescription>{error.message || "Wystąpił błąd podczas ładowania projektów."}</AlertDescription>
         </Alert>
-        <Button 
-          onClick={() => updateFilters({})} 
-          variant="outline"
-        >
+        <Button onClick={() => updateFilters({})} variant="outline">
           Spróbuj ponownie
         </Button>
       </div>
@@ -98,36 +84,19 @@ console.log("ProjectsListContainer", projects);
   }
 
   return (
-    <div 
-      className="w-full"
-      aria-busy={isLoading}
-      ref={containerRef}
-      tabIndex={-1}
-    >
+    <div className="w-full" aria-busy={isLoading} ref={containerRef} tabIndex={-1}>
       {/* Filters section */}
-      <ProjectsFilters
-        filters={filters}
-        onUpdateFilters={updateFilters}
-        onResetFilters={resetFilters}
-      />
+      <ProjectsFilters filters={filters} onUpdateFilters={updateFilters} onResetFilters={resetFilters} />
 
       {/* Loading skeleton or projects list */}
       {isLoading ? (
         <ProjectsLoadingSkeleton count={3} />
       ) : (
-        <ProjectsList 
-          projects={projects} 
-          onDelete={handleDeleteClick} 
-        />
+        <ProjectsList projects={projects} onDelete={handleDeleteClick} />
       )}
 
       {/* Pagination - only show if we have projects and not loading */}
-      {!isLoading && projects.length > 0 && (
-        <ProjectsPagination 
-          pagination={pagination}
-          onPageChange={goToPage}
-        />
-      )}
+      {!isLoading && projects.length > 0 && <ProjectsPagination pagination={pagination} onPageChange={goToPage} />}
 
       {/* Delete confirmation modal */}
       <DeleteProjectModal

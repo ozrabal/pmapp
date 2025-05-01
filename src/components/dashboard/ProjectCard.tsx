@@ -34,7 +34,7 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
 
   return (
     <Card
-      className="mb-4 overflow-hidden transition-all duration-300 hover:shadow-md cursor-pointer group"
+      className="overflow-hidden transition-all duration-300 hover:shadow-md cursor-pointer group"
       onClick={handleClick}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
