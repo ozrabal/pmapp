@@ -6,7 +6,7 @@ import type { ValidationResultViewModel } from "../types";
 import { AssumptionsMappers } from "../mappers";
 
 // Helper function for debouncing
-const debounce = <T extends any[]>(func: (...args: T) => unknown, wait: number): ((...args: T) => void) => {
+const debounce = <T extends unknown[]>(func: (...args: T) => unknown, wait: number): ((...args: T) => void) => {
   let timeout: ReturnType<typeof setTimeout> | null = null;
 
   return function (...args: T) {

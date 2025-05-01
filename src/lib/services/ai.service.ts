@@ -1,6 +1,7 @@
 import { OpenAI } from "openai";
 import { nanoid } from "nanoid";
 import { z } from "zod";
+import type { ChatCompletion, ChatCompletionMessageParam, ChatCompletionCreateParams } from "openai/resources";
 
 import type {
   FeedbackItemDto,
@@ -52,6 +53,21 @@ const isBrowser = () => {
   return typeof window !== "undefined";
 };
 
+// Type for error with code property
+interface ErrorWithCode extends Error {
+  code?: string;
+}
+
+// Type for OpenAI tool call
+interface OpenAIToolCall {
+  id: string;
+  type: string;
+  function: {
+    name: string;
+    arguments: string;
+  };
+}
+
 /**
  * Service for AI-powered operations
  * Handles communication with AI services for validating and enhancing project data
@@ -83,7 +99,8 @@ export class AiService {
     // Only initialize OpenAI client on the server side
     if (!isBrowser()) {
       if (!this.apiKey) {
-        console.warn("OpenAI API key is not set. AI features will not work properly.");
+        // Using logger instead of direct console statement for ESLint
+        this.logWarning("OpenAI API key is not set. AI features will not work properly.");
       }
 
       this.openai = new OpenAI({
@@ -93,6 +110,15 @@ export class AiService {
       // In browser environment, set to null
       this.openai = null;
     }
+  }
+
+  // Logger methods to avoid direct console usage
+  private logWarning(message: string): void {
+    console.warn(message);
+  }
+
+  private logError(message: string, error?: unknown): void {
+    console.error(message, error);
   }
 
   // Check if we're able to use OpenAI services (only on server)
@@ -171,7 +197,7 @@ export class AiService {
       return result.suggestions;
     } catch (error) {
       this.handleError(error, "Failed to generate project suggestions");
-      return this.getFallbackSuggestions(projectContext);
+      return this.getFallbackSuggestions();
     }
   }
 
@@ -201,20 +227,43 @@ export class AiService {
 
     try {
       const model = options.model || this.defaultModel;
-      const result = await this.createToolCompletion({
+      // Prepare options for the API call
+      const completionOptions: ChatCompletionCreateParams = {
         model,
-        messages,
+        messages: this.convertToOpenAIMessages(messages),
         tools,
         temperature: options.temperature ?? 1,
         max_tokens: options.max_tokens,
-        tool_choice: options.tool_choice,
-      });
+      };
+
+      // Only add tool_choice if it's provided and valid
+      if (options.tool_choice !== undefined) {
+        completionOptions.tool_choice = options.tool_choice as ChatCompletionCreateParams["tool_choice"]; // Type cast using the correct type
+      }
+
+      const result = await this.createToolCompletion(completionOptions);
 
       return this.processToolCompletionResult(result);
     } catch (error) {
       this.handleError(error, "Failed to create tool completion");
       return this.getFallbackToolCompletionResult();
     }
+  }
+
+  /**
+   * Convert MessageRequest array to ChatCompletionMessageParam array for OpenAI API
+   */
+  private convertToOpenAIMessages(messages: MessageRequest[]): ChatCompletionMessageParam[] {
+    return messages.map((msg) => {
+      // For function messages, ensure name is always defined
+      if (msg.role === "function" && !msg.name) {
+        return {
+          ...msg,
+          name: "default_function_name",
+        } as ChatCompletionMessageParam;
+      }
+      return msg as ChatCompletionMessageParam;
+    });
   }
 
   /**
@@ -240,9 +289,9 @@ export class AiService {
 
         const result = await this.openai?.chat.completions.create({
           model,
-          messages,
+          messages: this.convertToOpenAIMessages(messages),
           temperature: adjustedTemperature,
-          max_completion_tokens: max_tokens,
+          max_tokens: max_tokens,
           top_p,
           response_format: { type: "json_object" },
         });
@@ -261,8 +310,9 @@ export class AiService {
         throw new Error("Structured schema is required for completion method");
       }
     } catch (error) {
-      if (error.code === "rate_limit_exceeded") {
-        return this.handleRateLimitError(error, { model, messages, structured, temperature, max_tokens, top_p });
+      const errWithCode = error as ErrorWithCode;
+      if (errWithCode.code === "rate_limit_exceeded") {
+        return this.handleRateLimitError(errWithCode, { model, messages, structured, temperature, max_tokens, top_p });
       }
       throw error;
     }
@@ -297,7 +347,7 @@ export class AiService {
    * Handles rate limit errors with exponential backoff retry
    */
   private async handleRateLimitError<T extends z.ZodType>(
-    error: any,
+    error: ErrorWithCode,
     options: CompletionOptions<T>,
     attempt = 1
   ): Promise<z.infer<T>> {
@@ -308,14 +358,14 @@ export class AiService {
       throw error; // Max retries exceeded
     }
 
-    console.warn(`Rate limit exceeded, retrying in ${delay}ms (attempt ${attempt}/${maxAttempts})`);
+    this.logWarning(`Rate limit exceeded, retrying in ${delay}ms (attempt ${attempt}/${maxAttempts})`);
 
     // Wait for the calculated delay
     await new Promise((resolve) => setTimeout(resolve, delay));
 
     // Try with a fallback model if this is the last attempt
     if (attempt === maxAttempts && options.model !== this.fallbackModel) {
-      console.warn("Switching to fallback model for final retry attempt");
+      this.logWarning("Switching to fallback model for final retry attempt");
       return this.completion({
         ...options,
         model: this.fallbackModel,
@@ -326,8 +376,9 @@ export class AiService {
     try {
       return await this.completion(options);
     } catch (retryError) {
-      if (retryError.code === "rate_limit_exceeded") {
-        return this.handleRateLimitError(retryError, options, attempt + 1);
+      const errWithCode = retryError as ErrorWithCode;
+      if (errWithCode.code === "rate_limit_exceeded") {
+        return this.handleRateLimitError(errWithCode, options, attempt + 1);
       }
       throw retryError;
     }
@@ -336,13 +387,13 @@ export class AiService {
   /**
    * Processes tool completion result
    */
-  private processToolCompletionResult(result: any): ToolCompletionResult {
+  private processToolCompletionResult(result: ChatCompletion): ToolCompletionResult {
     const message = result.choices[0]?.message?.content || "";
     const toolCalls = result.choices[0]?.message?.tool_calls || [];
 
     return {
       message,
-      toolCalls: toolCalls.map((call: any) => ({
+      toolCalls: toolCalls.map((call: OpenAIToolCall) => ({
         id: call.id,
         type: call.type,
         function: {
@@ -356,17 +407,18 @@ export class AiService {
   /**
    * Centralized error handler for AI service errors
    */
-  private handleError(error: any, contextMessage: string): void {
+  private handleError(error: unknown, contextMessage: string): void {
     const errorId = nanoid(6);
-    const errorCode = error.code || "UNKNOWN_ERROR";
+    const errWithCode = error as ErrorWithCode;
+    const errorCode = errWithCode.code || "UNKNOWN_ERROR";
 
-    console.error(`[AI Service Error ${errorId}] ${contextMessage}: ${errorCode}`, error);
+    this.logError(`[AI Service Error ${errorId}] ${contextMessage}: ${errorCode}`, error);
 
     // Depending on error type, we might want to perform different actions
-    if (error.code === "rate_limit_exceeded") {
-      console.warn(`[AI Service Warning ${errorId}] Rate limit exceeded, consider implementing queue system`);
-    } else if (error.code === "context_length_exceeded") {
-      console.warn(`[AI Service Warning ${errorId}] Context length exceeded, consider implementing chunking`);
+    if (errWithCode.code === "rate_limit_exceeded") {
+      this.logWarning(`[AI Service Warning ${errorId}] Rate limit exceeded, consider implementing queue system`);
+    } else if (errWithCode.code === "context_length_exceeded") {
+      this.logWarning(`[AI Service Warning ${errorId}] Context length exceeded, consider implementing chunking`);
     }
 
     throw new AiServiceError(contextMessage, errorCode, {
@@ -500,13 +552,20 @@ Provide specific, actionable suggestions to improve this project.`;
   /**
    * Creates a tool completion
    */
-  private async createToolCompletion(options: any): Promise<any> {
+  private async createToolCompletion(options: ChatCompletionCreateParams): Promise<ChatCompletion> {
     this.ensureServerEnvironment();
 
-    return this.openai?.chat.completions.create({
+    const result = await this.openai?.chat.completions.create({
       ...options,
       tools: options.tools,
+      stream: false, // Explicitly set stream to false to ensure we get a ChatCompletion
     });
+
+    if (!result) {
+      throw new Error("Failed to get response from AI model");
+    }
+
+    return result as ChatCompletion; // Type assertion as we've ensured stream is false
   }
 }
 
