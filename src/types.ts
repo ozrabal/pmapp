@@ -211,3 +211,43 @@ export interface SessionHeartbeatResponseDto {
 // Export Formats
 
 export type ExportFormat = "json";
+
+// AI Service Types
+
+export interface AiCompletionOptions {
+  temperature?: number;
+  max_tokens?: number;
+  top_p?: number;
+  model?: string;
+}
+
+export interface ToolCompletionOptions extends AiCompletionOptions {
+  tool_choice?: string | object;
+}
+
+export interface AiTool {
+  type: "function";
+  function: {
+    name: string;
+    description: string;
+    parameters: Record<string, unknown>;
+  };
+}
+
+export interface ToolCompletionResult {
+  message: string;
+  toolCalls: {
+    id: string;
+    type: string;
+    function: {
+      name: string;
+      arguments: string;
+    };
+  }[];
+}
+
+export interface MessageRequest {
+  role: "system" | "user" | "assistant" | "function";
+  content: string;
+  name?: string;
+}
