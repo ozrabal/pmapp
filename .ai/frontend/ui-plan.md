@@ -187,7 +187,7 @@ Kluczowe założenia architektury UI:
   - Formularz edycji bloku funkcjonalnego
   - Przyciski dodawania/usuwania bloków
   - Możliwość zmiany kolejności bloków (drag & drop)
-  - Przycisk "Eksportuj bloki"
+  - Przycisk "Eksportuj bloki" - nie wchodzi w zakres MVP
 - **UX i dostępność:**
   - Stan pusty z instrukcją generowania
   - Wskaźniki ładowania podczas operacji AI
