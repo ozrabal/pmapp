@@ -1,0 +1,112 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ProjectHeader from "../../../components/projects/ProjectHeader.astro";
+import ProjectTabsNavigation from "../../../components/projects/ProjectTabsNavigation";
+import FunctionalBlocksContainer from "../../../components/projects/functional-blocks/FunctionalBlocksContainer";
+import { type ProjectDto } from "../../../types";
+
+const { id } = Astro.params;
+
+if (!id) {
+  return Astro.redirect("/dashboard");
+}
+
+// Fetch project details
+let project: ProjectDto | null = null;
+let error: string | null = null;
+
+try {
+  const response = await fetch(`${Astro.url.origin}/api/projects/${id}`);
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error?.message || "Nie udało się pobrać danych projektu");
+  }
+  project = await response.json();
+} catch (err) {
+  error = err instanceof Error ? err.message : "Wystąpił błąd podczas pobierania danych projektu";
+  console.error("Error fetching project:", error);
+}
+
+if (!project && !error) {
+  error = "Nie znaleziono projektu";
+}
+
+const title = project ? `${project.name} - Bloki funkcjonalne` : "Bloki funkcjonalne";
+
+const tabs: ProjectTabProps[] = [
+  {
+    id: "descriptions",
+    label: "Opisy",
+    isActive: false,
+    disabled: false,
+  },
+  {
+    id: "assumptions",
+    label: "Założenia",
+    isActive: false,
+    disabled: false,
+  },
+  {
+    id: "functionalBlocks",
+    label: "Funkcjonalności",
+    isActive: true,
+    disabled: false,
+  },
+  {
+    id: "schedule",
+    label: "Harmonogram",
+    isActive: false,
+    disabled: false,
+  },
+];
+---
+
+<Layout title={title}>
+  {
+    project && (
+      <div class="container mx-auto px-4 py-6 space-y-6">
+        <ProjectHeader project={project} />
+
+        <div class="mb-6">
+          <ProjectTabsNavigation tabs={tabs} projectId={id} activeTab="functionalBlocks" client:load />
+        </div>
+
+        <div class="bg-white rounded-lg border border-neutral-200 shadow-sm">
+          {error ? (
+            <div class="p-6 text-center">
+              <h2 class="text-xl font-semibold text-red-600 mb-2">Wystąpił błąd</h2>
+              <p class="text-neutral-700">{error}</p>
+              <button
+                class="mt-4 px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
+                onclick="window.location.reload();"
+              >
+                Spróbuj ponownie
+              </button>
+            </div>
+          ) : (
+            <FunctionalBlocksContainer projectId={id} client:load />
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  {
+    !project && !error && (
+      <div class="container mx-auto px-4 py-6">
+        <div class="flex items-center justify-center h-64">
+          <div class="animate-pulse flex space-x-4">
+            <div class="rounded-full bg-neutral-200 h-12 w-12" />
+            <div class="flex-1 space-y-4 py-1">
+              <div class="h-4 bg-neutral-200 rounded w-3/4" />
+              <div class="space-y-2">
+                <div class="h-4 bg-neutral-200 rounded" />
+                <div class="h-4 bg-neutral-200 rounded w-5/6" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+</Layout>
