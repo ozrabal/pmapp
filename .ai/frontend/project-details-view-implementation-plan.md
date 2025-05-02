@@ -159,7 +159,7 @@ ProjectDetailsPage (Astro)
 
 ```typescript
 // Typy związane z zakładkami
-export type TabType = 'descriptions' | 'assumptions' | 'functionalBlocks' | 'schedule';
+export type TabType = 'descriptions' | 'assumptions' | 'functional-blocks' | 'schedule';
 
 export interface ProjectTabProps {
   id: TabType;

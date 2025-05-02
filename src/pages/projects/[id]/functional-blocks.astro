@@ -48,7 +48,7 @@ const tabs: ProjectTabProps[] = [
     disabled: false,
   },
   {
-    id: "functionalBlocks",
+    id: "functional-blocks",
     label: "Funkcjonalności",
     isActive: true,
     disabled: false,
@@ -69,7 +69,7 @@ const tabs: ProjectTabProps[] = [
         <ProjectHeader project={project} />
 
         <div class="mb-6">
-          <ProjectTabsNavigation tabs={tabs} projectId={id} activeTab="functionalBlocks" client:load />
+          <ProjectTabsNavigation tabs={tabs} projectId={id} activeTab="functional-blocks" client:load />
         </div>
 
         <div class="bg-white rounded-lg border border-neutral-200 shadow-sm">

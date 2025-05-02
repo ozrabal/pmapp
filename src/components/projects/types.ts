@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import type { ProjectDto, FunctionalBlockDto, ScheduleStageDto, ExportFormat } from "../../types";
 
 // Types related to tabs
-export type TabType = "descriptions" | "assumptions" | "functionalBlocks" | "schedule";
+export type TabType = "descriptions" | "assumptions" | "functional-blocks" | "schedule";
 
 export interface ProjectTabProps {
   id: TabType;
