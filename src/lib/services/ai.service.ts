@@ -11,6 +11,7 @@ import type {
   ToolCompletionResult,
   MessageRequest,
   FunctionalBlockDto,
+  ScheduleStageDto,
 } from "../../types";
 import { AiServiceError } from "./errors/ai-service.error";
 import type { ProjectAssumptions } from "../schemas/assumptions.schema";
@@ -45,6 +46,17 @@ export interface ProjectFunctionalBlockContext {
   name: string;
   description: string | null;
   assumptions: unknown | null;
+}
+
+/**
+ * Project context for generating schedule with AI
+ */
+export interface ProjectScheduleContext {
+  id: string;
+  name: string;
+  description: string | null;
+  assumptions: unknown | null;
+  functionalBlocks: unknown | null;
 }
 
 /**
@@ -264,6 +276,55 @@ export class AiService {
   }
 
   /**
+   * Generates a project schedule based on project data
+   *
+   * @param projectContext - The project context to generate schedule for
+   * @returns A promise resolving to a schedule with stages
+   */
+  async generateSchedule(projectContext: ProjectScheduleContext): Promise<{ stages: ScheduleStageDto[] }> {
+    this.ensureServerEnvironment();
+
+    // Validate input
+    if (!projectContext || !projectContext.id || !projectContext.name) {
+      throw new AiServiceError("Valid project context is required", "INVALID_INPUT");
+    }
+
+    try {
+      const systemMessage = this.getSystemPromptForScheduleGeneration();
+      const userMessage = this.formatProjectContextForSchedule(projectContext);
+
+      const scheduleSchema = z.object({
+        stages: z.array(
+          z.object({
+            id: z.string(),
+            name: z.string(),
+            description: z.string(),
+            dependencies: z.array(z.string()),
+            relatedBlocks: z.array(z.string()),
+            order: z.number(),
+          })
+        ),
+      });
+
+      const result = await this.completion({
+        model: this.defaultModel,
+        messages: [
+          { role: "system", content: systemMessage },
+          { role: "user", content: userMessage },
+        ],
+        structured: scheduleSchema,
+        temperature: 1, // Balance between creativity and consistency
+        max_tokens: 3000,
+      });
+
+      return result;
+    } catch (error) {
+      this.handleError(error, "Failed to generate project schedule");
+      return this.getFallbackSchedule();
+    }
+  }
+
+  /**
    * Creates fallback functional blocks for error cases
    */
   private getFallbackFunctionalBlocks(): { blocks: FunctionalBlockDto[] } {
@@ -276,6 +337,24 @@ export class AiService {
             "The essential functionality of the project. Please regenerate blocks for more specific details.",
           category: "core",
           dependencies: [],
+          order: 1,
+        },
+      ],
+    };
+  }
+
+  /**
+   * Creates fallback schedule for error cases
+   */
+  private getFallbackSchedule(): { stages: ScheduleStageDto[] } {
+    return {
+      stages: [
+        {
+          id: `fallback-${nanoid(6)}`,
+          name: "Project Planning",
+          description: "Initial project planning phase. Please regenerate schedule for more specific details.",
+          dependencies: [],
+          relatedBlocks: [],
           order: 1,
         },
       ],
@@ -316,6 +395,40 @@ Important guidelines:
   }
 
   /**
+   * Gets the system prompt for schedule generation
+   */
+  private getSystemPromptForScheduleGeneration(): string {
+    return `You are an expert project management assistant specialized in creating project schedules.
+Your task is to analyze the provided project information and generate a structured project schedule with logical stages.
+
+Each stage should represent a distinct phase of the project implementation process.
+Identify dependencies between stages where applicable.
+Connect stages to functional blocks where appropriate.
+
+Your response should follow this JSON structure exactly:
+{
+  "stages": [
+    {
+      "id": "unique-identifier", 
+      "name": "Stage Name",
+      "description": "Detailed description of what happens in this stage",
+      "dependencies": ["id-of-dependency-1", "id-of-dependency-2"],
+      "relatedBlocks": ["id-of-related-block-1", "id-of-related-block-2"],
+      "order": 1
+    }
+  ]
+}
+ 
+Important guidelines:
+1. Generate 5-15 stages depending on project complexity
+2. Ensure each stage has a unique ID (use short alphanumeric strings)
+3. Make descriptions specific and actionable
+4. Assign logical dependencies (avoid circular dependencies)
+5. Order stages from 1 to N in a logical implementation sequence
+6. Connect stages to functional blocks when possible`;
+  }
+
+  /**
    * Formats project context for functional blocks generation
    */
   private formatProjectContextForFunctionalBlocks(context: ProjectFunctionalBlockContext): string {
@@ -328,6 +441,26 @@ ${context.assumptions ? `Project Assumptions: ${JSON.stringify(context.assumptio
 
 Create a comprehensive set of functional blocks that would be needed to implement this project.
 Include all necessary components across frontend, backend, and any other relevant areas.`;
+  }
+
+  /**
+   * Formats project context for schedule generation
+   */
+  private formatProjectContextForSchedule(context: ProjectScheduleContext): string {
+    return `Please generate a project schedule for the following project:
+    
+Project Name: ${context.name}
+${context.description ? `Description: ${context.description}` : "No description provided."}
+
+${context.assumptions ? `Project Assumptions: ${JSON.stringify(context.assumptions, null, 2)}` : "No assumptions data available."}
+${
+  context.functionalBlocks
+    ? `Functional Blocks: ${JSON.stringify(context.functionalBlocks, null, 2)}`
+    : "No functional blocks data available."
+}
+
+Create a comprehensive project schedule with implementation stages that would be needed to complete this project.
+Include dependencies between stages and connections to functional blocks where appropriate.`;
   }
 
   /**

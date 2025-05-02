@@ -13,6 +13,8 @@ import type {
   SuggestionDto,
   GetProjectSuggestionsResponseDto,
   FunctionalBlockDto,
+  ScheduleStageDto,
+  GenerateScheduleResponseDto,
 } from "../../types";
 import type { ListProjectsQueryParams } from "../schemas/project.schema";
 import { ProjectAssumptionsSchema } from "../schemas/assumptions.schema";
@@ -376,7 +378,50 @@ export class ProjectService {
     });
 
     return functionalBlocks;
-    return functionalBlocks;
+  }
+
+  /**
+   * Generate a project schedule using AI
+   *
+   * @param projectId - The ID of the project to generate schedule for
+   * @param userId - The ID of the user who owns the project
+   * @returns A promise that resolves to a schedule with stages
+   * @throws Error if project is not found or user doesn't have access
+   */
+  async generateProjectSchedule(projectId: string, userId: string): Promise<{ stages: ScheduleStageDto[] }> {
+    // Get project with data needed for schedule generation
+    const { data: project, error } = await this.supabase
+      .from("projects")
+      .select("id, name, description, assumptions, functional_blocks")
+      .eq("id", projectId)
+      .eq("user_id", userId)
+      .is("deleted_at", null)
+      .single();
+
+    if (error) {
+      console.error(`Error fetching project: ${error.message}`);
+      throw new Error("Project not found or access denied");
+    }
+
+    // Prepare project context for AI schedule generation
+    const projectContext = {
+      id: project.id,
+      name: project.name,
+      description: project.description,
+      assumptions: project.assumptions,
+      functionalBlocks: project.functional_blocks,
+    };
+
+    // Use AI service to generate schedule
+    const schedule = await aiService.generateSchedule(projectContext);
+
+    // Update the project with the generated schedule
+    // Convert schedule to JSON-compatible structure
+    await this.updateProject(userId, projectId, {
+      schedule: JSON.parse(JSON.stringify({ stages: schedule.stages })),
+    });
+
+    return schedule;
   }
 }
 
@@ -542,6 +587,28 @@ export class ProjectClientService {
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData?.error?.message || `Failed to get suggestions for project with ID: ${id}`);
+    }
+
+    return response.json();
+  }
+
+  /**
+   * Generate a project schedule using AI
+   *
+   * @param id - The ID of the project to generate schedule for
+   * @returns A promise that resolves to a GenerateScheduleResponseDto
+   */
+  static async generateProjectSchedule(id: string): Promise<GenerateScheduleResponseDto> {
+    const response = await fetch(`${this.API_BASE_PATH}/${id}/schedule/generate`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData?.error?.message || `Failed to generate schedule for project with ID: ${id}`);
     }
 
     return response.json();

@@ -61,7 +61,7 @@ export const createProjectSchema = z.object({
     .trim()
     .min(1, { message: "Project name is required" })
     .max(200, { message: "Project name must be 200 characters or less" }),
-  
+
   // Project description - optional, can be null
   description: z
     .string()
@@ -83,14 +83,14 @@ export const updateProjectSchema = z.object({
     .min(1, { message: "Project name is required" })
     .max(200, { message: "Project name must be 200 characters or less" })
     .optional(),
-  
+
   description: z
     .string()
     .trim()
     .max(2000, { message: "Description must be 2000 characters or less" })
     .nullable()
     .optional(),
-  
+
   assumptions: z.any().optional(),
   functionalBlocks: z.any().optional(),
   schedule: z.any().optional(),
@@ -103,11 +103,35 @@ export type UpdateProjectInput = z.infer<typeof updateProjectSchema>;
  */
 export const projectSuggestionsSchema = z.object({
   // Optional focus parameter to specify the area for suggestions
-  focus: z
-    .string()
-    .trim()
-    .max(100, { message: "Focus parameter must be 100 characters or less" })
-    .optional(),
+  focus: z.string().trim().max(100, { message: "Focus parameter must be 100 characters or less" }).optional(),
 });
 
 export type ProjectSuggestionsInput = z.infer<typeof projectSuggestionsSchema>;
+
+/**
+ * Validation schema for project schedule stage
+ */
+export const scheduleStageSchema = z.object({
+  id: z.string().uuid({
+    message: "Stage ID must be a valid UUID",
+  }),
+  name: z
+    .string()
+    .trim()
+    .min(1, { message: "Stage name is required" })
+    .max(200, { message: "Stage name must be 200 characters or less" }),
+  description: z.string().trim().max(2000, { message: "Stage description must be 2000 characters or less" }),
+  dependencies: z.array(z.string()),
+  relatedBlocks: z.array(z.string()),
+  order: z.number().int().nonnegative(),
+});
+
+/**
+ * Validation schema for project schedule generation
+ */
+export const scheduleGenerationSchema = z.object({
+  stages: z.array(scheduleStageSchema),
+});
+
+export type ProjectSchedule = z.infer<typeof scheduleGenerationSchema>;
+export type ScheduleStage = z.infer<typeof scheduleStageSchema>;
