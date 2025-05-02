@@ -5,6 +5,7 @@ import ProjectTabsNavigation from "../../../components/projects/ProjectTabsNavig
 import FunctionalBlocksContainer from "../../../components/projects/functional-blocks/FunctionalBlocksContainer";
 import { type ProjectDto } from "../../../types";
 import type { ProjectTabProps } from "@/components/projects/types";
+import { BackToProjectsButton } from "@/components/projects/BackToProjectsButton";
 
 const { id } = Astro.params;
 
@@ -65,10 +66,16 @@ const tabs: ProjectTabProps[] = [
 <Layout title={title}>
   {
     project && (
-      <div class="container mx-auto px-4 py-6 space-y-6">
-        <ProjectHeader project={project} />
-
+      <>
         <div class="mb-6">
+          <div class="flex justify-between items-center mb-4">
+            <BackToProjectsButton client:load />
+          </div>
+
+          <ProjectHeader projectId={id} />
+        </div>
+
+        <div class="mt-6 mb-8">
           <ProjectTabsNavigation tabs={tabs} projectId={id} activeTab="functional-blocks" client:load />
         </div>
 
@@ -88,7 +95,7 @@ const tabs: ProjectTabProps[] = [
             <FunctionalBlocksContainer projectId={id} client:load />
           )}
         </div>
-      </div>
+      </>
     )
   }
 
