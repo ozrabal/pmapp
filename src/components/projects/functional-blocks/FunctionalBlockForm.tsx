@@ -111,7 +111,6 @@ export function FunctionalBlockForm({ block, allBlocks, onSave, onCancel, inModa
           placeholder="Wprowadź nazwę bloku funkcjonalnego"
           {...register("name")}
           className={errors.name ? "border-red-300 focus:border-red-500" : ""}
-          autoFocus
         />
         {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
       </div>
