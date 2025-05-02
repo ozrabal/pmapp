@@ -12,7 +12,7 @@ import {
   ProjectSchedulePanel,
 } from "./panels";
 import { isSessionExpiredError, isPermissionError, isNotFoundError } from "../../lib/services/error.service";
-import type { ProjectDetailsContentProps } from "./types";
+import type { FunctionalBlocksViewModel, ProjectDetailsContentProps, ScheduleViewModel } from "./types";
 import { Pen } from "lucide-react";
 
 export const ProjectDetailsContent: React.FC<ProjectDetailsContentProps> = ({
@@ -76,8 +76,8 @@ export const ProjectDetailsContent: React.FC<ProjectDetailsContentProps> = ({
   // Extract data for each panel from the project
   const descriptionData = project ? { description: project.description || "" } : null;
   const assumptionsData = (project?.assumptions as Record<string, string>) || null;
-  const functionalBlocksData = (project?.functionalBlocks as { blocks: any[] }) || null;
-  const scheduleData = (project?.schedule as { stages: any[] }) || null;
+  const functionalBlocksData = (project?.functionalBlocks as unknown as FunctionalBlocksViewModel) || null;
+  const scheduleData = project?.schedule ? (project.schedule as unknown as ScheduleViewModel) : null;
 
   // Get tab title based on selected tab
   const getTabTitle = () => {
@@ -86,7 +86,7 @@ export const ProjectDetailsContent: React.FC<ProjectDetailsContentProps> = ({
         return "Project Description";
       case "assumptions":
         return "Project Assumptions";
-      case "functionalBlocks":
+      case "functional-blocks":
         return "Functional Blocks";
       case "schedule":
         return "Project Schedule";
@@ -116,9 +116,9 @@ export const ProjectDetailsContent: React.FC<ProjectDetailsContentProps> = ({
           </div>
         );
 
-      case "functionalBlocks":
+      case "functional-blocks":
         return isLoading ? (
-          <LoadingSkeleton type="functionalBlocks" />
+          <LoadingSkeleton type="functional-blocks" />
         ) : (
           <div id="functionalBlocks-panel" role="tabpanel" aria-labelledby="tab-functionalBlocks">
             <ProjectFunctionalBlocksPanel functionalBlocks={functionalBlocksData} isLoading={isLoading} />
