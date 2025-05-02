@@ -76,7 +76,7 @@ export function useFunctionalBlocks(projectId: string) {
 
     try {
       // Call endpoint to generate blocks
-      const response = await fetch(`/api/projects/${projectId}/generate-functional-blocks`, {
+      const response = await fetch(`/api/projects/${projectId}/functional-blocks/generate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
