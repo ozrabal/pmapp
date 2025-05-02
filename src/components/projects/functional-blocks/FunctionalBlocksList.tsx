@@ -3,29 +3,21 @@ import { type FunctionalBlockDto } from "../../../types";
 import { FunctionalBlockItem } from "./FunctionalBlockItem";
 import { AddBlockButton } from "./AddBlockButton";
 import type { DragState } from "./types";
-import { FunctionalBlockForm } from "./FunctionalBlockForm";
-import { type FunctionalBlockFormValues } from "./types";
 
 interface FunctionalBlocksListProps {
   blocks: FunctionalBlockDto[];
-  selectedBlockId: string | null;
   onReorder: (blocks: FunctionalBlockDto[]) => void;
   onAddBlock: () => void;
   onEditBlock: (blockId: string) => void;
   onDeleteBlock: (blockId: string) => void;
-  onUpdateBlock: (blockId: string, values: FunctionalBlockFormValues) => void;
-  onCancelEdit: () => void;
 }
 
 export function FunctionalBlocksList({
   blocks,
-  selectedBlockId,
   onReorder,
   onAddBlock,
   onEditBlock,
   onDeleteBlock,
-  onUpdateBlock,
-  onCancelEdit,
 }: FunctionalBlocksListProps) {
   // Stan przeciągania
   const [dragState, setDragState] = useState<DragState>({
@@ -102,33 +94,12 @@ export function FunctionalBlocksList({
     });
   };
 
-  // Obsługa zapisywania formularza
-  const handleSaveBlock = (blockId: string | undefined, values: FunctionalBlockFormValues) => {
-    if (blockId) {
-      onUpdateBlock(blockId, values);
-    }
-  };
-
-  // Znajdź zaznaczony blok
-  const selectedBlock = selectedBlockId ? blocks.find((block) => block.id === selectedBlockId) : null;
-
   return (
     <div className="space-y-4">
-      {selectedBlock && (
-        <div className="mb-6">
-          <FunctionalBlockForm
-            block={selectedBlock}
-            allBlocks={blocks}
-            onSave={handleSaveBlock}
-            onCancel={onCancelEdit}
-          />
-        </div>
-      )}
-
       {blocks.map((block) => (
         <div
           key={block.id}
-          draggable={!selectedBlockId}
+          draggable
           onDragStart={(e) => handleDragStart(e, block.id)}
           onDragOver={(e) => handleDragOver(e, block.id)}
           onDrop={(e) => handleDrop(e, block.id)}
@@ -139,7 +110,7 @@ export function FunctionalBlocksList({
         >
           <FunctionalBlockItem
             block={block}
-            isSelected={selectedBlockId === block.id}
+            isSelected={false}
             onEdit={() => onEditBlock(block.id)}
             onDelete={() => onDeleteBlock(block.id)}
             allBlocks={blocks}
@@ -150,12 +121,10 @@ export function FunctionalBlocksList({
         </div>
       ))}
 
-      {/* Przycisk dodawania nowego bloku - wyświetlany tylko gdy nie ma aktywnej edycji */}
-      {!selectedBlockId && (
-        <div className="mt-6">
-          <AddBlockButton onClick={onAddBlock} />
-        </div>
-      )}
+      {/* Przycisk dodawania nowego bloku */}
+      <div className="mt-6">
+        <AddBlockButton onClick={onAddBlock} />
+      </div>
     </div>
   );
 }

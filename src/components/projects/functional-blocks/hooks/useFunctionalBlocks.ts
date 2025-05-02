@@ -9,7 +9,6 @@ export function useFunctionalBlocks(projectId: string) {
   const [blocks, setBlocks] = useState<FunctionalBlockDto[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
 
   // Fetch blocks from project
   const fetchBlocks = useCallback(async () => {
@@ -24,10 +23,10 @@ export function useFunctionalBlocks(projectId: string) {
       }
 
       const project: ProjectDto = await response.json();
-      console.log("Fetched project:", project);
+
       // Convert functionalBlocks from JSON to array
       const functionalBlocksData = project.functionalBlocks
-        ? (project.functionalBlocks as { blocks: FunctionalBlockDto[] }).blocks || []
+        ? (project.functionalBlocks as unknown as { blocks: FunctionalBlockDto[] }).blocks || []
         : [];
 
       setBlocks(functionalBlocksData);
@@ -100,21 +99,24 @@ export function useFunctionalBlocks(projectId: string) {
   }, [projectId, updateBlocks]);
 
   // Add new block
-  const addBlock = useCallback(() => {
-    // Create new block with unique id
-    const newBlock: FunctionalBlockDto = {
-      id: crypto.randomUUID(),
-      name: "Nowy blok funkcjonalny",
-      description: "Opis bloku funkcjonalnego",
-      category: "other",
-      dependencies: [],
-      order: blocks.length,
-    };
+  const addBlock = useCallback(
+    (blockData?: Partial<FunctionalBlockDto>) => {
+      // Create new block with unique id
+      const newBlock: FunctionalBlockDto = {
+        id: crypto.randomUUID(),
+        name: blockData?.name || "Nowy blok funkcjonalny",
+        description: blockData?.description || "Opis bloku funkcjonalnego",
+        category: blockData?.category || "other",
+        dependencies: blockData?.dependencies || [],
+        order: blocks.length,
+      };
 
-    const updatedBlocks = [...blocks, newBlock];
-    updateBlocks(updatedBlocks);
-    setSelectedBlockId(newBlock.id);
-  }, [blocks, updateBlocks]);
+      const updatedBlocks = [...blocks, newBlock];
+      updateBlocks(updatedBlocks);
+      return newBlock.id;
+    },
+    [blocks, updateBlocks]
+  );
 
   // Update existing block
   const updateBlock = useCallback(
@@ -122,7 +124,6 @@ export function useFunctionalBlocks(projectId: string) {
       const updatedBlocks = blocks.map((block) => (block.id === blockId ? { ...block, ...values } : block));
 
       updateBlocks(updatedBlocks);
-      setSelectedBlockId(null);
     },
     [blocks, updateBlocks]
   );
@@ -139,11 +140,8 @@ export function useFunctionalBlocks(projectId: string) {
         }));
 
       updateBlocks(updatedBlocks);
-      if (selectedBlockId === blockId) {
-        setSelectedBlockId(null);
-      }
     },
-    [blocks, selectedBlockId, updateBlocks]
+    [blocks, updateBlocks]
   );
 
   // Reorder blocks
@@ -169,8 +167,6 @@ export function useFunctionalBlocks(projectId: string) {
     blocks: useMemo(() => [...blocks].sort((a, b) => a.order - b.order), [blocks]),
     isLoading,
     error,
-    selectedBlockId,
-    setSelectedBlockId,
     generateBlocks,
     addBlock,
     updateBlock,

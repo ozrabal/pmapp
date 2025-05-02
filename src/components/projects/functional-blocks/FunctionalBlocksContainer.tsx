@@ -1,29 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
 import { useFunctionalBlocks } from "./hooks/useFunctionalBlocks";
 import { LoadingState } from "./LoadingState";
 import { EmptyState } from "./EmptyState";
 import { GenerateBlocksButton } from "./GenerateBlocksButton";
 import { FunctionalBlocksList } from "./FunctionalBlocksList";
+import { FunctionalBlockFormDialog } from "./FunctionalBlockFormDialog";
 import { type FunctionalBlockFormValues } from "./types";
+import { type FunctionalBlockDto } from "../../../types";
 
 interface FunctionalBlocksContainerProps {
   projectId: string;
 }
 
 export default function FunctionalBlocksContainer({ projectId }: FunctionalBlocksContainerProps) {
-  const {
-    blocks,
-    isLoading,
-    error,
-    selectedBlockId,
-    setSelectedBlockId,
-    generateBlocks,
-    addBlock,
-    updateBlock,
-    deleteBlock,
-    reorderBlocks,
-    refreshBlocks,
-  } = useFunctionalBlocks(projectId);
+  const { blocks, isLoading, error, generateBlocks, addBlock, updateBlock, deleteBlock, reorderBlocks, refreshBlocks } =
+    useFunctionalBlocks(projectId);
+
+  // Dialog state
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingBlock, setEditingBlock] = useState<FunctionalBlockDto | null>(null);
 
   // Handle generation of blocks
   const handleGenerateBlocks = async () => {
@@ -34,14 +29,46 @@ export default function FunctionalBlocksContainer({ projectId }: FunctionalBlock
     }
   };
 
-  // Handle block update from form
-  const handleUpdateBlock = (blockId: string, values: FunctionalBlockFormValues) => {
-    updateBlock(blockId, values);
+  // Open form dialog for adding a new block
+  const handleAddBlock = () => {
+    setEditingBlock(null);
+    setIsFormOpen(true);
   };
 
-  // Cancel edit mode
-  const handleCancelEdit = () => {
-    setSelectedBlockId(null);
+  // Open form dialog for editing an existing block
+  const handleEditBlock = (blockId: string) => {
+    const blockToEdit = blocks.find((block) => block.id === blockId);
+    if (blockToEdit) {
+      setEditingBlock(blockToEdit);
+      setIsFormOpen(true);
+    }
+  };
+
+  // Close form dialog
+  const handleCloseForm = () => {
+    setIsFormOpen(false);
+    setEditingBlock(null);
+  };
+
+  // Handle form submission
+  const handleSaveBlock = (blockId: string | undefined, values: FunctionalBlockFormValues) => {
+    if (blockId) {
+      // Update existing block
+      updateBlock(blockId, values);
+    } else {
+      // Create a new block with form values
+      const newBlockData: Partial<FunctionalBlockDto> = {
+        name: values.name,
+        description: values.description,
+        category: values.category,
+        dependencies: values.dependencies,
+      };
+
+      addBlock(newBlockData);
+    }
+
+    // Close the dialog
+    handleCloseForm();
   };
 
   // If loading initially
@@ -64,28 +91,30 @@ export default function FunctionalBlocksContainer({ projectId }: FunctionalBlock
       {/* Header with actions */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <h2 className="text-xl font-semibold text-neutral-800">Bloki funkcjonalne</h2>
-        <GenerateBlocksButton
-          onClick={handleGenerateBlocks}
-          isLoading={isLoading}
-          disabled={selectedBlockId !== null}
-        />
+        <GenerateBlocksButton onClick={handleGenerateBlocks} isLoading={isLoading} />
       </div>
 
       {/* Content */}
       {blocks.length > 0 ? (
         <FunctionalBlocksList
           blocks={blocks}
-          selectedBlockId={selectedBlockId}
           onReorder={reorderBlocks}
-          onAddBlock={addBlock}
-          onEditBlock={setSelectedBlockId}
+          onAddBlock={handleAddBlock}
+          onEditBlock={handleEditBlock}
           onDeleteBlock={deleteBlock}
-          onUpdateBlock={handleUpdateBlock}
-          onCancelEdit={handleCancelEdit}
         />
       ) : (
         <EmptyState onGenerate={handleGenerateBlocks} isLoading={isLoading} />
       )}
+
+      {/* Functional Block Form Dialog */}
+      <FunctionalBlockFormDialog
+        block={editingBlock}
+        allBlocks={blocks}
+        isOpen={isFormOpen}
+        onClose={handleCloseForm}
+        onSave={handleSaveBlock}
+      />
 
       {/* Loading overlay for async operations */}
       {isLoading && blocks.length > 0 && (
