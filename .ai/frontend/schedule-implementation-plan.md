@@ -413,7 +413,7 @@ const updateProject = async (
 2. System zmienia kolejność etapów
 3. System zapisuje zmiany w harmonogramie na serwerze
 
-### Eksport harmonogramu
+### Eksport harmonogramu - nie implementujemy w tej wersji
 1. Użytkownik klika przycisk "Eksportuj harmonogram"
 2. System otwiera dialog z opcjami eksportu
 3. Użytkownik wybiera format eksportu
@@ -478,7 +478,7 @@ const updateProject = async (
 3. **Implementacja hooków**:
    - Utworzenie hooka `useScheduleState` do zarządzania stanem harmonogramu
    - Utworzenie hooka `useStageValidation` do walidacji formularza etapu
-   - Utworzenie hooka `useDrag` do obsługi drag & drop
+   - Utworzenie hooka `useDrag` do obsługi drag & drop, nie uywaj zewnetrznych bibliotek
 
 4. **Implementacja komponentów pomocniczych**:
    - LoadingSpinner
@@ -488,7 +488,7 @@ const updateProject = async (
 5. **Implementacja panelu akcji**:
    - Utworzenie komponentu ScheduleActionsPanel
    - Implementacja funkcji generowania harmonogramu
-   - Implementacja funkcji eksportu harmonogramu
+   - Implementacja funkcji eksportu harmonogramu - nie implementujemy jej w tej wersji
 
 6. **Implementacja listy etapów**:
    - Utworzenie komponentu ScheduleStagesList
