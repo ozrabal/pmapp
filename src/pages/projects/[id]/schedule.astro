@@ -1,0 +1,86 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import ProjectHeader from "@/components/projects/ProjectHeader.astro";
+import ProjectTabsNavigation from "@/components/projects/ProjectTabsNavigation";
+import ScheduleContainer from "@/components/projects/schedule/ScheduleContainer";
+import { ErrorBoundary } from "../../../components/dashboard/ErrorBoundary";
+import type { ProjectDto } from "@/types";
+import type { ProjectTabProps } from "@/components/projects/types";
+import { BackToProjectsButton } from "@/components/projects/BackToProjectsButton";
+
+const { id } = Astro.params;
+
+if (!id) {
+  return Astro.redirect("/dashboard");
+}
+
+let project: ProjectDto | null = null;
+let error: Error | null = null;
+
+try {
+  const response = await fetch(`${Astro.url.origin}/api/projects/${id}`);
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error?.message || `Error ${response.status}`);
+  }
+
+  project = await response.json();
+} catch (e) {
+  error = e instanceof Error ? e : new Error("Failed to load project");
+  console.error("Error fetching project:", error);
+}
+
+const tabs: ProjectTabProps[] = [
+  {
+    id: "descriptions",
+    label: "Opisy",
+    isActive: false,
+    disabled: false,
+  },
+  {
+    id: "assumptions",
+    label: "Założenia",
+    isActive: false,
+    disabled: false,
+  },
+  {
+    id: "functional-blocks",
+    label: "Funkcjonalności",
+    isActive: false,
+    disabled: false,
+  },
+  {
+    id: "schedule",
+    label: "Harmonogram",
+    isActive: true,
+    disabled: false,
+  },
+];
+---
+
+<Layout title={project ? `${project.name} - Schedule` : "Project Schedule"}>
+  {
+    project && (
+      <>
+        <div class="mb-6">
+          <div class="flex justify-between items-center mb-4">
+            <BackToProjectsButton client:load />
+          </div>
+
+          <ProjectHeader projectId={id} />
+        </div>
+
+        <div class="mt-6 mb-8">
+          <ProjectTabsNavigation tabs={tabs} projectId={id} activeTab="schedule" client:load />
+        </div>
+
+        <div class="bg-white rounded-lg border border-neutral-200 shadow-sm">
+          <ErrorBoundary client:load>
+            <ScheduleContainer client:load projectId={id} project={project} />
+          </ErrorBoundary>
+        </div>
+      </>
+    )
+  }x
+</Layout>
