@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -6,17 +6,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, Loader2 } from "lucide-react";
 
+// Schema for login form validation
 const loginSchema = z.object({
   email: z.string().email("Wprowadź poprawny adres email"),
   password: z.string().min(1, "Hasło jest wymagane"),
-  rememberMe: z.boolean().optional(),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
-export function LoginForm() {
+interface LoginFormProps {
+  redirect?: string;
+}
+
+export function LoginForm({ redirect = "/dashboard" }: LoginFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -29,9 +32,10 @@ export function LoginForm() {
     defaultValues: {
       email: "",
       password: "",
-      rememberMe: false,
     },
   });
+
+  const [loginSuccess, setLoginSuccess] = useState(false);
 
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
@@ -50,26 +54,31 @@ export function LoginForm() {
 
       if (!response.ok) {
         setError(result.error?.message || "Wystąpił błąd podczas logowania");
+        setIsLoading(false);
         return;
       }
 
-      // Przekierowanie po udanym logowaniu
-      const params = new URLSearchParams(window.location.search);
-      const redirectTo = params.get("redirect") || "/dashboard";
-      window.location.href = redirectTo;
+      // Mark login as successful to trigger redirect in useEffect
+      setLoginSuccess(true);
     } catch (err) {
-      setError("Wystąpił nieoczekiwany błąd. Spróbuj ponownie później.");
       console.error("Login error:", err);
-    } finally {
+      setError("Wystąpił nieoczekiwany błąd. Spróbuj ponownie później.");
       setIsLoading(false);
     }
   };
+
+  // Handle navigation as a side effect
+  React.useEffect(() => {
+    if (loginSuccess) {
+      // After successful login, redirect
+      window.location.href = redirect;
+    }
+  }, [loginSuccess, redirect]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {error && (
         <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
@@ -79,8 +88,9 @@ export function LoginForm() {
         <Input
           id="email"
           type="email"
-          placeholder="adres@email.com"
+          placeholder="twoj@email.com"
           {...register("email")}
+          autoComplete="email"
           aria-invalid={errors.email ? "true" : "false"}
         />
         {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
@@ -89,48 +99,24 @@ export function LoginForm() {
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <Label htmlFor="password">Hasło</Label>
-          <a href="/auth/reset-password" className="text-sm text-blue-600 hover:underline">
-            Nie pamiętam hasła
+          <a href="/auth/reset-password" className="text-xs text-muted-foreground hover:text-primary">
+            Zapomniałeś hasła?
           </a>
         </div>
         <Input
           id="password"
           type="password"
+          placeholder="••••••••"
           {...register("password")}
+          autoComplete="current-password"
           aria-invalid={errors.password ? "true" : "false"}
         />
         {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
       </div>
 
-      <div className="flex items-center space-x-2">
-        <input
-          id="rememberMe"
-          type="checkbox"
-          className="h-4 w-4 rounded border-gray-300"
-          {...register("rememberMe")}
-        />
-        <Label htmlFor="rememberMe" className="text-sm">
-          Zapamiętaj mnie
-        </Label>
-      </div>
-
       <Button type="submit" className="w-full" disabled={isLoading}>
-        {isLoading ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Logowanie...
-          </>
-        ) : (
-          "Zaloguj się"
-        )}
+        {isLoading ? "Logowanie..." : "Zaloguj się"}
       </Button>
-
-      <p className="text-center text-sm">
-        Nie masz jeszcze konta?{" "}
-        <a href="/auth/register" className="text-blue-600 hover:underline">
-          Zarejestruj się
-        </a>
-      </p>
     </form>
   );
 }

@@ -1,20 +1,27 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Loader2, LogOut } from "lucide-react";
 
 interface LogoutButtonProps {
-  className?: string;
+  redirectTo?: string;
   variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
-  size?: "default" | "sm" | "lg";
+  size?: "default" | "sm" | "lg" | "icon";
+  className?: string;
+  children?: React.ReactNode;
 }
 
-export function LogoutButton({ className = "", variant = "ghost", size = "sm" }: LogoutButtonProps) {
+export function LogoutButton({
+  redirectTo = "/auth/login",
+  variant = "ghost",
+  size = "default",
+  className = "",
+  children = "Wyloguj się",
+}: LogoutButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogout = async () => {
-    setIsLoading(true);
-
     try {
+      setIsLoading(true);
+
       const response = await fetch("/api/auth/logout", {
         method: "POST",
         headers: {
@@ -22,31 +29,22 @@ export function LogoutButton({ className = "", variant = "ghost", size = "sm" }:
         },
       });
 
-      if (!response.ok) {
-        console.error("Logout failed");
-        return;
+      if (response.ok) {
+        // Server-side redirect after successful logout
+        window.location.href = redirectTo;
+      } else {
+        console.error("Logout failed:", await response.json());
+        setIsLoading(false);
       }
-
-      // Redirect to login page after logout
-      window.location.href = "/auth/login";
-    } catch (err) {
-      console.error("Logout error:", err);
-    } finally {
+    } catch (error) {
+      console.error("Logout error:", error);
       setIsLoading(false);
     }
   };
 
   return (
-    <Button
-      onClick={handleLogout}
-      disabled={isLoading}
-      variant={variant}
-      size={size}
-      className={`gap-2 ${className}`}
-      aria-label="Wyloguj się"
-    >
-      {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogOut className="h-4 w-4" />}
-      <span>Wyloguj</span>
+    <Button variant={variant} size={size} className={className} onClick={handleLogout} disabled={isLoading}>
+      {isLoading ? "Wylogowywanie..." : children}
     </Button>
   );
 }
