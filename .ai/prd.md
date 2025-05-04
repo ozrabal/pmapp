@@ -159,7 +159,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
 
 ### Definiowanie założeń projektu
 
-#### US-008: Wprowadzanie podstawowych założeń projektu
+#### US-010: Wprowadzanie podstawowych założeń projektu
 - Jako zalogowany użytkownik, chcę wprowadzić podstawowe założenia mojego projektu, aby określić jego zakres
 - Kryteria akceptacji:
   1. Użytkownik ma dostęp do ustrukturyzowanego formularza z polami definiującymi założenia projektu
@@ -167,7 +167,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   3. System zapisuje wprowadzone dane w czasie rzeczywistym
   4. Użytkownik może edytować założenia w dowolnym momencie
 
-#### US-009: Otrzymywanie walidacji założeń od AI
+#### US-011: Otrzymywanie walidacji założeń od AI
 - Jako zalogowany użytkownik, chcę otrzymać informację od AI o poprawności moich założeń, aby upewnić się, że są kompletne i spójne
 - Kryteria akceptacji:
   1. System analizuje wprowadzone założenia przy pomocy AI
@@ -182,7 +182,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   8. System zapisuje zmiany w czasie rzeczywistym
   9. Użytkownik może w dowolnym momencie ponownie poprosić AI o ponowną walidację założeń
 
-#### US-010: Uzyskiwanie sugestii dotyczących definicji projektu
+#### US-012: Uzyskiwanie sugestii dotyczących definicji projektu
 - Jako zalogowany użytkownik, chcę otrzymać sugestie od AI dotyczące mojego projektu, aby ulepszyć jego definicję
 - Kryteria akceptacji:
   1. AI analizuje wprowadzone dane i kontekst projektu
@@ -192,7 +192,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
 
 ### Podział na bloki funkcjonalne
 
-#### US-011: Generowanie bloków funkcjonalnych przez AI
+#### US-013: Generowanie bloków funkcjonalnych przez AI
 - Jako zalogowany użytkownik, chcę aby AI zaproponowało podział mojego projektu na bloki funkcjonalne, aby ustrukturyzować proces rozwoju
 - Kryteria akceptacji:
   1. AI analizuje założenia projektu i generuje propozycję podziału na bloki funkcjonalne
@@ -200,7 +200,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   3. Każdy blok zawiera krótki opis zakresu prac
   4. System prezentuje wygenerowane bloki w przejrzystej formie graficznej
 
-#### US-012: Modyfikacja bloków funkcjonalnych
+#### US-014: Modyfikacja bloków funkcjonalnych
 - Jako zalogowany użytkownik, chcę modyfikować zaproponowane bloki funkcjonalne, aby dostosować je do moich potrzeb
 - Kryteria akceptacji:
   1. Użytkownik może edytować nazwę, opis i zakres każdego bloku
@@ -209,7 +209,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   4. Użytkownik może zmieniać kolejność bloków
   5. System zapisuje wszystkie zmiany w czasie rzeczywistym
 
-#### US-013: Eksportowanie podziału na bloki funkcjonalne
+#### US-015: Eksportowanie podziału na bloki funkcjonalne
 - Jako zalogowany użytkownik, chcę wyeksportować podział na bloki funkcjonalne, aby móc go wykorzystać poza aplikacją
 - Kryteria akceptacji:
   1. Użytkownik może wybrać format eksportu (PDF, CSV, JSON)
@@ -219,7 +219,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
 
 ### Tworzenie harmonogramu
 
-#### US-014: Generowanie prostego harmonogramu przez AI
+#### US-016: Generowanie prostego harmonogramu przez AI
 - Jako zalogowany użytkownik, chcę aby AI wygenerowało prosty harmonogram projektu, aby lepiej zaplanować prace
 - Kryteria akceptacji:
   1. AI analizuje zdefiniowane bloki funkcjonalne i generuje harmonogram projektu
@@ -227,7 +227,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   3. System określa zależności między poszczególnymi etapami
   4. Harmonogram jest prezentowany w formie wykresu Gantta lub podobnej
 
-#### US-015: Modyfikacja harmonogramu projektu
+#### US-017: Modyfikacja harmonogramu projektu
 - Jako zalogowany użytkownik, chcę modyfikować wygenerowany harmonogram, aby dostosować go do rzeczywistych możliwości
 - Kryteria akceptacji:
   1. Użytkownik może edytować nazwy etapów i ich opisy
@@ -235,7 +235,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   3. Użytkownik może dodawać nowe etapy lub usuwać istniejące
   4. System zapisuje wszystkie zmiany w czasie rzeczywistym
 
-#### US-016: Eksportowanie harmonogramu projektu
+#### US-018: Eksportowanie harmonogramu projektu
 - Jako zalogowany użytkownik, chcę wyeksportować harmonogram projektu, aby móc go wykorzystać poza aplikacją
 - Kryteria akceptacji:
   1. Użytkownik może wybrać format eksportu (PDF, CSV, iCal)
@@ -245,7 +245,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
 
 ### Ocena sugestii AI
 
-#### US-017: Ocenianie przydatności sugestii AI
+#### US-019: Ocenianie przydatności sugestii AI
 - Jako zalogowany użytkownik, chcę oceniać przydatność sugestii AI, aby pomóc w doskonaleniu algorytmów
 - Kryteria akceptacji:
   1. Przy każdej sugestii AI dostępne są przyciski "przydatne" i "nieprzydatne"
@@ -253,7 +253,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   3. Użytkownik otrzymuje podziękowanie za przekazanie feedbacku
   4. System wykorzystuje zebrane dane do doskonalenia algorytmów AI
 
-#### US-018: Zgłaszanie nieadekwatnych sugestii AI
+#### US-020: Zgłaszanie nieadekwatnych sugestii AI
 - Jako zalogowany użytkownik, chcę zgłaszać nieadekwatne lub niepoprawne sugestie AI, aby poprawić jakość systemu
 - Kryteria akceptacji:
   1. Użytkownik może zgłosić niepoprawną sugestię AI
@@ -263,7 +263,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
 
 ### Zarządzanie kontem
 
-#### US-019: Edycja profilu użytkownika
+#### US-021: Edycja profilu użytkownika
 - Jako zalogowany użytkownik, chcę edytować swój profil, aby zaktualizować moje dane osobowe
 - Kryteria akceptacji:
   1. Użytkownik ma dostęp do strony edycji profilu
@@ -271,7 +271,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   3. Użytkownik może zmienić hasło (z potwierdzeniem starego hasła)
   4. System zapisuje zmiany i aktualizuje dane profilu
 
-#### US-020: Usuwanie konta
+#### US-022: Usuwanie konta
 - Jako zalogowany użytkownik, chcę usunąć moje konto, jeśli nie chcę już korzystać z aplikacji
 - Kryteria akceptacji:
   1. Użytkownik może zainicjować proces usuwania konta z poziomu ustawień profilu
