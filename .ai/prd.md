@@ -115,6 +115,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   2. System prezentuje formularz z podstawowymi polami (nazwa, opis)
   3. Po wypełnieniu wymaganych pól, projekt jest zapisywany w systemie
   4. Nowy projekt pojawia się na liście projektów użytkownika
+  5. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 #### US-005: Przeglądanie listy projektów
 - Jako zalogowany użytkownik, chcę zobaczyć listę moich projektów, aby zarządzać nimi
@@ -123,6 +124,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   2. Lista zawiera podstawowe informacje o projektach (nazwa, data utworzenia, status)
   3. Projekty są sortowane od najnowszych do najstarszych
   4. Użytkownik może filtrować projekty według statusu
+  5. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 #### US-006: Edycja projektu
 - Jako zalogowany użytkownik, chcę edytować istniejący projekt, aby zaktualizować jego szczegóły
@@ -131,6 +133,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   2. System wyświetla formularz z aktualnymi danymi projektu
   3. Użytkownik może modyfikować wszystkie pola projektu
   4. Po zapisaniu zmian, system aktualizuje dane projektu
+  5. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 #### US-007: Usuwanie projektu
 - Jako zalogowany użytkownik, chcę usunąć projekt, którego już nie potrzebuję
@@ -139,6 +142,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   2. System prosi o potwierdzenie usunięcia
   3. Po potwierdzeniu, projekt jest trwale usuwany z systemu
   4. Użytkownik otrzymuje potwierdzenie usunięcia projektu
+  5. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 #### US-008: Przeglądanie szczegółów projektu
 - Jako zalogowany użytkownik, chcę przeglądać szczegóły mojego projektu, aby zobaczyć wszystkie jego elementy
@@ -147,6 +151,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   2. System wyświetla szczegółowe informacje o projekcie (nazwę projektu, opis, założenia, bloki funkcjonalne, harmonogram)
   3. Użytkownik może przełączać się między różnymi sekcjami projektu
   4. Użytkownik może wrócić do listy projektów w dowolnym momencie
+  5. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 #### US-009: Eksportowanie projektu
 - Jako zalogowany użytkownik, chcę wyeksportować projekt do pliku, aby móc go wykorzystać poza aplikacją
@@ -156,6 +161,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   3. Po wybraniu formatu, system generuje plik z danymi projektu
   4. Użytkownik może pobrać wygenerowany plik
   5. Wyeksportowany plik zawiera wszystkie informacje dostępne w aplikacji
+  6. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 ### Definiowanie założeń projektu
 
@@ -166,6 +172,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   2. Formularz zawiera pola: cel projektu, główne funkcjonalności, technologię
   3. System zapisuje wprowadzone dane w czasie rzeczywistym
   4. Użytkownik może edytować założenia w dowolnym momencie
+  5. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 #### US-011: Otrzymywanie walidacji założeń od AI
 - Jako zalogowany użytkownik, chcę otrzymać informację od AI o poprawności moich założeń, aby upewnić się, że są kompletne i spójne
@@ -181,6 +188,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   7. Użytkownik może wprowadzić poprawki do założeń na podstawie sugestii AI
   8. System zapisuje zmiany w czasie rzeczywistym
   9. Użytkownik może w dowolnym momencie ponownie poprosić AI o ponowną walidację założeń
+  10. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 #### US-012: Uzyskiwanie sugestii dotyczących definicji projektu
 - Jako zalogowany użytkownik, chcę otrzymać sugestie od AI dotyczące mojego projektu, aby ulepszyć jego definicję
@@ -189,6 +197,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   2. System prezentuje sugestie dotyczące udoskonalenia definicji projektu
   3. Użytkownik może zaakceptować lub odrzucić poszczególne sugestie
   4. Po akceptacji, sugestie są automatycznie implementowane w definicji projektu
+  5. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 ### Podział na bloki funkcjonalne
 
@@ -199,6 +208,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   2. Wygenerowane bloki są kategoryzowane według typu funkcjonalności
   3. Każdy blok zawiera krótki opis zakresu prac
   4. System prezentuje wygenerowane bloki w przejrzystej formie graficznej
+  5. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 #### US-014: Modyfikacja bloków funkcjonalnych
 - Jako zalogowany użytkownik, chcę modyfikować zaproponowane bloki funkcjonalne, aby dostosować je do moich potrzeb
@@ -208,6 +218,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   3. Użytkownik może usuwać niepotrzebne bloki
   4. Użytkownik może zmieniać kolejność bloków
   5. System zapisuje wszystkie zmiany w czasie rzeczywistym
+  6. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 #### US-015: Eksportowanie podziału na bloki funkcjonalne
 - Jako zalogowany użytkownik, chcę wyeksportować podział na bloki funkcjonalne, aby móc go wykorzystać poza aplikacją
@@ -216,6 +227,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   2. System generuje plik w wybranym formacie zawierający wszystkie bloki funkcjonalne i ich opisy
   3. Użytkownik może pobrać wygenerowany plik
   4. Wyeksportowany plik zawiera wszystkie informacje dostępne w aplikacji
+  5. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 ### Tworzenie harmonogramu
 
@@ -226,6 +238,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   2. Harmonogram zawiera kluczowe etapy realizacji projektu
   3. System określa zależności między poszczególnymi etapami
   4. Harmonogram jest prezentowany w formie wykresu Gantta lub podobnej
+  5. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 #### US-017: Modyfikacja harmonogramu projektu
 - Jako zalogowany użytkownik, chcę modyfikować wygenerowany harmonogram, aby dostosować go do rzeczywistych możliwości
@@ -234,6 +247,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   2. Użytkownik może modyfikować kolejność i zależności między etapami
   3. Użytkownik może dodawać nowe etapy lub usuwać istniejące
   4. System zapisuje wszystkie zmiany w czasie rzeczywistym
+  5. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 #### US-018: Eksportowanie harmonogramu projektu
 - Jako zalogowany użytkownik, chcę wyeksportować harmonogram projektu, aby móc go wykorzystać poza aplikacją
@@ -242,6 +256,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   2. System generuje plik w wybranym formacie zawierający wszystkie informacje o harmonogramie
   3. Użytkownik może pobrać wygenerowany plik
   4. Wyeksportowany plik zachowuje strukturę i zależności między etapami
+  5. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 ### Ocena sugestii AI
 
@@ -252,6 +267,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   2. Po ocenieniu, system zapisuje feedback użytkownika
   3. Użytkownik otrzymuje podziękowanie za przekazanie feedbacku
   4. System wykorzystuje zebrane dane do doskonalenia algorytmów AI
+  5. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 #### US-020: Zgłaszanie nieadekwatnych sugestii AI
 - Jako zalogowany użytkownik, chcę zgłaszać nieadekwatne lub niepoprawne sugestie AI, aby poprawić jakość systemu
@@ -260,6 +276,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   2. System umożliwia dodanie komentarza wyjaśniającego problem
   3. Zgłoszenia są przechowywane w systemie w celu analizy
   4. Użytkownik otrzymuje potwierdzenie przyjęcia zgłoszenia
+  5. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 ### Zarządzanie kontem
 
@@ -270,6 +287,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   2. Użytkownik może zmieniać imię, nazwisko, avatar i inne dane osobowe
   3. Użytkownik może zmienić hasło (z potwierdzeniem starego hasła)
   4. System zapisuje zmiany i aktualizuje dane profilu
+  5. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 #### US-022: Usuwanie konta
 - Jako zalogowany użytkownik, chcę usunąć moje konto, jeśli nie chcę już korzystać z aplikacji
@@ -279,6 +297,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   3. System informuje o konsekwencjach usunięcia konta (utrata wszystkich projektów)
   4. Po potwierdzeniu, konto jest trwale usuwane wraz z wszystkimi danymi użytkownika
   5. Dane są usuwane zgodnie z wymogami RODO
+  6. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 ## 6. Metryki sukcesu
 
