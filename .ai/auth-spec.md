@@ -409,8 +409,8 @@ const protectedPaths = [
   "/projects",
 ];
 
-// Lista ścieżek dostępnych tylko dla niezalogowanych użytkowników
-const publicOnlyPaths = [
+// Lista ścieżek dla niezalogowanych użytkowników (logowanie, rejestracja)
+const authPaths = [
   "/auth/login",
   "/auth/register",
   "/auth/reset-password",
@@ -426,11 +426,12 @@ export const onRequest = defineMiddleware(async ({ locals, url, cookies, redirec
   
   // Przekierowanie niezalogowanych użytkowników z chronionych stron
   if (!isAuthenticated && protectedPaths.some(p => path.startsWith(p))) {
-    return redirect("/auth/login?redirect=" + encodeURIComponent(url.pathname));
+    // Zachowanie oryginalnego URL do przekierowania po zalogowaniu
+    return redirect(`/auth/login?redirect=${encodeURIComponent(path)}`);
   }
   
-  // Przekierowanie zalogowanych użytkowników ze stron tylko dla niezalogowanych
-  if (isAuthenticated && publicOnlyPaths.some(p => path.startsWith(p))) {
+  // Przekierowanie zalogowanych użytkowników ze stron logowania/rejestracji na dashboard
+  if (isAuthenticated && authPaths.some(p => path === p)) {
     return redirect("/dashboard");
   }
   
@@ -530,18 +531,8 @@ export class AuthService {
    * Wysyłanie linku resetowania hasła
    */
   async resetPassword(data: ResetPasswordDto): Promise<void> {
-    // Sprawdzenie czy użytkownik istnieje
-    const { data: user } = await this.supabase
-      .from("profiles")
-      .select("id")
-      .eq("email", data.email)
-      .single();
-    
-    if (!user) {
-      throw new UserNotFoundError();
-    }
-    
-    // Wysłanie emaila resetującego hasło
+    // Ze względów bezpieczeństwa nie sprawdzamy czy użytkownik istnieje
+    // aby nie ujawnić, które adresy email są zarejestrowane w systemie
     const { error } = await this.supabase.auth.resetPasswordForEmail(data.email, {
       redirectTo: `${new URL(import.meta.env.SITE_URL || "http://localhost:3000").origin}/auth/new-password`,
     });
@@ -549,6 +540,9 @@ export class AuthService {
     if (error) {
       throw error;
     }
+    
+    // Zawsze zwracamy sukces, nawet jeśli email nie istnieje w systemie
+    return;
   }
   
   /**
@@ -823,7 +817,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 import type { APIRoute } from "astro";
 import { AuthService } from "../../../lib/services/auth.service";
 import { newPasswordSchema } from "../../../lib/schemas/auth.schema";
-import { handleApiError } from "../../../lib/services/error.service";
+import { handleApiError } from "../../../lib/services.error.service";
 
 export const prerender = false;
 
