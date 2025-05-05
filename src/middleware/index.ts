@@ -21,6 +21,27 @@ const PUBLIC_PATHS = [
 ];
 
 export const onRequest = defineMiddleware(async ({ locals, cookies, request, url, redirect }, next) => {
+  // Check for Supabase auth redirect with code parameter
+  const authCode = url.searchParams.get("code");
+  const error = url.searchParams.get("error");
+  const errorCode = url.searchParams.get("error_code");
+
+  // Handle auth code redirects to root
+  if (url.pathname === "/" && authCode) {
+    // If we have an auth code at the root URL, redirect to the new-password page with the code
+    return redirect(`/auth/new-password?code=${authCode}`);
+  }
+
+  // Handle error redirects to root
+  if (url.pathname === "/" && error && errorCode) {
+    // If we have an error at the root URL, redirect to the appropriate page
+    if (errorCode === "otp_expired") {
+      return redirect(
+        `/auth/reset-password?error=${error}&error_code=${errorCode}&error_description=${url.searchParams.get("error_description") || ""}`
+      );
+    }
+  }
+
   // Initialize server-side Supabase client with proper cookie handling
   const supabase = createSupabaseServerInstance({
     headers: request.headers,
