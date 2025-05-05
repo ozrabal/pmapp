@@ -24,14 +24,53 @@ const newPasswordSchema = z
 
 type NewPasswordFormData = z.infer<typeof newPasswordSchema>;
 
-interface NewPasswordFormProps {
-  token: string;
-}
-
-export function NewPasswordForm({ token }: NewPasswordFormProps) {
+export function NewPasswordForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [token, setToken] = useState<string | null>(null);
+  const [code, setCode] = useState<string | null>(null);
+
+  // Extract code/token from URL and data attributes on component mount
+  useEffect(() => {
+    // First, check for error parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlHash = new URLSearchParams(window.location.hash.substring(1));
+
+    const errorCode = urlParams.get("error_code") || urlHash.get("error_code");
+    const errorDesc = urlParams.get("error_description") || urlHash.get("error_description");
+
+    if (errorCode === "otp_expired") {
+      setError(errorDesc?.replace(/\+/g, " ") || "Link resetowania hasła wygasł. Proszę wygenerować nowy link.");
+      return;
+    }
+
+    // Check for authentication code/token in DOM data attributes (set by Astro)
+    const formContainer = document.getElementById("password-reset-form");
+    const dataCode = formContainer?.dataset.code;
+    const dataToken = formContainer?.dataset.token;
+
+    // Check URL parameters
+    const urlCode = urlParams.get("code");
+    const urlToken = urlParams.get("token");
+
+    // Check hash parameters
+    const hashToken = urlHash.get("access_token");
+
+    // Set code and token with priority
+    if (dataCode || urlCode) {
+      setCode(dataCode || urlCode);
+    }
+
+    if (dataToken || urlToken || hashToken) {
+      setToken(dataToken || urlToken || hashToken);
+    }
+
+    // If we don't have a code or token, show error
+    if (!dataCode && !urlCode && !dataToken && !urlToken && !hashToken) {
+      setError("Brak wymaganego tokena resetowania hasła. Link może być nieprawidłowy lub wygasły.");
+    }
+  }, []);
 
   const {
     register,
@@ -46,6 +85,11 @@ export function NewPasswordForm({ token }: NewPasswordFormProps) {
   });
 
   const onSubmit = async (data: NewPasswordFormData) => {
+    if (!code && !token) {
+      setError("Brak wymaganego tokena autoryzacji.");
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 
@@ -56,7 +100,8 @@ export function NewPasswordForm({ token }: NewPasswordFormProps) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          token,
+          ...(code ? { code } : {}),
+          ...(token ? { token } : {}),
           password: data.password,
         }),
       });
@@ -87,6 +132,20 @@ export function NewPasswordForm({ token }: NewPasswordFormProps) {
       return () => clearTimeout(timer);
     }
   }, [isSuccess]);
+
+  if (!code && !token && !isSuccess) {
+    return (
+      <div className="space-y-6">
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{error || "Link resetowania hasła jest nieprawidłowy lub wygasł."}</AlertDescription>
+        </Alert>
+        <Button onClick={() => (window.location.href = "/auth/reset-password")} className="w-full">
+          Spróbuj ponownie
+        </Button>
+      </div>
+    );
+  }
 
   if (isSuccess) {
     return (
