@@ -11,6 +11,16 @@ Backend - Supabase jako kompleksowe rozwiązanie backendowe:
 - Jest rozwiązaniem open source, które można hostować lokalnie lub na własnym serwerze
 - Posiada wbudowaną autentykację użytkowników
 
+Testing - kompleksowe podejście do testowania:
+- Testy jednostkowe:
+  - Vitest jako szybki, natywny dla Vite runner testowy
+  - React Testing Library do testowania komponentów React
+  - Testowanie izolowanych fragmentów kodu, funkcji, komponentów i hooków
+- Testy End-to-End (E2E):
+  - Playwright do automatyzacji przeglądarki i testów E2E
+  - Symulacja rzeczywistych scenariuszy użytkownika
+  - Testowanie kompletnych przepływów funkcjonalnych
+
 AI - Komunikacja z modelami przez bibliotekę ai sdk od Vercel:
 - Dostęp do szerokiej gamy modeli (OpenAI, Anthropic, Google i wiele innych), które pozwolą nam znaleźć rozwiązanie zapewniające wysoką efektywność i niskie koszta
 - Wsparcie dla wielu języków programowania, co pozwala na łatwą integrację z naszym projektem
@@ -18,5 +28,5 @@ AI - Komunikacja z modelami przez bibliotekę ai sdk od Vercel:
 - Wsparcie dla wielu frameworków, co pozwala na łatwą integrację z naszym projektem
 
 CI/CD i Hosting:
-- Github Actions do tworzenia pipeline’ów CI/CD
+- Github Actions do tworzenia pipeline'ów CI/CD
 - DigitalOcean do hostowania aplikacji za pośrednictwem obrazu docker

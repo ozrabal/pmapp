@@ -94,6 +94,13 @@ Plan My App addresses these challenges by providing:
   - Built-in authentication
   - Open-source BaaS (Backend-as-a-Service)
 
+### Testing
+- **Unit Testing**: 
+  - Vitest: Fast Vite-native test runner
+  - React Testing Library: For testing React components
+- **End-to-End Testing**:
+  - Playwright: For browser automation and E2E testing
+
 ### AI Integration
 - **Vercel AI SDK**: For communication with AI models
   - Access to various models (OpenAI, Anthropic, Google, etc.)
