@@ -69,6 +69,7 @@ export function RegisterForm() {
         return;
       }
 
+      // Registration successful, show success message
       setIsSuccess(true);
     } catch (err) {
       setError("Wystąpił nieoczekiwany błąd. Spróbuj ponownie później.");

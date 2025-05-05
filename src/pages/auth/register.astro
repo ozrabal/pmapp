@@ -2,15 +2,17 @@
 import Layout from "../../layouts/Layout.astro";
 import { RegisterForm } from "../../components/auth/RegisterForm";
 
-// Checking session state - in the real implementation, redirect if user is already logged in
-// const { data: { session } } = await Astro.locals.supabase.auth.getSession();
-const isLoggedIn = false; // Simplified for implementation
+// Page is rendered server-side
+export const prerender = false;
 
-if (isLoggedIn) {
+// If user is already logged in, redirect to dashboard
+// Important: Always use auth.getUser() for secure authentication
+const {
+  data: { user },
+} = await Astro.locals.supabase.auth.getUser();
+if (user) {
   return Astro.redirect("/dashboard");
 }
-
-export const prerender = false;
 ---
 
 <Layout title="Rejestracja | Plan My App">
