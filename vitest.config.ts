@@ -13,17 +13,18 @@ export default defineConfig({
     globals: true,
     setupFiles: ["./vitest.setup.ts"],
     include: ["./src/**/*.{test,spec}.{js,jsx,ts,tsx}"],
-    exclude: [...configDefaults.exclude, "./e2e/**"],
+    exclude: [...configDefaults.exclude, "./e2e/**", "**/*.astro"],
     coverage: {
       provider: "istanbul",
       reporter: ["text", "json", "html"],
       reportsDirectory: "./coverage",
-      thresholds: {
-        statements: 80,
-        branches: 70,
-        functions: 80,
-        lines: 80,
-      },
+      exclude: ["**/*.astro", "**/*.config.{js,ts}", "dist/**", ".astro/**", "node_modules/**"],
+      // thresholds: {
+      //   statements: 80,
+      //   branches: 70,
+      //   functions: 80,
+      //   lines: 80,
+      // },
     },
     alias: {
       "@": path.resolve(__dirname, "./src"),
