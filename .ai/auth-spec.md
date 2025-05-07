@@ -82,7 +82,7 @@
    - Siłę hasła (min. 8 znaków, zawierające cyfry i litery)
 4. Po poprawnej walidacji, użytkownik wysyła formularz
 5. System tworzy konto w Supabase Auth
-6. System tworzy profil w tabeli `profiles`
+6. Profil użytkownika jest automatycznie tworzony przez wyzwalacz bazodanowy
 7. System wysyła email z linkiem aktywacyjnym
 8. Użytkownik zostaje przekierowany na stronę z informacją o konieczności aktywacji konta
 
@@ -446,6 +446,43 @@ export const onRequest = defineMiddleware(async ({ locals, url, cookies, redirec
 
 ### 3.1 Integracja z Supabase Auth
 
+#### Automatyczne tworzenie profilu użytkownika
+
+Przy rejestracji nowego użytkownika, profil jest automatycznie tworzony przez wyzwalacz bazodanowy:
+
+```sql
+CREATE OR REPLACE FUNCTION create_profile_after_signup()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.profiles (
+    id,
+    first_name,
+    last_name,
+    timezone,
+    projects_limit,
+    created_at,
+    updated_at
+  ) VALUES (
+    NEW.id,
+    'User',                -- Domyślna wartość dla first_name
+    NULL,                  -- Domyślna wartość dla last_name (NULL)
+    'UTC',                 -- Domyślna strefa czasowa
+    5,                     -- Domyślny limit projektów
+    NOW(),
+    NOW()
+  );
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE TRIGGER create_profile_after_signup_trigger
+AFTER INSERT ON auth.users
+FOR EACH ROW
+EXECUTE FUNCTION create_profile_after_signup();
+```
+
+Dzięki temu rozwiązaniu, nie ma potrzeby jawnego tworzenia profilu użytkownika w kodzie API - profile są tworzone automatycznie przy rejestracji w Supabase Auth.
+
 #### Serwis autentykacji
 ```typescript
 // src/lib/services/auth.service.ts
@@ -460,12 +497,16 @@ export class AuthService {
    * Rejestracja nowego użytkownika
    */
   async register(data: RegisterUserDto): Promise<void> {
-    // 1. Rejestracja użytkownika w Supabase Auth
-    const { error: signUpError, data: signUpData } = await this.supabase.auth.signUp({
+    // Rejestracja użytkownika w Supabase Auth
+    // Profil zostanie utworzony automatycznie przez wyzwalacz bazodanowy
+    const { error: signUpError } = await this.supabase.auth.signUp({
       email: data.email,
       password: data.password,
       options: {
         emailRedirectTo: `${new URL(import.meta.env.SITE_URL || "http://localhost:3000").origin}/auth/callback`,
+        data: {
+          first_name: data.firstName
+        }
       },
     });
     
@@ -474,19 +515,6 @@ export class AuthService {
         throw new EmailAlreadyExistsError();
       }
       throw signUpError;
-    }
-    
-    // 2. Utworzenie profilu użytkownika
-    const { error: profileError } = await this.supabase.from("profiles").insert({
-      id: signUpData.user!.id,
-      first_name: data.firstName,
-      timezone: "UTC",
-    });
-    
-    if (profileError) {
-      // Rollback - usunięcie użytkownika auth, jeśli nie udało się utworzyć profilu
-      await this.supabase.auth.admin.deleteUser(signUpData.user!.id);
-      throw profileError;
     }
   }
   
@@ -1316,7 +1344,7 @@ Istniejące strony i komponenty wymagające autoryzacji zostaną zaktualizowane 
 
 1. **Rejestracja**:
    - Frontend: Formularz rejestracyjny -> Walidacja -> API request
-   - Backend: Walidacja -> Supabase Auth signUp -> utworzenie profilu -> odpowiedź
+   - Backend: Walidacja -> Supabase Auth signUp -> automatyczne utworzenie profilu -> odpowiedź
    - Frontend: Wyświetlenie potwierdzenia lub błędu
 
 2. **Aktywacja konta**:

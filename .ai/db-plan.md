@@ -191,7 +191,42 @@ CREATE POLICY "System może aktualizować sesje"
 
 ## 5. Funkcje i wyzwalacze
 
-### 5.1 Funkcja i wyzwalacz dla aktualizacji `updated_at`
+### 5.1 Funkcja i wyzwalacz do automatycznego tworzenia profilu użytkownika
+
+```sql
+-- Funkcja tworząca profil użytkownika po rejestracji
+CREATE OR REPLACE FUNCTION create_profile_after_signup()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.profiles (
+    id,
+    first_name,
+    last_name,
+    timezone,
+    projects_limit,
+    created_at,
+    updated_at
+  ) VALUES (
+    NEW.id,
+    'User',                -- Domyślna wartość dla first_name
+    NULL,                  -- Domyślna wartość dla last_name (NULL)
+    'UTC',                 -- Domyślna strefa czasowa
+    5,                     -- Domyślny limit projektów
+    NOW(),
+    NOW()
+  );
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Wyzwalacz tworzący profil po rejestracji użytkownika
+CREATE TRIGGER create_profile_after_signup_trigger
+AFTER INSERT ON auth.users
+FOR EACH ROW
+EXECUTE FUNCTION create_profile_after_signup();
+```
+
+### 5.2 Funkcja i wyzwalacz dla aktualizacji `updated_at`
 
 ```sql
 -- Funkcja aktualizująca pole updated_at
@@ -219,7 +254,7 @@ BEFORE UPDATE ON ai_suggestion_feedbacks
 FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
 ```
 
-### 5.2 Funkcja i wyzwalacz dla sprawdzania limitu projektów
+### 5.3 Funkcja i wyzwalacz dla sprawdzania limitu projektów
 
 ```sql
 -- Funkcja sprawdzająca limit projektów użytkownika
@@ -251,7 +286,7 @@ BEFORE INSERT ON projects
 FOR EACH ROW EXECUTE PROCEDURE check_projects_limit();
 ```
 
-### 5.3 Funkcja i wyzwalacz dla aktualizacji czasu ostatniego logowania
+### 5.4 Funkcja i wyzwalacz dla aktualizacji czasu ostatniego logowania
 
 ```sql
 -- Funkcja aktualizująca czas ostatniego logowania

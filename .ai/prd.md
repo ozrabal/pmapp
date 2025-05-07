@@ -88,6 +88,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   3. System wymaga hasła o odpowiedniej sile (min. 8 znaków, zawierające cyfry i litery)
   4. Po rejestracji użytkownik otrzymuje email z linkiem aktywacyjnym
   5. Konto zostaje aktywowane po kliknięciu w link aktywacyjny
+  6. Profil użytkownika jest automatycznie tworzony po rejestracji z domyślnymi wartościami (imię: 'User', strefa czasowa: 'UTC', limit projektów: 5)
 
 #### US-002: Logowanie do systemu
 - Jako zarejestrowany użytkownik, chcę zalogować się do aplikacji, aby uzyskać dostęp do moich projektów
