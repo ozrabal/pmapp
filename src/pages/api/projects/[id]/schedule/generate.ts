@@ -2,7 +2,6 @@
 import type { APIContext } from "astro";
 import { projectIdSchema } from "../../../../../lib/schemas/project.schema";
 import { ProjectService } from "../../../../../lib/services/project.service";
-import { DEFAULT_USER_ID } from "../../../../../db/supabase.client";
 import type { GenerateScheduleResponseDto } from "../../../../../types";
 
 // Set prerender to false for API routes
@@ -31,31 +30,27 @@ export async function POST({ params, locals }: APIContext) {
       );
     }
 
-    // Step 2: Check if user is authenticated
-    const session = await locals.supabase.auth.getSession();
-    let userId = session?.data?.session?.user?.id;
+    // Step 2: Get authenticated user using the secure method
+    const {
+      data: { user },
+    } = await locals.supabase.auth.getUser();
 
-    // In development, use DEFAULT_USER_ID if no session is available
-    if (!userId) {
-      if (import.meta.env.DEV) {
-        console.warn("No authenticated session found, using DEFAULT_USER_ID for development");
-        userId = DEFAULT_USER_ID;
-      } else {
-        return new Response(
-          JSON.stringify({
-            error: {
-              code: "UNAUTHORIZED",
-              message: "Authentication required",
-            },
-          }),
-          { status: 401, headers: { "Content-Type": "application/json" } }
-        );
-      }
+    // Check if user is authenticated
+    if (!user) {
+      return new Response(
+        JSON.stringify({
+          error: {
+            code: "UNAUTHORIZED",
+            message: "Authentication required",
+          },
+        }),
+        { status: 401, headers: { "Content-Type": "application/json" } }
+      );
     }
 
-    // Step 3: Generate schedule using ProjectService
+    // Step 3: Generate schedule using ProjectService with authenticated user's ID
     const projectService = new ProjectService(locals.supabase);
-    const schedule = await projectService.generateProjectSchedule(parsedId.data, userId);
+    const schedule = await projectService.generateProjectSchedule(parsedId.data, user.id);
 
     // Step 4: Return the generated schedule in the expected response format
     const response: GenerateScheduleResponseDto = {

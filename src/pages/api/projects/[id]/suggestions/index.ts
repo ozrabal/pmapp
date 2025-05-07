@@ -8,7 +8,6 @@ import type {
   GetProjectSuggestionsResponseDto,
   SuggestionDto,
 } from "../../../../../types";
-import { DEFAULT_USER_ID } from "../../../../../db/supabase.client";
 
 // Mark this endpoint as non-prerendered (dynamic)
 export const prerender = false;
@@ -98,16 +97,34 @@ export async function POST(context: APIContext): Promise<Response> {
 
     const { focus } = bodyValidation.data;
 
+    // Get authenticated user
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    // Check if user is authenticated
+    if (!user) {
+      const errorResponse: ErrorResponseDto = {
+        error: {
+          code: "unauthorized",
+          message: "Authentication required",
+        },
+      };
+
+      return new Response(JSON.stringify(errorResponse), {
+        status: 401,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    }
+
     // Create the project service
     const projectService = new ProjectService(supabase);
 
     try {
       // Generate project suggestions
-      const suggestions: SuggestionDto[] = await projectService.getProjectSuggestions(
-        projectId,
-        DEFAULT_USER_ID,
-        focus
-      );
+      const suggestions: SuggestionDto[] = await projectService.getProjectSuggestions(projectId, user.id, focus);
 
       // Format the response according to the DTO
       const response: GetProjectSuggestionsResponseDto = {

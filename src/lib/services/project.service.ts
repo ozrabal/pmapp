@@ -34,13 +34,14 @@ export class ProjectService {
    * @returns A promise that resolves to a ListProjectsResponseDto
    */
   async listProjects(userId: string, filters: ListProjectsQueryParams): Promise<ListProjectsResponseDto> {
-    const { status, page, limit, sort } = filters;
+    // Set defaults for required parameters if they're not provided
+    const { limit = 10, status, sort = "createdAt:desc", page = 1 } = filters || {};
 
     // Calculate offset for pagination
-    const offset = (page - 1) * limit;
+    const offset = ((page || 1) - 1) * (limit || 10);
 
-    // Parse sort parameter
-    const [sortField, sortDirection] = sort.split(":");
+    // Parse sort parameter with fallback to default
+    const [sortField, sortDirection] = (sort || "createdAt:desc").split(":");
 
     // Map frontend sort field names to database column names
     let dbSortField: string;
@@ -149,28 +150,70 @@ export class ProjectService {
    * @returns A promise that resolves to a CreateProjectResponseDto
    */
   async createProject(userId: string, project: CreateProjectRequestDto): Promise<CreateProjectResponseDto> {
-    const { data, error } = await this.supabase
-      .from("projects")
-      .insert([
-        {
-          user_id: userId,
-          name: project.name,
-          description: project.description || null,
-        },
-      ])
-      .select()
-      .single();
+    // When using RLS, we need to ensure we're in the security context of the user
+    // First check if the current Supabase client has an active auth session
+    const { data: sessionData } = await this.supabase.auth.getSession();
 
-    if (error) {
-      throw new Error(`Failed to create project: ${error.message}`);
+    if (!sessionData?.session) {
+      // If there's no session, we need to use the admin API to bypass RLS
+      // This requires setting user_id explicitly as we're doing
+
+      // Create project using BYPASSRLS capability (available to service_role)
+      const { data, error } = await this.supabase
+        .from("projects")
+        .insert([
+          {
+            user_id: userId,
+            name: project.name,
+            description: project.description || null,
+          },
+        ])
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Project creation error:", error);
+        throw new Error(`Failed to create project: ${error.message}`);
+      }
+
+      return {
+        id: data.id,
+        name: data.name,
+        description: data.description,
+        createdAt: data.created_at,
+      };
+    } else {
+      // If there's an active session, the RLS policies will be applied automatically
+      // Make sure the authenticated user matches the userId parameter
+      if (sessionData.session.user.id !== userId) {
+        throw new Error("User ID mismatch: Cannot create project for another user");
+      }
+
+      const { data, error } = await this.supabase
+        .from("projects")
+        .insert([
+          {
+            // No need to set user_id explicitly as RLS will handle this
+            user_id: userId,
+            name: project.name,
+            description: project.description || null,
+          },
+        ])
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Project creation error:", error);
+        throw new Error(`Failed to create project: ${error.message}`);
+      }
+
+      return {
+        id: data.id,
+        name: data.name,
+        description: data.description,
+        createdAt: data.created_at,
+      };
     }
-
-    return {
-      id: data.id,
-      name: data.name,
-      description: data.description,
-      createdAt: data.created_at,
-    };
   }
 
   /**

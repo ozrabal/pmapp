@@ -83,6 +83,10 @@ Endpoint umożliwia utworzenie nowego projektu dla zalogowanego użytkownika. Sp
 - **Bezpieczna komunikacja z bazą danych**:
   - Użycie parametryzowanych zapytań poprzez Supabase
   - Unikanie SQL Injection przez korzystanie z API Supabase
+- **Row-Level Security (RLS)**:
+  - Poprawne ustawienie kontekstu użytkownika w zapytaniach Supabase
+  - Weryfikacja zgodności identyfikatora zalogowanego użytkownika z identyfikatorem w zapytaniu
+  - Obsługa przypadków, gdy zapytanie jest wykonywane bez aktywnej sesji użytkownika
 
 ## 7. Obsługa błędów
 - **Błędy walidacji** (400 Bad Request):
@@ -95,6 +99,10 @@ Endpoint umożliwia utworzenie nowego projektu dla zalogowanego użytkownika. Sp
   - Token wygasł
 - **Błędy autoryzacji** (403 Forbidden):
   - Osiągnięcie limitu projektów dla użytkownika
+  - Próba tworzenia projektu dla innego użytkownika
+- **Błędy Row-Level Security (RLS)** (403 Forbidden):
+  - Naruszenie polityki RLS przy tworzeniu projektu
+  - Brak explicity podanego user_id gdy nie istnieje aktywna sesja
 - **Błędy serwera** (500 Internal Server Error):
   - Problemy z połączeniem z bazą danych
   - Nieoczekiwane wyjątki podczas przetwarzania żądania
@@ -112,6 +120,8 @@ Endpoint umożliwia utworzenie nowego projektu dla zalogowanego użytkownika. Sp
    - Dodanie metody `createProject` w `src/lib/services/project.service.ts`
    - Implementacja logiki sprawdzania limitu projektów
    - Implementacja tworzenia projektu w bazie danych
+   - Rozszerzenie metody o weryfikację kontekstu uwierzytelniania
+   - Poprawna obsługa Row-Level Security
 
 3. **Utworzenie endpointu**:
    - Implementacja funkcji obsługi POST w `src/pages/api/projects.ts`
@@ -123,6 +133,7 @@ Endpoint umożliwia utworzenie nowego projektu dla zalogowanego użytkownika. Sp
    - Testy jednostkowe dla funkcji walidacyjnych i serwisowych
    - Manualne testowanie endpointu pod kątem poprawnego działania
    - Testowanie scenariuszy błędów
+   - Weryfikacja zgodności z politykami RLS
 
 5. **Dokumentacja**:
    - Aktualizacja dokumentacji API
@@ -131,3 +142,20 @@ Endpoint umożliwia utworzenie nowego projektu dla zalogowanego użytkownika. Sp
 6. **Wdrożenie**:
    - Wdrożenie zmian w środowisku produkcyjnym
    - Monitorowanie działania endpointu
+
+## 10. Integracja z Row-Level Security
+
+### Sposoby obsługi RLS w Supabase
+
+1. **Sprawdzanie kontekstu uwierzytelniania**:
+   - Przed wykonaniem operacji INSERT sprawdzanie, czy klient Supabase ma aktywną sesję użytkownika
+   - Jeśli sesja istnieje, używamy standardowego podejścia i pozwalamy RLS działać automatycznie
+   - Jeśli sesja nie istnieje, musimy jawnie ustawić `user_id` na identyfikator użytkownika
+
+2. **Implementacja warunków**:
+   - Weryfikacja czy sesja.user.id zgadza się z userId przekazywanym jako parametr
+   - W przypadku niezgodności, zgłaszanie błędu próby tworzenia projektu dla innego użytkownika
+
+3. **Obsługa błędów RLS**:
+   - Odpowiednie logowanie błędów naruszenia polityki RLS
+   - Przekształcanie tych błędów na zrozumiałe komunikaty dla użytkownika końcowego

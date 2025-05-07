@@ -1,37 +1,44 @@
-import type { APIContext } from "astro";
-
+import type { APIRoute } from "astro";
+import { z } from "zod";
 import { ProjectService } from "../../lib/services/project.service";
-import { listProjectsSchema, createProjectSchema } from "../../lib/schemas/project.schema";
-import type { 
-  ErrorResponseDto, 
-  ListProjectsResponseDto,
+import type {
   CreateProjectRequestDto,
-  CreateProjectResponseDto
+  CreateProjectResponseDto,
+  ListProjectsResponseDto,
+  ErrorResponseDto,
 } from "../../types";
-import { DEFAULT_USER_ID } from "../../db/supabase.client";
 
 // Mark this endpoint as non-prerendered (dynamic)
 export const prerender = false;
 
 /**
- * GET handler for listing projects with optional filtering and pagination
+ * GET handler to list projects with optional filtering
  *
- * @param context - The Astro API context containing request data and locals
- * @returns Response with projects list or error
+ * @param param0 Object containing request data
+ * @returns Response with list of projects or error
  */
-export async function GET(context: APIContext): Promise<Response> {
+export const GET: APIRoute = async ({ url, locals }) => {
   // Get Supabase client from locals
-  const { locals } = context;
   const { supabase } = locals;
 
   try {
-    // Validate and parse query parameters
-    const result = listProjectsSchema.safeParse(Object.fromEntries(context.url.searchParams));
-    // If validation fails, return 400 Bad Request
+    // Define the schema for query parameters
+    const querySchema = z.object({
+      limit: z.coerce.number().int().positive().default(10),
+      page: z.coerce.number().int().min(1).default(1),
+      sort: z.string().default("createdAt:desc"),
+      status: z.enum(["not_started", "in_progress", "completed", "all"]).optional(),
+      search: z.string().optional(),
+    });
+
+    // Parse the query parameters
+    const queryParams = Object.fromEntries(url.searchParams);
+    const result = querySchema.safeParse(queryParams);
+
     if (!result.success) {
       const errorResponse: ErrorResponseDto = {
         error: {
-          code: "invalid_parameters",
+          code: "validation_error",
           message: "Invalid query parameters",
           details: result.error.format(),
         },
@@ -45,13 +52,35 @@ export async function GET(context: APIContext): Promise<Response> {
       });
     }
 
-    // Parameters are valid, proceed with fetching projects
+    // Create the project service
     const projectService = new ProjectService(supabase);
 
-    // Use DEFAULT_USER_ID as specified in feedback
-    const response: ListProjectsResponseDto = await projectService.listProjects(DEFAULT_USER_ID, result.data);
+    // Get authenticated user
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-    // Return successful response
+    // Check if user is authenticated
+    if (!user) {
+      const errorResponse: ErrorResponseDto = {
+        error: {
+          code: "unauthorized",
+          message: "Authentication required",
+        },
+      };
+
+      return new Response(JSON.stringify(errorResponse), {
+        status: 401,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    }
+
+    // Get projects for the authenticated user
+    const response: ListProjectsResponseDto = await projectService.listProjects(user.id, result.data);
+
+    // Return the list of projects
     return new Response(JSON.stringify(response), {
       status: 200,
       headers: {
@@ -60,13 +89,13 @@ export async function GET(context: APIContext): Promise<Response> {
     });
   } catch (error) {
     // Log the error for debugging
-    console.error("Error fetching projects:", error);
+    console.error("Error listing projects:", error);
 
-    // Return 500 Internal Server Error
+    // Return a 500 error response
     const errorResponse: ErrorResponseDto = {
       error: {
         code: "server_error",
-        message: "An error occurred while fetching projects",
+        message: "An error occurred while listing projects",
       },
     };
 
@@ -77,32 +106,47 @@ export async function GET(context: APIContext): Promise<Response> {
       },
     });
   }
-}
+};
 
 /**
- * POST handler for creating a new project
+ * POST handler to create a new project
  *
- * @param context - The Astro API context containing request data and locals
+ * @param param0 Object containing request data
  * @returns Response with created project data or error
  */
-export async function POST(context: APIContext): Promise<Response> {
+export const POST: APIRoute = async ({ request, locals }) => {
   // Get Supabase client from locals
-  const { locals } = context;
   const { supabase } = locals;
 
   try {
-    // Parse and validate the request body
-    let requestData: CreateProjectRequestDto;
-    try {
-      requestData = await context.request.json();
-    } catch (error) {
+    // Parse the request body
+    const body = await request.json();
+
+    // Define schema for creating a project
+    const createProjectSchema = z.object({
+      name: z.string().min(1, "Project name cannot be empty").max(100, "Project name is too long"),
+      description: z.string().max(500, "Description is too long").optional(),
+      status: z.enum(["not_started", "in_progress", "completed"]).default("not_started"),
+      due_date: z
+        .string()
+        .refine((val) => !isNaN(Date.parse(val)), "Invalid date format")
+        .optional(),
+      tag_ids: z.array(z.string().uuid("Invalid tag ID format")).optional(),
+    });
+
+    // Validate request body against schema
+    const result = createProjectSchema.safeParse(body);
+
+    if (!result.success) {
+      // Return validation errors
       const errorResponse: ErrorResponseDto = {
         error: {
-          code: "invalid_request",
-          message: "Invalid JSON in request body",
+          code: "validation_error",
+          message: "Invalid project data",
+          details: result.error.format(),
         },
       };
-      
+
       return new Response(JSON.stringify(errorResponse), {
         status: 400,
         headers: {
@@ -111,19 +155,22 @@ export async function POST(context: APIContext): Promise<Response> {
       });
     }
 
-    // Validate request data against schema
-    const validationResult = createProjectSchema.safeParse(requestData);
-    if (!validationResult.success) {
+    // Get authenticated user
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    // Check if user is authenticated
+    if (!user) {
       const errorResponse: ErrorResponseDto = {
         error: {
-          code: "invalid_input",
-          message: "Nieprawidłowe dane wejściowe",
-          details: validationResult.error.format(),
+          code: "unauthorized",
+          message: "Authentication required",
         },
       };
-      
+
       return new Response(JSON.stringify(errorResponse), {
-        status: 400,
+        status: 401,
         headers: {
           "Content-Type": "application/json",
         },
@@ -133,53 +180,49 @@ export async function POST(context: APIContext): Promise<Response> {
     // Create the project service
     const projectService = new ProjectService(supabase);
 
-    try {
-      // Create the project (using DEFAULT_USER_ID for now, no authentication check)
-      const createdProject: CreateProjectResponseDto = await projectService.createProject(
-        DEFAULT_USER_ID,
-        validationResult.data
-      );
-      
-      // Return successful response with created project data
-      return new Response(JSON.stringify(createdProject), {
-        status: 201, // Created
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-    } catch (error) {
-      // Check if it's a limit exceeded error
-      if (error instanceof Error && error.message.includes('Przekroczono limit projektów')) {
+    // Create the project using the authenticated user's ID
+    const createProjectRequestDto: CreateProjectRequestDto = result.data;
+    const response: CreateProjectResponseDto = await projectService.createProject(user.id, createProjectRequestDto);
+
+    // Return the created project data
+    return new Response(JSON.stringify(response), {
+      status: 201,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (error) {
+    // Handle specific error types
+    if (error instanceof Error) {
+      if (error.message.includes("project limit")) {
+        // User has reached their project limit
         const errorResponse: ErrorResponseDto = {
           error: {
-            code: "limit_exceeded",
-            message: "Osiągnięto limit projektów dla tego konta",
+            code: "project_limit_exceeded",
+            message: "You have reached your project limit",
           },
         };
-        
+
         return new Response(JSON.stringify(errorResponse), {
-          status: 403, // Forbidden
+          status: 403,
           headers: {
             "Content-Type": "application/json",
           },
         });
       }
-      
-      // Re-throw other errors to be caught by the outer catch block
-      throw error;
     }
-  } catch (error) {
+
     // Log the error for debugging
     console.error("Error creating project:", error);
-    
-    // Return 500 Internal Server Error
+
+    // Return a 500 error response for other errors
     const errorResponse: ErrorResponseDto = {
       error: {
         code: "server_error",
         message: "An error occurred while creating the project",
       },
     };
-    
+
     return new Response(JSON.stringify(errorResponse), {
       status: 500,
       headers: {
@@ -187,4 +230,4 @@ export async function POST(context: APIContext): Promise<Response> {
       },
     });
   }
-}
+};
