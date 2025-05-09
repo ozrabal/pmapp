@@ -7,6 +7,7 @@ import { FunctionalBlocksList } from "./FunctionalBlocksList";
 import { FunctionalBlockFormDialog } from "./FunctionalBlockFormDialog";
 import { type FunctionalBlockFormValues } from "./types";
 import { type FunctionalBlockDto } from "../../../types";
+import { Card } from "@/components/ui/card";
 
 interface FunctionalBlocksContainerProps {
   projectId: string;
@@ -15,7 +16,7 @@ interface FunctionalBlocksContainerProps {
 export default function FunctionalBlocksContainer({ projectId }: FunctionalBlocksContainerProps) {
   const { blocks, isLoading, error, generateBlocks, addBlock, updateBlock, deleteBlock, reorderBlocks, refreshBlocks } =
     useFunctionalBlocks(projectId);
-
+  console.log("FunctionalBlocksContainer", blocks, isLoading, error);
   // Dialog state
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingBlock, setEditingBlock] = useState<FunctionalBlockDto | null>(null);
@@ -77,7 +78,7 @@ export default function FunctionalBlocksContainer({ projectId }: FunctionalBlock
   }
 
   return (
-    <div className="p-6">
+    <Card className="p-6">
       {/* Error display */}
       {error && (
         <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-lg">
@@ -122,6 +123,6 @@ export default function FunctionalBlocksContainer({ projectId }: FunctionalBlock
           <LoadingState message="Przetwarzanie..." />
         </div>
       )}
-    </div>
+    </Card>
   );
 }

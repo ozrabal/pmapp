@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import type { FunctionalBlockDto, ProjectDto, GenerateFunctionalBlocksResponseDto } from "../../../../types";
+import type { FunctionalBlockDto, GenerateFunctionalBlocksResponseDto } from "../../../../types";
+import { ProjectClientService } from "@/lib/services/project.service";
 
 /**
  * Hook managing the state of functional blocks
@@ -10,21 +11,13 @@ export function useFunctionalBlocks(projectId: string) {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch blocks from project
+  // Function to load project data
   const fetchBlocks = useCallback(async () => {
     setIsLoading(true);
     setError(null);
-
     try {
-      // Fetching project
-      const response = await fetch(`/api/projects/${projectId}`);
-      if (!response.ok) {
-        throw new Error("Nie udało się pobrać danych projektu");
-      }
+      const project = await ProjectClientService.getProject(projectId);
 
-      const project: ProjectDto = await response.json();
-
-      // Convert functionalBlocks from JSON to array
       const functionalBlocksData = project.functionalBlocks
         ? (project.functionalBlocks as unknown as { blocks: FunctionalBlockDto[] }).blocks || []
         : [];
