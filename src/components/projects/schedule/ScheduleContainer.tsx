@@ -1,5 +1,4 @@
 import React from "react";
-import type { ProjectDto } from "@/types";
 import { ScheduleProvider, useSchedule } from "./ScheduleContext";
 import ScheduleActionsPanel from "./ScheduleActionsPanel";
 import EmptyScheduleState from "./EmptyScheduleState";
@@ -7,10 +6,10 @@ import ScheduleContent from "./ScheduleContent";
 import LoadingSpinner from "./LoadingSpinner";
 import ScheduleStageFormModal from "./ScheduleStageFormModal";
 import type { ScheduleStageViewModel } from "./types";
+import { Card } from "@/components/ui/card";
 
 interface ScheduleContainerProps {
   projectId: string;
-  project: ProjectDto;
 }
 
 // Internal component that uses the schedule context
@@ -94,7 +93,7 @@ const ScheduleContainerContent: React.FC = () => {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <Card className="p-6">
       {/* Actions Panel */}
       <ScheduleActionsPanel
         isScheduleEmpty={!schedule || schedule.stages.length === 0}
@@ -123,14 +122,14 @@ const ScheduleContainerContent: React.FC = () => {
         availableDependencies={getAvailableDependencies()}
         onSubmit={handleSubmitStageForm}
       />
-    </div>
+    </Card>
   );
 };
 
 // Main container component that provides the context
-const ScheduleContainer: React.FC<ScheduleContainerProps> = ({ projectId, project }) => {
+const ScheduleContainer: React.FC<ScheduleContainerProps> = ({ projectId }) => {
   return (
-    <ScheduleProvider projectId={projectId} project={project}>
+    <ScheduleProvider projectId={projectId}>
       <ScheduleContainerContent />
     </ScheduleProvider>
   );

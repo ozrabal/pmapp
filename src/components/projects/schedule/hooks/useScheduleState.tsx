@@ -34,12 +34,10 @@ const mapToDto = (schedule: ProjectScheduleViewModel): ProjectDto["schedule"] =>
   };
 };
 
-export const useScheduleState = (projectId: string, initialProject?: ProjectDto) => {
+export const useScheduleState = (projectId: string) => {
   // Schedule state
-  const [schedule, setSchedule] = useState<ProjectScheduleViewModel | null>(
-    initialProject?.schedule ? mapToViewModel(initialProject.schedule as unknown as ProjectScheduleViewModel) : null
-  );
-  const [isLoading, setIsLoading] = useState<boolean>(!initialProject);
+  const [schedule, setSchedule] = useState<ProjectScheduleViewModel | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [editingStage, setEditingStage] = useState<ScheduleStageViewModel | null>(null);
@@ -47,8 +45,6 @@ export const useScheduleState = (projectId: string, initialProject?: ProjectDto)
 
   // Function to fetch project schedule
   const fetchProjectSchedule = useCallback(async () => {
-    if (initialProject?.schedule) return;
-
     try {
       setIsLoading(true);
       setError(null);
@@ -71,7 +67,7 @@ export const useScheduleState = (projectId: string, initialProject?: ProjectDto)
     } finally {
       setIsLoading(false);
     }
-  }, [projectId, initialProject]);
+  }, [projectId]);
 
   // Function to generate schedule using AI
   const generateSchedule = async () => {

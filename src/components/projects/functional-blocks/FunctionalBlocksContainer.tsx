@@ -16,7 +16,6 @@ interface FunctionalBlocksContainerProps {
 export default function FunctionalBlocksContainer({ projectId }: FunctionalBlocksContainerProps) {
   const { blocks, isLoading, error, generateBlocks, addBlock, updateBlock, deleteBlock, reorderBlocks, refreshBlocks } =
     useFunctionalBlocks(projectId);
-  console.log("FunctionalBlocksContainer", blocks, isLoading, error);
   // Dialog state
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingBlock, setEditingBlock] = useState<FunctionalBlockDto | null>(null);

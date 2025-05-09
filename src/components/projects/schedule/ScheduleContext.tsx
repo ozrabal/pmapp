@@ -1,6 +1,5 @@
 import React, { createContext, useContext, type ReactNode } from "react";
 import { useScheduleState } from "./hooks/useScheduleState";
-import type { ProjectDto } from "@/types";
 import type { ScheduleContextValue } from "./types";
 
 // Create context with a default undefined value
@@ -9,16 +8,15 @@ const ScheduleContext = createContext<ScheduleContextValue | undefined>(undefine
 interface ScheduleProviderProps {
   children: ReactNode;
   projectId: string;
-  project: ProjectDto;
 }
 
 /**
  * Provider component that wraps schedule-related components and provides
  * centralized state management
  */
-export const ScheduleProvider: React.FC<ScheduleProviderProps> = ({ children, projectId, project }) => {
+export const ScheduleProvider: React.FC<ScheduleProviderProps> = ({ children, projectId }) => {
   // Use our custom hook to manage schedule state
-  const scheduleState = useScheduleState(projectId, project);
+  const scheduleState = useScheduleState(projectId);
 
   return <ScheduleContext.Provider value={scheduleState}>{children}</ScheduleContext.Provider>;
 };
