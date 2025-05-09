@@ -4,8 +4,9 @@ import ProjectHeader from "../../../components/projects/ProjectHeader.astro";
 import ProjectTabsNavigation from "../../../components/projects/ProjectTabsNavigation";
 import { AssumptionsForm } from "../../../components/projects/assumptions/AssumptionsForm";
 import { BackToProjectsButton } from "../../../components/projects/BackToProjectsButton";
-import type { ProjectTabProps, TabType } from "../../../components/projects/types";
+import type { TabType } from "../../../components/projects/types";
 import { ErrorBoundary } from "@/components/dashboard/ErrorBoundary";
+import { PROJECT_TABS } from "@/lib/consts";
 
 export const prerender = false;
 
@@ -17,30 +18,6 @@ if (!id) {
 
 // Active tab is 'assumptions'
 const activeTab: TabType = "assumptions";
-
-// Define tabs with proper typing and navigation logic in onClick handlers
-const tabs: ProjectTabProps[] = [
-  {
-    id: "descriptions",
-    label: "Overview",
-    isActive: false,
-  },
-  {
-    id: "assumptions",
-    label: "Assumptions",
-    isActive: true,
-  },
-  {
-    id: "functional-blocks",
-    label: "Functional Blocks",
-    isActive: false,
-  },
-  {
-    id: "schedule",
-    label: "Schedule",
-    isActive: false,
-  },
-];
 ---
 
 <Layout title="Project Assumptions">
@@ -53,7 +30,7 @@ const tabs: ProjectTabProps[] = [
   </div>
 
   <div class="mt-6 mb-8">
-    <ProjectTabsNavigation projectId={id} client:load tabs={tabs} activeTab={activeTab} />
+    <ProjectTabsNavigation projectId={id} client:load tabs={PROJECT_TABS} activeTab={activeTab} />
   </div>
 
   <section aria-labelledby="edit-project-description-form" class="mt-8">

@@ -3,9 +3,9 @@ import Layout from "../../../layouts/Layout.astro";
 import ProjectHeader from "../../../components/projects/ProjectHeader.astro";
 import ProjectTabsNavigation from "../../../components/projects/ProjectTabsNavigation";
 import FunctionalBlocksContainer from "../../../components/projects/functional-blocks/FunctionalBlocksContainer";
-import type { ProjectTabProps } from "@/components/projects/types";
 import { BackToProjectsButton } from "@/components/projects/BackToProjectsButton";
 import { ErrorBoundary } from "@/components/dashboard/ErrorBoundary";
+import { PROJECT_TABS } from "@/lib/consts";
 
 const { id } = Astro.params;
 
@@ -14,33 +14,6 @@ if (!id) {
 }
 
 const pageTitle = "Bloki funkcjonalności projektu";
-
-const tabs: ProjectTabProps[] = [
-  {
-    id: "descriptions",
-    label: "Opisy",
-    isActive: false,
-    disabled: false,
-  },
-  {
-    id: "assumptions",
-    label: "Założenia",
-    isActive: false,
-    disabled: false,
-  },
-  {
-    id: "functional-blocks",
-    label: "Funkcjonalności",
-    isActive: true,
-    disabled: false,
-  },
-  {
-    id: "schedule",
-    label: "Harmonogram",
-    isActive: false,
-    disabled: false,
-  },
-];
 ---
 
 <Layout title={pageTitle}>
@@ -53,7 +26,7 @@ const tabs: ProjectTabProps[] = [
   </div>
 
   <div class="mt-6 mb-8">
-    <ProjectTabsNavigation projectId={id} tabs={tabs} activeTab="functional-blocks" client:load />
+    <ProjectTabsNavigation projectId={id} tabs={PROJECT_TABS} activeTab="functional-blocks" client:load />
   </div>
 
   <section class="mt-8">

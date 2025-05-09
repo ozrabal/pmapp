@@ -4,8 +4,8 @@ import ProjectHeader from "@/components/projects/ProjectHeader.astro";
 import ProjectTabsNavigation from "@/components/projects/ProjectTabsNavigation";
 import ScheduleContainer from "@/components/projects/schedule/ScheduleContainer";
 import { ErrorBoundary } from "../../../components/dashboard/ErrorBoundary";
-import type { ProjectTabProps } from "@/components/projects/types";
 import { BackToProjectsButton } from "@/components/projects/BackToProjectsButton";
+import { PROJECT_TABS } from "@/lib/consts";
 
 const { id } = Astro.params;
 
@@ -14,33 +14,6 @@ if (!id) {
 }
 
 const pageTitle = "Harmonogram projektu";
-
-const tabs: ProjectTabProps[] = [
-  {
-    id: "descriptions",
-    label: "Opisy",
-    isActive: false,
-    disabled: false,
-  },
-  {
-    id: "assumptions",
-    label: "Założenia",
-    isActive: false,
-    disabled: false,
-  },
-  {
-    id: "functional-blocks",
-    label: "Funkcjonalności",
-    isActive: false,
-    disabled: false,
-  },
-  {
-    id: "schedule",
-    label: "Harmonogram",
-    isActive: true,
-    disabled: false,
-  },
-];
 ---
 
 <Layout title={pageTitle}>
@@ -53,7 +26,7 @@ const tabs: ProjectTabProps[] = [
   </div>
 
   <div class="mt-6 mb-8">
-    <ProjectTabsNavigation tabs={tabs} projectId={id} activeTab="schedule" client:load />
+    <ProjectTabsNavigation tabs={PROJECT_TABS} projectId={id} activeTab="schedule" client:load />
   </div>
 
   <section class="mt-8">
