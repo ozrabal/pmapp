@@ -65,12 +65,14 @@ ProjectDetailsPage (Astro)
 - **Główne elementy**: Zakładki odpowiadające różnym sekcjom projektu (opis, założenia, bloki funkcjonalne, harmonogram).
 - **Obsługiwane interakcje**: Wybór zakładki, zmiana aktywnej sekcji.
 - **Obsługiwana walidacja**: Sprawdzanie, czy wybrana zakładka jest prawidłowa.
-- **Typy**: Wykorzystuje typy TabType, ProjectTabProps.
+- **Typy**: Wykorzystuje typy TabType, ProjectTabProps, ProjectTabsNavigationProps.
 - **Propsy**: 
   - `tabs`: ProjectTabProps[]
   - `activeTab`: TabType
-  - `onSelectTab`: (tab: TabType) => void
-  - `isLoading`: boolean
+  - `onSelectTab`: (tab: TabType) => void (opcjonalnie)
+  - `projectId`: string (opcjonalnie)
+  - `isLoading`: boolean (opcjonalnie)
+  - `className`: string (opcjonalnie)
 
 ### ProjectDetailsContent (React)
 - **Opis komponentu**: Kontener dla zawartości projektu, który zmienia wyświetlaną zawartość w zależności od wybranej zakładki.
@@ -132,7 +134,7 @@ ProjectDetailsPage (Astro)
 - **Obsługiwana walidacja**: Brak specyficznej walidacji.
 - **Typy**: Proste typy konfiguracyjne.
 - **Propsy**: 
-  - `type`: 'descriptions' | 'assumptions' | 'functionalBlocks' | 'schedule'
+  - `type`: 'descriptions' | 'assumptions' | 'functional-blocks' | 'schedule'
 
 ### ExportButton (React)
 - **Opis komponentu**: Przycisk umożliwiający eksport danych projektu.
@@ -159,13 +161,12 @@ ProjectDetailsPage (Astro)
 
 ```typescript
 // Typy związane z zakładkami
-export type TabType = 'descriptions' | 'assumptions' | 'functional-blocks' | 'schedule';
+export type TabType = "descriptions" | "assumptions" | "functional-blocks" | "schedule";
 
 export interface ProjectTabProps {
   id: TabType;
   label: string;
-  isActive: boolean;
-  onClick: () => void;
+  onClick?: () => void;
   disabled?: boolean;
 }
 
@@ -197,6 +198,16 @@ export interface FunctionalBlocksViewModel {
 
 export interface ScheduleViewModel {
   stages: ScheduleStageDto[];
+}
+
+// Typy dla komponentu nawigacji
+export interface ProjectTabsNavigationProps {
+  tabs: ProjectTabProps[];
+  activeTab: TabType;
+  projectId?: string;
+  onSelectTab?: (tab: TabType) => void;
+  isLoading?: boolean;
+  className?: string;
 }
 
 // Typy dla operacji eksportu
@@ -264,7 +275,7 @@ function useProjectTabs(initialTab: TabType = 'assumptions') {
   // Synchronizacja z URL za pomocą fragmentu hash
   useEffect(() => {
     const hash = window.location.hash.replace('#', '') as TabType;
-    if (hash && ['descriptions', 'assumptions', 'functionalBlocks', 'schedule'].includes(hash)) {
+    if (hash && ['descriptions', 'assumptions', 'functional-blocks', 'schedule'].includes(hash)) {
       setSelectedTab(hash);
     }
   }, []);
@@ -272,7 +283,11 @@ function useProjectTabs(initialTab: TabType = 'assumptions') {
   // Aktualizacja URL przy zmianie zakładki
   const handleTabChange = useCallback((tab: TabType) => {
     setSelectedTab(tab);
-    window.history.pushState(null, '', `#${tab}`);
+    
+    // Aktualizacja URL za pomocą fragmentu hash
+    if (typeof window !== 'undefined') {
+      window.history.pushState(null, '', `#${tab}`);
+    }
   }, []);
   
   // Generowanie konfiguracji zakładek
@@ -290,10 +305,10 @@ function useProjectTabs(initialTab: TabType = 'assumptions') {
       onClick: () => handleTabChange('assumptions')
     },
     {
-      id: 'functionalBlocks',
+      id: 'functional-blocks', // Zmieniono zgodnie z typem TabType w rzeczywistym komponencie
       label: 'Bloki funkcjonalne',
-      isActive: selectedTab === 'functionalBlocks',
-      onClick: () => handleTabChange('functionalBlocks')
+      isActive: selectedTab === 'functional-blocks',
+      onClick: () => handleTabChange('functional-blocks')
     },
     {
       id: 'schedule',
@@ -306,7 +321,8 @@ function useProjectTabs(initialTab: TabType = 'assumptions') {
   return {
     selectedTab,
     setSelectedTab: handleTabChange,
-    tabs
+    tabs,
+    isLoading: false // Dodano dla spójności z komponentem ProjectTabsNavigation
   };
 }
 ```
@@ -393,7 +409,42 @@ Widok szczegółów projektu integruje się z następującymi endpointami:
 1. Użytkownik klika na wybraną zakładkę (opis, założenia, bloki funkcjonalne, harmonogram)
 2. System podświetla wybraną zakładkę jako aktywną
 3. Zawartość panelu zostaje zmieniona na odpowiednią dla wybranej zakładki
-4. URL zostaje zaktualizowany o odpowiedni fragment (np. `#functionalBlocks`)
+4. URL zostaje zaktualizowany o odpowiedni fragment (np. `#functional-blocks`)
+
+#### Przykładowe użycie komponentu
+```jsx
+// W komponencie rodzica (np. ProjectDetailsPage.astro)
+const { projectId } = Astro.params;
+
+// W komponencie React (np. ProjectDetailsContent.tsx)
+const { selectedTab, setSelectedTab, tabs } = useProjectTabs('assumptions');
+
+return (
+  <>
+    <ProjectTabsNavigation 
+      tabs={tabs} 
+      activeTab={selectedTab}
+      onSelectTab={setSelectedTab}
+      isLoading={isLoading} 
+    />
+    <div className="mt-6">
+      {selectedTab === 'descriptions' && (
+        <ProjectDescriptionsPanel 
+          description={project?.description ? { description: project.description } : null}
+          isLoading={isLoading}
+        />
+      )}
+      {selectedTab === 'assumptions' && (
+        <ProjectAssumptionsPanel 
+          assumptions={project?.assumptions || null}
+          isLoading={isLoading}
+        />
+      )}
+      {/* Pozostałe panele... */}
+    </div>
+  </>
+);
+```
 
 ### Interakcja 3: Edycja projektu
 1. Użytkownik klika przycisk "Edytuj projekt"
@@ -481,7 +532,11 @@ Widok szczegółów projektu integruje się z następującymi endpointami:
 
 5. **Implementacja komponentów UI**:
    - Implementacja ProjectHeader
-   - Implementacja ProjectTabsNavigation
+   - Implementacja ProjectTabsNavigation:
+     - Wykorzystanie komponentów Tabs z shadcn/ui
+     - Implementacja obsługi zmiany zakładek
+     - Dodanie obsługi stanu ładowania (Skeleton)
+     - Zapewnienie dostępności (ARIA) dla nawigacji
    - Implementacja LoadingSkeleton dla różnych sekcji
 
 6. **Implementacja paneli sekcji**:
@@ -511,7 +566,88 @@ Widok szczegółów projektu integruje się z następującymi endpointami:
     - Testowanie z czytnikami ekranowymi
     - Upewnienie się, że wszystkie interakcje są intuicyjne
 
-11. **Końcowe testy i przegląd**:
+11. **Kompletna integracja ProjectTabsNavigation w stronie szczegółów projektu**:
+    ```jsx
+    // W pliku /src/pages/projects/[id]/index.astro
+    ---
+    import Layout from '../../../layouts/MainLayout.astro';
+    import ProjectHeader from '../../../components/projects/ProjectHeader.astro';
+    import ProjectDetailsContent from '../../../components/projects/ProjectDetailsContent';
+    import ErrorBoundary from '../../../components/ErrorBoundary';
+    import type { TabType } from '../../../components/projects/types';
+    
+    const { id } = Astro.params;
+    const initialTab = (Astro.url.hash.replace('#', '') || 'assumptions') as TabType;
+    
+    // Walidacja ID projektu
+    // ...
+    ---
+    
+    <Layout title="Szczegóły projektu">
+      <ProjectHeader projectId={id} />
+      
+      <div class="container mx-auto mt-8 px-4">
+        <ErrorBoundary>
+          <ProjectDetailsContent projectId={id} initialTab={initialTab} />
+        </ErrorBoundary>
+      </div>
+    </Layout>
+    ```
+    
+    ```tsx
+    // W pliku /src/components/projects/ProjectDetailsContent.tsx
+    import { useState, useEffect } from 'react';
+    import ProjectTabsNavigation from './ProjectTabsNavigation';
+    import { useProjectDetails } from './hooks/useProjectDetails';
+    import { useProjectTabs } from './hooks/useProjectTabs';
+    import type { ProjectDetailsContentProps } from './types';
+    
+    export default function ProjectDetailsContent({ projectId, initialTab = 'assumptions' }: ProjectDetailsContentProps) {
+      const { project, isLoading, error } = useProjectDetails(projectId);
+      const { selectedTab, setSelectedTab, tabs } = useProjectTabs(initialTab);
+      
+      // Renderowanie odpowiednich paneli w zależności od wybranej zakładki
+      const renderPanel = () => {
+        if (isLoading) return <LoadingSkeleton type={selectedTab} />;
+        
+        switch (selectedTab) {
+          case 'descriptions':
+            return <ProjectDescriptionsPanel description={project?.description ? { description: project.description } : null} />;
+          case 'assumptions':
+            return <ProjectAssumptionsPanel assumptions={project?.assumptions || null} />;
+          case 'functional-blocks':
+            return <ProjectFunctionalBlocksPanel functionalBlocks={project?.functionalBlocks || null} />;
+          case 'schedule':
+            return <ProjectSchedulePanel schedule={project?.schedule || null} />;
+          default:
+            return <div>Wybierz sekcję projektu</div>;
+        }
+      };
+      
+      return (
+        <div className="space-y-6">
+          <ProjectTabsNavigation 
+            tabs={tabs}
+            activeTab={selectedTab}
+            onSelectTab={setSelectedTab}
+            isLoading={isLoading}
+            className="mb-6"
+          />
+          
+          {error ? (
+            <div className="rounded-md bg-red-50 p-4 text-red-700">
+              <h3 className="text-lg font-medium">Wystąpił błąd</h3>
+              <p>{error.message}</p>
+            </div>
+          ) : (
+            renderPanel()
+          )}
+        </div>
+      );
+    }
+    ```
+
+12. **Końcowe testy i przegląd**:
     - Weryfikacja zgodności z PRD i user stories
     - Sprawdzenie czy wszystkie wymagania zostały spełnione
     - Przeprowadzenie testów końcowych
