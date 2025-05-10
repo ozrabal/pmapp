@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { test as base } from "@playwright/test";
 import { LoginPage } from "../models/LoginPage";
+import { getE2ECredentials } from "../utils/credentials";
 
 // Define test fixtures
 interface AuthFixtures {
@@ -24,9 +25,9 @@ export const test = base.extend<AuthFixtures>({
     const loginPage = new LoginPage(page);
     await loginPage.goto();
 
-    // Using test credentials - in a real project, these would come from env vars
-    // or be specific test users created for e2e testing
-    await loginPage.login("test@example.com", "password123");
+    // Using test credentials from environment variables helper
+    const { username, password } = getE2ECredentials();
+    await loginPage.login(username, password);
 
     // Wait for authentication to complete
     await page.waitForURL(/\/dashboard/);

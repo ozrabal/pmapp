@@ -13,10 +13,10 @@ export class LoginPage {
 
   constructor(page: Page) {
     this.page = page;
-    this.emailInput = page.getByLabel("Email");
-    this.passwordInput = page.getByLabel("Password");
-    this.submitButton = page.getByRole("button", { name: /sign in/i });
-    this.errorMessage = page.getByRole("alert");
+    this.emailInput = page.getByTestId("email-input");
+    this.passwordInput = page.getByTestId("password-input");
+    this.submitButton = page.getByTestId("login-submit");
+    this.errorMessage = page.getByTestId("login-error");
     this.forgotPasswordLink = page.getByRole("link", { name: /forgot password/i });
   }
 
@@ -40,6 +40,7 @@ export class LoginPage {
    * Assert that error message is visible with specific text
    */
   async expectErrorMessage(message?: string) {
+    // Check for error message using data-testid
     await expect(this.errorMessage).toBeVisible();
     if (message) {
       await expect(this.errorMessage).toContainText(message);
@@ -51,5 +52,7 @@ export class LoginPage {
    */
   async expectRedirectToDashboard() {
     await expect(this.page).toHaveURL(/\/dashboard/);
+    // Additionally verify dashboard content is visible using data-testid
+    await expect(this.page.getByTestId("dashboard-header")).toBeVisible();
   }
 }

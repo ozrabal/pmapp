@@ -76,9 +76,9 @@ export function LoginForm({ redirect = "/dashboard" }: LoginFormProps) {
   }, [loginSuccess, redirect]);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" data-testid="login-form">
       {error && (
-        <Alert variant="destructive">
+        <Alert variant="destructive" data-testid="login-error">
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
@@ -92,6 +92,7 @@ export function LoginForm({ redirect = "/dashboard" }: LoginFormProps) {
           {...register("email")}
           autoComplete="email"
           aria-invalid={errors.email ? "true" : "false"}
+          data-testid="email-input"
         />
         {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
       </div>
@@ -110,11 +111,16 @@ export function LoginForm({ redirect = "/dashboard" }: LoginFormProps) {
           {...register("password")}
           autoComplete="current-password"
           aria-invalid={errors.password ? "true" : "false"}
+          data-testid="password-input"
         />
-        {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
+        {errors.password && (
+          <p className="text-sm text-red-500" data-testid="password-error">
+            {errors.password.message}
+          </p>
+        )}
       </div>
 
-      <Button type="submit" className="w-full" disabled={isLoading}>
+      <Button type="submit" className="w-full" disabled={isLoading} data-testid="login-submit">
         {isLoading ? "Logowanie..." : "Zaloguj się"}
       </Button>
     </form>

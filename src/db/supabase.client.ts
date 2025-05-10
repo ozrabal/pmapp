@@ -16,7 +16,9 @@ export const DEFAULT_USER_ID = "47d41db2-992a-45c0-9cdf-1e63347cfc35";
 // Cookie options for the SSR client
 export const cookieOptions: CookieOptionsWithName = {
   path: "/",
-  secure: true,
+  // only in production
+  secure: import.meta.env.PRODUCTION ? true : false,
+  maxAge: 60 * 60 * 24 * 7, // 1 week
   httpOnly: true,
   sameSite: "lax",
 };
