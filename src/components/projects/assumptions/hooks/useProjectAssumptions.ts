@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { ProjectClientService } from "../../../../lib/services/project.service";
 import type { ValidateProjectAssumptionsResponseDto } from "../../../../types";
 import type { AssumptionsViewModel } from "../../types";
@@ -41,14 +41,24 @@ export function useProjectAssumptions(projectId: string) {
     error: null,
   });
 
+  // Create refs outside of useMemo
+  const projectGoalsRef = useRef<HTMLTextAreaElement>(null);
+  const targetAudienceRef = useRef<HTMLTextAreaElement>(null);
+  const keyFeaturesRef = useRef<HTMLTextAreaElement>(null);
+  const technologyStackRef = useRef<HTMLTextAreaElement>(null);
+  const constraintsRef = useRef<HTMLTextAreaElement>(null);
+
   // References to form field elements for focus management
-  const fieldRefs: Record<string, React.RefObject<HTMLTextAreaElement | null>> = {
-    projectGoals: useRef<HTMLTextAreaElement>(null),
-    targetAudience: useRef<HTMLTextAreaElement>(null),
-    keyFeatures: useRef<HTMLTextAreaElement>(null),
-    technologyStack: useRef<HTMLTextAreaElement>(null),
-    constraints: useRef<HTMLTextAreaElement>(null),
-  };
+  const fieldRefs = useMemo<Record<string, React.RefObject<HTMLTextAreaElement | null>>>(
+    () => ({
+      projectGoals: projectGoalsRef,
+      targetAudience: targetAudienceRef,
+      keyFeatures: keyFeaturesRef,
+      technologyStack: technologyStackRef,
+      constraints: constraintsRef,
+    }),
+    [projectGoalsRef, targetAudienceRef, keyFeaturesRef, technologyStackRef, constraintsRef]
+  );
 
   // Function to load project data
   const loadProject = useCallback(async () => {
@@ -78,56 +88,62 @@ export function useProjectAssumptions(projectId: string) {
     }
   }, [projectId]);
 
-  // Function to update a single assumption field
-  const updateAssumption = useCallback((field: keyof AssumptionsViewModel, value: string) => {
-    // Immediately update UI
-    setProject((prev) => {
-      if (!prev || !prev.assumptions) return prev;
-
-      return {
-        ...prev,
-        assumptions: {
-          ...prev.assumptions,
-          [field]: value,
-        },
-      };
-    });
-
-    // Mark related suggestions as outdated
-    setValidationResult((prev) => ({
-      ...prev,
-      suggestions: prev.suggestions.map((s) => (s.field === field ? { ...s, outdated: true } : s)),
-    }));
-
-    // Trigger debounced update to API
-    debouncedUpdate(field, value);
-  }, []);
-
   // Debounced function to update assumptions via API
   const debouncedUpdate = useCallback(
-    debounce(async (field: keyof AssumptionsViewModel, value: string) => {
-      setProject((currentProject) => {
-        if (!currentProject?.id || !currentProject.assumptions) return currentProject;
+    (field: keyof AssumptionsViewModel, value: string) => {
+      const debouncedFn = debounce(async (f: keyof AssumptionsViewModel, v: string) => {
+        setProject((currentProject) => {
+          if (!currentProject?.id || !currentProject.assumptions) return currentProject;
 
-        try {
           const updatedAssumptions = {
             ...currentProject.assumptions,
-            [field]: value,
+            [f]: v,
           };
 
           ProjectClientService.updateProject(currentProject.id, {
             assumptions: AssumptionsMappers.viewModelToJson(updatedAssumptions),
           }).catch((error) => {
+            // eslint-disable-next-line no-console
             console.error("Error saving assumptions:", error);
           });
-        } catch (error) {
-          console.error("Error processing assumptions update:", error);
-        }
 
-        return currentProject;
+          return currentProject;
+        });
+      }, 500);
+
+      debouncedFn(field, value);
+    },
+    [
+      /* Dependencies would go here if needed */
+    ]
+  );
+
+  // Function to update a single assumption field
+  const updateAssumption = useCallback(
+    (field: keyof AssumptionsViewModel, value: string) => {
+      // Immediately update UI
+      setProject((prev) => {
+        if (!prev || !prev.assumptions) return prev;
+
+        return {
+          ...prev,
+          assumptions: {
+            ...prev.assumptions,
+            [field]: value,
+          },
+        };
       });
-    }, 500),
-    []
+
+      // Mark related suggestions as outdated
+      setValidationResult((prev) => ({
+        ...prev,
+        suggestions: prev.suggestions.map((s) => (s.field === field ? { ...s, outdated: true } : s)),
+      }));
+
+      // Trigger debounced update to API
+      debouncedUpdate(field, value);
+    },
+    [debouncedUpdate]
   );
 
   // Function to validate assumptions via AI
@@ -144,7 +160,6 @@ export function useProjectAssumptions(projectId: string) {
       const result: ValidateProjectAssumptionsResponseDto = await ProjectClientService.validateProjectAssumptions(
         project.id
       );
-      console.log("Validation result:", result);
       setValidationResult({
         isValid: result.isValid,
         feedback: result.feedback.map((f) => AssumptionsMappers.feedbackDtoToViewModel(f)),
@@ -187,7 +202,7 @@ export function useProjectAssumptions(projectId: string) {
         fieldRef.current.focus();
       }
     },
-    [validationResult.suggestions, project?.assumptions, updateAssumption]
+    [project?.assumptions, validationResult.suggestions, updateAssumption, fieldRefs]
   );
 
   // Function to reject a suggestion
@@ -207,20 +222,19 @@ export function useProjectAssumptions(projectId: string) {
         s.id === suggestionId ? { ...s, isFeedbackGiven: true, isHelpful } : s
       ),
     }));
-
-    // Here we could call an API endpoint to save feedback
-    // For now, we're just logging it
-    console.log(`Feedback submitted: Suggestion ${suggestionId} was ${isHelpful ? "helpful" : "not helpful"}`);
   }, []);
 
   // Focus a specific field
-  const focusField = useCallback((field: string) => {
-    const fieldRef = fieldRefs[field as keyof typeof fieldRefs];
-    if (fieldRef?.current) {
-      fieldRef.current.focus();
-      fieldRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
-  }, []);
+  const focusField = useCallback(
+    (field: string) => {
+      const fieldRef = fieldRefs[field as keyof typeof fieldRefs];
+      if (fieldRef?.current) {
+        fieldRef.current.focus();
+        fieldRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    },
+    [fieldRefs]
+  );
 
   // Load project data on mount
   useEffect(() => {

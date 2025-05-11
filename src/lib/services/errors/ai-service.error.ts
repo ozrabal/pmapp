@@ -5,9 +5,9 @@
  */
 export class AiServiceError extends Error {
   code: string;
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
 
-  constructor(message: string, code = "UNKNOWN_ERROR", context?: Record<string, any>) {
+  constructor(message: string, code = "UNKNOWN_ERROR", context?: Record<string, unknown>) {
     super(message);
     this.name = "AiServiceError";
     this.code = code;
@@ -22,7 +22,7 @@ export class AiServiceError extends Error {
   /**
    * Creates a JSON representation of the error
    */
-  toJSON(): Record<string, any> {
+  toJSON(): Record<string, unknown> {
     return {
       name: this.name,
       message: this.message,

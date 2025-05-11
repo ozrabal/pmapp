@@ -1,8 +1,8 @@
-import React from 'react';
-import { Card, CardContent } from '../../ui/card';
-import { Alert, AlertDescription } from '../../ui/alert';
-import { LoadingSkeleton } from '../LoadingSkeleton';
-import type { ProjectAssumptionsPanelProps } from '../types';
+import React from "react";
+import { Card, CardContent } from "../../ui/card";
+import { Alert, AlertDescription } from "../../ui/alert";
+import { LoadingSkeleton } from "../LoadingSkeleton";
+import type { ProjectAssumptionsPanelProps } from "../types";
 
 export const ProjectAssumptionsPanel: React.FC<ProjectAssumptionsPanelProps> = ({
   assumptions,
@@ -33,16 +33,15 @@ export const ProjectAssumptionsPanel: React.FC<ProjectAssumptionsPanelProps> = (
 
   // Create renderable sections from assumptions
   const sections = Object.entries(assumptions)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     .filter(([_, value]) => value) // Filter out empty values
     .map(([key, value]) => {
       // Convert camelCase to Title Case for display
-      const title = key
-        .replace(/([A-Z])/g, ' $1')
-        .replace(/^./, str => str.toUpperCase());
+      const title = key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase());
 
       // Format value text with proper line breaks
       const formattedValue = String(value)
-        .split('\n')
+        .split("\n")
         .map((line, i) => (
           <React.Fragment key={i}>
             {line}

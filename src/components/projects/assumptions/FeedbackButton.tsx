@@ -1,23 +1,16 @@
-import React from 'react';
-import { Button } from '../../ui/button';
-import { ThumbsUp, ThumbsDown } from 'lucide-react';
-import type { FeedbackButtonProps } from './types';
+import React from "react";
+import { Button } from "../../ui/button";
+import { ThumbsUp, ThumbsDown } from "lucide-react";
+import type { FeedbackButtonProps } from "./types";
 
 /**
  * Component for providing feedback on AI suggestions
  */
-export function FeedbackButton({
-  onFeedbackSubmit,
-  isSubmitted,
-  selectedFeedback,
-  className
-}: FeedbackButtonProps) {
+export function FeedbackButton({ onFeedbackSubmit, isSubmitted, selectedFeedback, className }: FeedbackButtonProps) {
   return (
     <div className={`flex items-center gap-2 ${className}`}>
       {isSubmitted ? (
-        <p className="text-xs text-muted-foreground italic">
-          Thank you for your feedback
-        </p>
+        <p className="text-xs text-muted-foreground italic">Thank you for your feedback</p>
       ) : (
         <>
           <span className="text-xs text-muted-foreground">Was this helpful?</span>

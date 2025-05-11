@@ -41,14 +41,13 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     });
 
     if (error) {
-      console.error("Reset password error:", error);
       return new Response(JSON.stringify({ error: { message: error.message } }), { status: 400 });
     }
 
     // Always return success, even if email doesn't exist (security best practice)
     return new Response(JSON.stringify({ success: true }), { status: 200 });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
-    console.error("Unexpected error during password reset:", error);
     return new Response(
       JSON.stringify({
         error: { message: "Wystąpił nieoczekiwany błąd. Spróbuj ponownie później." },

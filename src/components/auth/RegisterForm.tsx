@@ -71,9 +71,9 @@ export function RegisterForm() {
 
       // Registration successful, show success message
       setIsSuccess(true);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       setError("Wystąpił nieoczekiwany błąd. Spróbuj ponownie później.");
-      console.error("Registration error:", err);
     } finally {
       setIsLoading(false);
     }

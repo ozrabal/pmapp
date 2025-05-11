@@ -27,7 +27,7 @@ export const GET: APIRoute = async ({ url, locals }) => {
       limit: z.coerce.number().int().positive().default(10),
       page: z.coerce.number().int().min(1).default(1),
       sort: z.string().default("createdAt:desc"),
-      status: z.enum(["not_started", "in_progress", "completed", "all"]).optional(),
+      status: z.enum(["not_started", "in_progress", "completed", "all", "archived", "active"]).optional(),
       search: z.string().optional(),
     });
 
@@ -87,10 +87,8 @@ export const GET: APIRoute = async ({ url, locals }) => {
         "Content-Type": "application/json",
       },
     });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
-    // Log the error for debugging
-    console.error("Error listing projects:", error);
-
     // Return a 500 error response
     const errorResponse: ErrorResponseDto = {
       error: {
@@ -211,9 +209,6 @@ export const POST: APIRoute = async ({ request, locals }) => {
         });
       }
     }
-
-    // Log the error for debugging
-    console.error("Error creating project:", error);
 
     // Return a 500 error response for other errors
     const errorResponse: ErrorResponseDto = {

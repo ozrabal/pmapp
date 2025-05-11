@@ -1,4 +1,4 @@
-import type { ErrorResponseDto } from '../../types';
+import type { ErrorResponseDto } from "../../types";
 
 export interface ApiError extends Error {
   status?: number;
@@ -29,20 +29,17 @@ export function createApiError(
  */
 export async function parseApiErrorResponse(response: Response): Promise<ApiError> {
   let errorData: ErrorResponseDto;
-  
+
   try {
     errorData = await response.json();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (e) {
     // If JSON parsing fails, create a generic error
-    return createApiError(
-      'Failed to parse error response',
-      response.status,
-      'parse_error'
-    );
+    return createApiError("Failed to parse error response", response.status, "parse_error");
   }
 
   return createApiError(
-    errorData.error?.message || 'Unknown error',
+    errorData.error?.message || "Unknown error",
     response.status,
     errorData.error?.code,
     errorData.error?.details
@@ -57,28 +54,22 @@ export function handleNetworkError(error: unknown): ApiError {
     return createApiError(
       `Network error: ${error.message}`,
       0, // 0 indicates network error
-      'network_error'
+      "network_error"
     );
   }
-  return createApiError(
-    'Unknown network error occurred',
-    0,
-    'network_error'
-  );
+  return createApiError("Unknown network error occurred", 0, "network_error");
 }
 
 /**
  * Handles data validation errors for expected API data structures
  */
 export function handleDataValidationError(fieldName: string, error: unknown): ApiError {
-  const message = error instanceof Error
-    ? error.message
-    : 'Invalid data format';
-  
+  const message = error instanceof Error ? error.message : "Invalid data format";
+
   return createApiError(
     `Data validation error in ${fieldName}: ${message}`,
     400, // Using 400 to indicate client-side validation issues
-    'data_validation_error',
+    "data_validation_error",
     { fieldName }
   );
 }
@@ -109,26 +100,26 @@ export function isNotFoundError(error: ApiError): boolean {
  */
 export function getUserFriendlyErrorMessage(error: ApiError): string {
   if (isSessionExpiredError(error)) {
-    return 'Your session has expired. Please log in again to continue.';
+    return "Your session has expired. Please log in again to continue.";
   }
 
   if (isPermissionError(error)) {
-    return 'You don\'t have permission to access this resource.';
+    return "You don't have permission to access this resource.";
   }
 
   if (isNotFoundError(error)) {
-    return 'The requested resource was not found or has been deleted.';
+    return "The requested resource was not found or has been deleted.";
   }
 
   if (error.status === 0) {
-    return 'Network error. Please check your internet connection and try again.';
+    return "Network error. Please check your internet connection and try again.";
   }
 
   if (error.status === 500) {
-    return 'An unexpected server error occurred. Our team has been notified.';
+    return "An unexpected server error occurred. Our team has been notified.";
   }
 
-  return error.message || 'An unexpected error occurred.';
+  return error.message || "An unexpected error occurred.";
 }
 
 /**

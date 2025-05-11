@@ -60,8 +60,8 @@ export function LoginForm({ redirect = "/dashboard" }: LoginFormProps) {
 
       // Mark login as successful to trigger redirect in useEffect
       setLoginSuccess(true);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
-      console.error("Login error:", err);
       setError("Wystąpił nieoczekiwany błąd. Spróbuj ponownie później.");
       setIsLoading(false);
     }

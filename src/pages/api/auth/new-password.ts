@@ -54,7 +54,6 @@ export const POST: APIRoute = async ({ request, cookies }) => {
         const { data: sessionData, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
 
         if (exchangeError) {
-          console.error("Code exchange error:", exchangeError);
           error = exchangeError;
         } else if (sessionData) {
           // Then update the user's password
@@ -66,8 +65,8 @@ export const POST: APIRoute = async ({ request, cookies }) => {
             error = updateError;
           }
         }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (err) {
-        console.error("Error in code-based password reset:", err);
         error = {
           message: "Wystąpił błąd podczas weryfikacji kodu autoryzacyjnego",
         };
@@ -87,8 +86,8 @@ export const POST: APIRoute = async ({ request, cookies }) => {
           password: password,
         });
         error = updateError || resetError;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (err) {
-        console.error("Error in token-based password reset:", err);
         error = {
           message: "Wystąpił błąd podczas weryfikacji tokena resetowania hasła",
         };
@@ -96,8 +95,6 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     }
 
     if (error) {
-      console.error("Password update error:", error);
-
       // Handle specific error cases
       if (error.message?.includes("expired") || error.message?.includes("invalid")) {
         return new Response(
@@ -121,8 +118,8 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     }
 
     return new Response(JSON.stringify({ success: true }), { status: 200 });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
-    console.error("Unexpected error during password update:", error);
     return new Response(
       JSON.stringify({
         error: { message: "Wystąpił nieoczekiwany błąd. Spróbuj ponownie później." },

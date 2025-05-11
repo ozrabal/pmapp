@@ -74,11 +74,11 @@ export const useEditProject = (projectId: string) => {
 
       const data: ProjectDto = await response.json();
       setProject(data);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setErrors({
         general: "Wystąpił błąd podczas pobierania danych projektu. Spróbuj ponownie.",
       });
-      console.error("Error fetching project:", error);
     } finally {
       setIsLoading(false);
     }
@@ -205,11 +205,11 @@ export const useEditProject = (projectId: string) => {
 
       // After successful update, redirect back to the project details page
       window.location.href = `/projects/${projectId}`;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setErrors({
         general: "Wystąpił błąd podczas zapisywania zmian. Spróbuj ponownie.",
       });
-      console.error("Error updating project:", error);
     } finally {
       setIsSaving(false);
     }

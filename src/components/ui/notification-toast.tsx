@@ -10,9 +10,11 @@ const toastVariants = cva(
     variants: {
       variant: {
         default: "bg-background border",
-        success: "bg-green-50 border-green-200 text-green-800 dark:bg-green-950 dark:border-green-800 dark:text-green-400",
+        success:
+          "bg-green-50 border-green-200 text-green-800 dark:bg-green-950 dark:border-green-800 dark:text-green-400",
         error: "bg-red-50 border-red-200 text-red-800 dark:bg-red-950 dark:border-red-800 dark:text-red-400",
-        warning: "bg-amber-50 border-amber-200 text-amber-800 dark:bg-amber-950 dark:border-amber-800 dark:text-amber-400",
+        warning:
+          "bg-amber-50 border-amber-200 text-amber-800 dark:bg-amber-950 dark:border-amber-800 dark:text-amber-400",
         info: "bg-blue-50 border-blue-200 text-blue-800 dark:bg-blue-950 dark:border-blue-800 dark:text-blue-400",
       },
     },
@@ -44,12 +46,12 @@ const NotificationToast = forwardRef<HTMLDivElement, NotificationToastProps>(
 
     useEffect(() => {
       if (!duration) return;
-      
+
       const timeout = setTimeout(() => {
         setIsVisible(false);
         if (onClose) setTimeout(onClose, 300); // Allow animation to finish
       }, duration);
-      
+
       return () => clearTimeout(timeout);
     }, [duration, onClose]);
 
@@ -71,7 +73,7 @@ const NotificationToast = forwardRef<HTMLDivElement, NotificationToastProps>(
           toastVariants({ variant }),
           "bottom-4 left-1/2 -translate-x-1/2 max-w-md z-50 data-[state=open]:animate-in",
           "data-[state=closed]:animate-out data-[state=closed]:fade-out-80",
-          "data-[state=open]:slide-in-from-bottom-full data-[state=closed]:slide-out-to-bottom-full",
+          "data-[state=open]:slide-in-from-bottom-full data-[state=closed]:slide-out-to-bottom-full"
         )}
         data-state={isVisible ? "open" : "closed"}
         {...props}

@@ -60,7 +60,6 @@ export function AssumptionsForm({ projectId, className }: AssumptionsFormProps) 
       </Alert>
     );
   }
-  console.log("PROJECT", project);
   if (project?.isLoading) {
     return (
       <div className={`animate-pulse space-y-6 ${className}`}>
@@ -83,7 +82,6 @@ export function AssumptionsForm({ projectId, className }: AssumptionsFormProps) 
       </Alert>
     );
   }
-  console.log("PROJECT ASSUMPTIONS", project.assumptions);
   return (
     <div className={`space-y-6 ${className}`}>
       <Card>

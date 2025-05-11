@@ -2,38 +2,32 @@
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import Layout from "../layouts/Layout.astro";
 import { Button } from "@/components/ui/button";
-import Avatar  from "@/components/Avatar";
-
+import Avatar from "@/components/Avatar";
 ---
 
 <Layout>
   <div class="flex flex-col gap-4">
-    <Button size="sm" className="w-32">
-      button
-    </Button>
+    <Button size="sm" className="w-32"> button </Button>
 
     <Card className="w-96">
       <CardHeader>
-        <CardTitle>
-          Card Header
-        </CardTitle>
-      </CardHeader> 
+        <CardTitle> Card Header </CardTitle>
+      </CardHeader>
       <CardContent>
-        <p>
-          This is a card component. It can contain any content you want.
-        </p>
+        <p>This is a card component. It can contain any content you want.</p>
       </CardContent>
       <CardFooter className="gap-4">
-        <Button variant="outline">
-          Cancel
-        </Button>
-        <Button>
-          Save
-        </Button>
+        <Button variant="outline"> Cancel </Button>
+        <Button> Save </Button>
       </CardFooter>
     </Card>
 
-    <Avatar client:load className="size-10" image="https://images.unsplash.com/photo-1511485977113-f34c92461ad9?ixlib=rb-1.2.1&w=128&h=128&dpr=2&q=80" alt="Avatar" fallback="FA" />
-
+    <Avatar
+      client:load
+      className="size-10"
+      image="https://images.unsplash.com/photo-1511485977113-f34c92461ad9?ixlib=rb-1.2.1&w=128&h=128&dpr=2&q=80"
+      alt="Avatar"
+      fallback="FA"
+    />
   </div>
 </Layout>

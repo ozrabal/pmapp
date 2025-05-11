@@ -105,7 +105,6 @@ const ScheduleStageFormModal: React.FC<ScheduleStageFormModalProps> = ({
 
       onClose();
     } catch (err) {
-      console.error("Error submitting form:", err);
       setServerError(err instanceof Error ? err.message : "Wystąpił błąd podczas zapisywania etapu");
     } finally {
       setIsSubmitting(false);

@@ -1,17 +1,15 @@
-import React from 'react';
-import { Button } from '../ui/button';
-import { cn } from '../../lib/utils';
-import type { BackToProjectsButtonProps } from './types';
+import React from "react";
+import { Button } from "../ui/button";
+import { cn } from "../../lib/utils";
+import type { BackToProjectsButtonProps } from "./types";
 
-export const BackToProjectsButton: React.FC<BackToProjectsButtonProps> = ({ 
-  className 
-}) => {
+export const BackToProjectsButton: React.FC<BackToProjectsButtonProps> = ({ className }) => {
   return (
     <Button
       variant="outline"
       size="sm"
-      className={cn('flex items-center gap-1', className)}
-      onClick={() => window.location.href = '/dashboard'}
+      className={cn("flex items-center gap-1", className)}
+      onClick={() => (window.location.href = "/dashboard")}
       aria-label="Return to projects list"
     >
       <svg

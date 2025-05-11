@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface ProjectNameInputProps {
   value: string;
@@ -15,7 +15,7 @@ export const ProjectNameInput: React.FC<ProjectNameInputProps> = ({
   onChange,
   onBlur,
   id,
-  disabled = false
+  disabled = false,
 }) => {
   // Counter for real-time character tracking
   const maxLength = 200;
@@ -25,7 +25,7 @@ export const ProjectNameInput: React.FC<ProjectNameInputProps> = ({
 
   // Handle Enter key to proceed to the next field
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       e.preventDefault();
       onBlur(); // Validate on enter
       // Find the next focusable element and focus it
@@ -44,27 +44,23 @@ export const ProjectNameInput: React.FC<ProjectNameInputProps> = ({
   return (
     <div className="space-y-2">
       <div className="flex justify-between items-baseline">
-        <label 
-          htmlFor={id}
-          className="block text-sm font-medium"
-        >
-          Nazwa projektu <span className="text-red-500" aria-hidden="true">*</span>
+        <label htmlFor={id} className="block text-sm font-medium">
+          Nazwa projektu{" "}
+          <span className="text-red-500" aria-hidden="true">
+            *
+          </span>
           <span className="sr-only"> (wymagane)</span>
         </label>
 
         {/* Character counter for screen readers */}
-        <span 
+        <span
           className={`text-xs ${
-            isAtLimit 
-              ? 'text-red-500 font-semibold' 
-              : isNearLimit 
-                ? 'text-amber-600' 
-                : 'text-muted-foreground'
+            isAtLimit ? "text-red-500 font-semibold" : isNearLimit ? "text-amber-600" : "text-muted-foreground"
           }`}
           aria-live="polite"
           aria-atomic="true"
         >
-          {charsRemaining} {charsRemaining === 1 ? 'znak' : charsRemaining < 5 ? 'znaki' : 'znaków'}
+          {charsRemaining} {charsRemaining === 1 ? "znak" : charsRemaining < 5 ? "znaki" : "znaków"}
         </span>
       </div>
 
@@ -84,23 +80,23 @@ export const ProjectNameInput: React.FC<ProjectNameInputProps> = ({
         aria-required="true"
         className={`w-full rounded-md border px-3 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 ${
           error
-            ? 'border-red-300 focus-visible:border-red-500 focus-visible:ring-red-500'
-            : 'border-gray-300 focus-visible:border-blue-500 focus-visible:ring-blue-500'
-        } ${disabled ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : 'bg-white'}`}
-        aria-invalid={error ? 'true' : 'false'}
+            ? "border-red-300 focus-visible:border-red-500 focus-visible:ring-red-500"
+            : "border-gray-300 focus-visible:border-blue-500 focus-visible:ring-blue-500"
+        } ${disabled ? "bg-gray-100 text-gray-500 cursor-not-allowed" : "bg-white"}`}
+        aria-invalid={error ? "true" : "false"}
         aria-describedby={error ? `${id}-error` : undefined}
       />
-      
+
       {error && (
         <p id={`${id}-error`} className="text-sm text-red-500 flex items-start gap-1" role="alert">
-          <svg 
-            className="h-4 w-4 mt-0.5 flex-shrink-0" 
-            xmlns="http://www.w3.org/2000/svg" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="2" 
-            strokeLinecap="round" 
+          <svg
+            className="h-4 w-4 mt-0.5 flex-shrink-0"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
             strokeLinejoin="round"
             aria-hidden="true"
           >

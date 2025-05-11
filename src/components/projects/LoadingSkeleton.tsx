@@ -1,16 +1,13 @@
-import React from 'react';
-import { Skeleton } from '../ui/skeleton';
-import { cn } from '../../lib/utils';
-import type { LoadingSkeletonProps } from './types';
+import React from "react";
+import { Skeleton } from "../ui/skeleton";
+import { cn } from "../../lib/utils";
+import type { LoadingSkeletonProps } from "./types";
 
-export const LoadingSkeleton: React.FC<LoadingSkeletonProps> = ({
-  type,
-  className,
-}) => {
+export const LoadingSkeleton: React.FC<LoadingSkeletonProps> = ({ type, className }) => {
   // Description panel skeleton
-  if (type === 'descriptions') {
+  if (type === "descriptions") {
     return (
-      <div className={cn('space-y-4', className)}>
+      <div className={cn("space-y-4", className)}>
         <Skeleton className="h-6 w-3/4 mb-4" />
         <Skeleton className="h-4 w-full mb-2" />
         <Skeleton className="h-4 w-full mb-2" />
@@ -22,11 +19,11 @@ export const LoadingSkeleton: React.FC<LoadingSkeletonProps> = ({
       </div>
     );
   }
-  
+
   // Assumptions panel skeleton
-  if (type === 'assumptions') {
+  if (type === "assumptions") {
     return (
-      <div className={cn('space-y-8', className)}>
+      <div className={cn("space-y-8", className)}>
         <div className="space-y-3">
           <Skeleton className="h-5 w-48 mb-2" />
           <Skeleton className="h-4 w-full mb-1" />
@@ -47,11 +44,11 @@ export const LoadingSkeleton: React.FC<LoadingSkeletonProps> = ({
       </div>
     );
   }
-  
+
   // Functional blocks panel skeleton
-  if (type === 'functionalBlocks') {
+  if (type === "functionalBlocks") {
     return (
-      <div className={cn('space-y-8', className)}>
+      <div className={cn("space-y-8", className)}>
         <div className="space-y-3">
           <Skeleton className="h-6 w-64 mb-3" />
           <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
@@ -70,11 +67,11 @@ export const LoadingSkeleton: React.FC<LoadingSkeletonProps> = ({
       </div>
     );
   }
-  
+
   // Schedule panel skeleton
-  if (type === 'schedule') {
+  if (type === "schedule") {
     return (
-      <div className={cn('space-y-6', className)}>
+      <div className={cn("space-y-6", className)}>
         <Skeleton className="h-6 w-48 mb-4" />
         <div className="space-y-8">
           <div className="relative pl-14">
@@ -93,10 +90,10 @@ export const LoadingSkeleton: React.FC<LoadingSkeletonProps> = ({
       </div>
     );
   }
-  
+
   // Default generic skeleton
   return (
-    <div className={cn('space-y-4', className)}>
+    <div className={cn("space-y-4", className)}>
       <Skeleton className="h-6 w-3/4 mb-4" />
       <Skeleton className="h-4 w-full mb-2" />
       <Skeleton className="h-4 w-full mb-2" />

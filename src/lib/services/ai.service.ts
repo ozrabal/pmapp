@@ -121,11 +121,6 @@ export class AiService {
 
     // Only initialize OpenAI client on the server side
     if (!isBrowser()) {
-      if (!this.apiKey) {
-        // Using logger instead of direct console statement for ESLint
-        this.logWarning("OpenAI API key is not set. AI features will not work properly.");
-      }
-
       this.openai = new OpenAI({
         apiKey: this.apiKey,
       });
@@ -133,15 +128,6 @@ export class AiService {
       // In browser environment, set to null
       this.openai = null;
     }
-  }
-
-  // Logger methods to avoid direct console usage
-  private logWarning(message: string): void {
-    console.warn(message);
-  }
-
-  private logError(message: string, error?: unknown): void {
-    console.error(message, error);
   }
 
   // Check if we're able to use OpenAI services (only on server)
@@ -620,14 +606,11 @@ Include dependencies between stages and connections to functional blocks where a
       throw error; // Max retries exceeded
     }
 
-    this.logWarning(`Rate limit exceeded, retrying in ${delay}ms (attempt ${attempt}/${maxAttempts})`);
-
     // Wait for the calculated delay
     await new Promise((resolve) => setTimeout(resolve, delay));
 
     // Try with a fallback model if this is the last attempt
     if (attempt === maxAttempts && options.model !== this.fallbackModel) {
-      this.logWarning("Switching to fallback model for final retry attempt");
       return this.completion({
         ...options,
         model: this.fallbackModel,
@@ -673,15 +656,6 @@ Include dependencies between stages and connections to functional blocks where a
     const errorId = nanoid(6);
     const errWithCode = error as ErrorWithCode;
     const errorCode = errWithCode.code || "UNKNOWN_ERROR";
-
-    this.logError(`[AI Service Error ${errorId}] ${contextMessage}: ${errorCode}`, error);
-
-    // Depending on error type, we might want to perform different actions
-    if (errWithCode.code === "rate_limit_exceeded") {
-      this.logWarning(`[AI Service Warning ${errorId}] Rate limit exceeded, consider implementing queue system`);
-    } else if (errWithCode.code === "context_length_exceeded") {
-      this.logWarning(`[AI Service Warning ${errorId}] Context length exceeded, consider implementing chunking`);
-    }
 
     throw new AiServiceError(contextMessage, errorCode, {
       originalError: error,

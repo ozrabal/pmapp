@@ -25,6 +25,7 @@ export default function FunctionalBlocksContainer({ projectId }: FunctionalBlock
     try {
       await generateBlocks();
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error("Error generating blocks:", err);
     }
   };

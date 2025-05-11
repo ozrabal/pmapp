@@ -114,9 +114,9 @@ export function NewPasswordForm() {
       }
 
       setIsSuccess(true);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       setError("Wystąpił nieoczekiwany błąd. Spróbuj ponownie później.");
-      console.error("New password error:", err);
     } finally {
       setIsLoading(false);
     }

@@ -60,7 +60,14 @@ export function FunctionalBlockItem({ block, isSelected, onEdit, onDelete, allBl
       }`}
     >
       <CardHeader className="px-4 py-3 flex flex-row justify-between items-start space-y-0">
-        <div className="flex-1 cursor-pointer" onClick={toggleExpand}>
+        <div
+          className="flex-1 cursor-pointer"
+          onClick={toggleExpand}
+          onKeyDown={(e) => (e.key === "Enter" || e.key === " " ? toggleExpand() : null)}
+          role="button"
+          tabIndex={0}
+          aria-expanded={isExpanded}
+        >
           <div className="flex items-center gap-2 mb-1">
             <span className={`text-xs px-2 py-0.5 rounded font-medium ${getCategoryColor(block.category)}`}>
               {category.label}

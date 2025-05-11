@@ -177,10 +177,8 @@ export async function POST(context: APIContext): Promise<Response> {
       // Re-throw other errors to be caught by the outer catch block
       throw error;
     }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
-    // Log the error for debugging
-    console.error("Error generating project suggestions:", error);
-
     // Return 500 Internal Server Error
     const errorResponse: ErrorResponseDto = {
       error: {

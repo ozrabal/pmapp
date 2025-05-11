@@ -29,12 +29,15 @@ interface FunctionalBlockFormProps {
 
 export function FunctionalBlockForm({ block, allBlocks, onSave, onCancel, inModal = false }: FunctionalBlockFormProps) {
   // Domyślne wartości formularza
-  const defaultValues: FunctionalBlockFormValues = {
-    name: block?.name || "",
-    description: block?.description || "",
-    category: block?.category || "other",
-    dependencies: block?.dependencies || [],
-  };
+  const defaultValues = React.useMemo<FunctionalBlockFormValues>(
+    () => ({
+      name: block?.name || "",
+      description: block?.description || "",
+      category: block?.category || "other",
+      dependencies: block?.dependencies || [],
+    }),
+    [block?.name, block?.description, block?.category, block?.dependencies]
+  );
 
   const {
     register,
@@ -62,7 +65,7 @@ export function FunctionalBlockForm({ block, allBlocks, onSave, onCancel, inModa
     } else {
       reset(defaultValues);
     }
-  }, [block, reset]);
+  }, [block, defaultValues, reset]);
 
   // Obserwuj zmiany wartości
   const currentDependencies = watch("dependencies");

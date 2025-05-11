@@ -85,6 +85,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         is_active: true,
       });
     } catch (sessionError) {
+      // eslint-disable-next-line no-console
       console.error("Error recording session:", sessionError);
       // Don't interrupt the login process for session recording errors
     }
@@ -104,9 +105,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
         },
       }
     );
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
-    console.error("Login error:", error);
-
     return new Response(
       JSON.stringify({
         error: {

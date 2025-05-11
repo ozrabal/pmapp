@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
-import type { ProjectDto, UpdateProjectRequestDto, ErrorResponseDto } from '@/types';
+import { useState, useEffect, useCallback, useMemo } from "react";
+import type { ProjectDto, UpdateProjectRequestDto, ErrorResponseDto } from "@/types";
 
 interface ProjectEditViewModel {
   id: string;
@@ -23,7 +23,7 @@ export const useEditProject = (projectId: string) => {
   const [project, setProject] = useState<Partial<ProjectDto>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [errors, setErrors] = useState<ProjectEditViewModel['formErrors']>({});
+  const [errors, setErrors] = useState<ProjectEditViewModel["formErrors"]>({});
 
   // Memoize API URL to prevent unnecessary re-renders
   const apiUrl = useMemo(() => `/api/projects/${projectId}`, [projectId]);
@@ -32,37 +32,37 @@ export const useEditProject = (projectId: string) => {
   const handleApiError = useCallback(async (response: Response) => {
     // Early return for success cases
     if (response.ok) return;
-    
+
     if (response.status === 404) {
-      setErrors({ 
-        general: "Projekt o podanym identyfikatorze nie istnieje." 
+      setErrors({
+        general: "Projekt o podanym identyfikatorze nie istnieje.",
       });
       return;
-    } 
-    
+    }
+
     if (response.status === 403) {
-      setErrors({ 
-        general: "Nie masz uprawnień do edycji tego projektu." 
+      setErrors({
+        general: "Nie masz uprawnień do edycji tego projektu.",
       });
       return;
-    } 
-    
+    }
+
     if (response.status === 401) {
-      setErrors({ 
-        general: "Sesja wygasła. Zaloguj się ponownie." 
+      setErrors({
+        general: "Sesja wygasła. Zaloguj się ponownie.",
       });
       // Could implement redirect to login page here
       return;
     }
-    
+
     try {
       const errorData: ErrorResponseDto = await response.json();
-      setErrors({ 
-        general: errorData.error.message || "Wystąpił nieoczekiwany błąd." 
+      setErrors({
+        general: errorData.error.message || "Wystąpił nieoczekiwany błąd.",
       });
     } catch {
-      setErrors({ 
-        general: "Wystąpił nieoczekiwany błąd. Spróbuj ponownie." 
+      setErrors({
+        general: "Wystąpił nieoczekiwany błąd. Spróbuj ponownie.",
       });
     }
   }, []);
@@ -70,22 +70,22 @@ export const useEditProject = (projectId: string) => {
   // Fetch project data from API
   const fetchProject = useCallback(async () => {
     setIsLoading(true);
-    
+
     try {
       const response = await fetch(apiUrl);
-      
+
       if (!response.ok) {
         await handleApiError(response);
         return;
       }
-      
+
       const data: ProjectDto = await response.json();
       setProject(data);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      setErrors({ 
-        general: "Wystąpił błąd podczas pobierania danych projektu. Spróbuj ponownie." 
+      setErrors({
+        general: "Wystąpił błąd podczas pobierania danych projektu. Spróbuj ponownie.",
       });
-      console.error("Error fetching project:", error);
     } finally {
       setIsLoading(false);
     }
@@ -93,37 +93,38 @@ export const useEditProject = (projectId: string) => {
 
   // Validate the entire form before submission
   const validateForm = useCallback(() => {
-    const newErrors: ProjectEditViewModel['formErrors'] = {};
-    
+    const newErrors: ProjectEditViewModel["formErrors"] = {};
+
     // Validate name
-    if (!project.name || project.name.trim() === '') {
+    if (!project.name || project.name.trim() === "") {
       newErrors.name = "Nazwa projektu jest wymagana.";
     } else if (project.name.length > 200) {
       newErrors.name = "Nazwa projektu nie może przekraczać 200 znaków.";
     }
-    
+
     // Validate description
     if (project.description && project.description.length > 2000) {
       newErrors.description = "Opis projektu nie może przekraczać 2000 znaków.";
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   }, [project.name, project.description]);
 
   // Individual field validation functions
   const validateName = useCallback(() => {
-    if (!project.name || project.name.trim() === '') {
-      setErrors(prev => ({ ...prev, name: "Nazwa projektu jest wymagana." }));
+    if (!project.name || project.name.trim() === "") {
+      setErrors((prev) => ({ ...prev, name: "Nazwa projektu jest wymagana." }));
       return false;
-    } 
-    
+    }
+
     if (project.name.length > 200) {
-      setErrors(prev => ({ ...prev, name: "Nazwa projektu nie może przekraczać 200 znaków." }));
+      setErrors((prev) => ({ ...prev, name: "Nazwa projektu nie może przekraczać 200 znaków." }));
       return false;
-    } 
-    
-    setErrors(prev => {
+    }
+
+    setErrors((prev) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { name, ...rest } = prev;
       return rest;
     });
@@ -132,14 +133,15 @@ export const useEditProject = (projectId: string) => {
 
   const validateDescription = useCallback(() => {
     if (project.description && project.description.length > 2000) {
-      setErrors(prev => ({ 
-        ...prev, 
-        description: "Opis projektu nie może przekraczać 2000 znaków." 
+      setErrors((prev) => ({
+        ...prev,
+        description: "Opis projektu nie może przekraczać 2000 znaków.",
       }));
       return false;
-    } 
-    
-    setErrors(prev => {
+    }
+
+    setErrors((prev) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { description, ...rest } = prev;
       return rest;
     });
@@ -148,15 +150,16 @@ export const useEditProject = (projectId: string) => {
 
   // Handle form field changes
   const handleNameChange = useCallback((name: string) => {
-    setProject(prev => ({ ...prev, name }));
-    
+    setProject((prev) => ({ ...prev, name }));
+
     // Real-time validation
-    if (!name || name.trim() === '') {
-      setErrors(prev => ({ ...prev, name: "Nazwa projektu jest wymagana." }));
+    if (!name || name.trim() === "") {
+      setErrors((prev) => ({ ...prev, name: "Nazwa projektu jest wymagana." }));
     } else if (name.length > 200) {
-      setErrors(prev => ({ ...prev, name: "Nazwa projektu nie może przekraczać 200 znaków." }));
+      setErrors((prev) => ({ ...prev, name: "Nazwa projektu nie może przekraczać 200 znaków." }));
     } else {
-      setErrors(prev => {
+      setErrors((prev) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { name, ...rest } = prev;
         return rest;
       });
@@ -164,16 +167,17 @@ export const useEditProject = (projectId: string) => {
   }, []);
 
   const handleDescriptionChange = useCallback((description: string) => {
-    setProject(prev => ({ ...prev, description: description || null }));
-    
+    setProject((prev) => ({ ...prev, description: description || null }));
+
     // Real-time validation
     if (description && description.length > 2000) {
-      setErrors(prev => ({ 
-        ...prev, 
-        description: "Opis projektu nie może przekraczać 2000 znaków." 
+      setErrors((prev) => ({
+        ...prev,
+        description: "Opis projektu nie może przekraczać 2000 znaków.",
       }));
     } else {
-      setErrors(prev => {
+      setErrors((prev) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { description, ...rest } = prev;
         return rest;
       });
@@ -184,35 +188,35 @@ export const useEditProject = (projectId: string) => {
   const handleSubmit = useCallback(async () => {
     // Validate form before submission
     if (!validateForm()) return;
-    
+
     setIsSaving(true);
-    
+
     try {
       const updateData: UpdateProjectRequestDto = {
         name: project.name,
-        description: project.description
+        description: project.description,
       };
-      
+
       const response = await fetch(apiUrl, {
-        method: 'PATCH',
+        method: "PATCH",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(updateData)
+        body: JSON.stringify(updateData),
       });
-      
+
       if (!response.ok) {
         await handleApiError(response);
         return;
       }
-      
+
       // Redirect to projects list after successful update
-      window.location.href = '/dashboard';
+      window.location.href = "/dashboard";
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      setErrors({ 
-        general: "Wystąpił błąd podczas zapisywania zmian. Spróbuj ponownie." 
+      setErrors({
+        general: "Wystąpił błąd podczas zapisywania zmian. Spróbuj ponownie.",
       });
-      console.error("Error updating project:", error);
     } finally {
       setIsSaving(false);
     }
@@ -231,7 +235,7 @@ export const useEditProject = (projectId: string) => {
 
   // Determine whether there are any validation errors
   const hasErrors = useMemo(() => Object.keys(errors).length > 0, [errors]);
-  
+
   return {
     project,
     isLoading,
@@ -243,6 +247,6 @@ export const useEditProject = (projectId: string) => {
     validateName,
     validateDescription,
     handleSubmit,
-    handleCancel
+    handleCancel,
   };
 };

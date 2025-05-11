@@ -115,10 +115,8 @@ export async function GET(context: APIContext): Promise<Response> {
       // Re-throw other errors to be caught by the outer catch block
       throw error;
     }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
-    // Log the error for debugging
-    console.error("Error fetching project:", error);
-
     // Return 500 Internal Server Error
     const errorResponse: ErrorResponseDto = {
       error: {
@@ -289,10 +287,8 @@ export async function PATCH(context: APIContext): Promise<Response> {
       // Re-throw other errors to be caught by the outer catch block
       throw error;
     }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
-    // Log the error for debugging
-    console.error("Error updating project:", error);
-
     // Return 500 Internal Server Error
     const errorResponse: ErrorResponseDto = {
       error: {
@@ -372,8 +368,6 @@ export async function DELETE({ params, locals }: APIContext): Promise<Response> 
       },
     });
   } catch (error) {
-    console.error("Error deleting project:", error);
-
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
 
     // Handle specific error types

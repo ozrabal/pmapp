@@ -13,7 +13,7 @@ const inputSchema = z.object({
   assumptions: ProjectAssumptionsSchema,
 });
 
-export const POST: APIRoute = async ({ request, locals }) => {
+export const POST: APIRoute = async ({ request }) => {
   try {
     // Parse and validate input
     const rawData = await request.json();
@@ -30,8 +30,6 @@ export const POST: APIRoute = async ({ request, locals }) => {
       },
     });
   } catch (error) {
-    console.error("Error validating assumptions:", error);
-
     // If it's a validation error, return a 400
     if (error instanceof z.ZodError) {
       return new Response(
@@ -72,7 +70,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         error: {
           code: "UNKNOWN_ERROR",
           message: "An unexpected error occurred",
-          details: { originalMessage: error.message || "Unknown error" },
+          details: { originalMessage: error instanceof Error ? error.message : "Unknown error" },
         },
       }),
       {

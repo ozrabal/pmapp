@@ -35,9 +35,6 @@ const ExportScheduleDialog: React.FC<ExportScheduleDialogProps> = ({ isOpen, onC
       setIsExporting(true);
       setError(null);
 
-      // This is placeholder functionality for future implementation
-      console.log(`Exporting schedule in ${selectedFormat} format`);
-
       // Simulate export delay
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -58,9 +55,9 @@ const ExportScheduleDialog: React.FC<ExportScheduleDialogProps> = ({ isOpen, onC
       URL.revokeObjectURL(url);
 
       onClose();
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       setError("Wystąpił błąd podczas eksportowania harmonogramu. Spróbuj ponownie później.");
-      console.error("Export error:", err);
     } finally {
       setIsExporting(false);
     }

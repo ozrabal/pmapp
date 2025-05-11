@@ -82,8 +82,8 @@ export const ProjectFunctionalBlocksPanel: React.FC<ProjectFunctionalBlocksPanel
         ))}
       </div>
     );
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
-    console.error("Error rendering functional blocks:", error);
     return (
       <Alert variant="warning" className={className}>
         <AlertDescription>Unable to display functional blocks due to invalid data format.</AlertDescription>

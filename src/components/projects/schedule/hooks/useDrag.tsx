@@ -21,23 +21,25 @@ interface DragProps {
  * @param idField The field name that represents the unique identifier in each item
  * @param options Optional configuration options
  */
-export function useDrag<T extends Record<string, any>>(items: T[], idField: keyof T, options: UseDragOptions<T> = {}) {
-  const [draggedItemId, setDraggedItemId] = useState<any | null>(null);
+export function useDrag<T extends Record<string, unknown>>(
+  items: T[],
+  idField: keyof T,
+  options: UseDragOptions<T> = {}
+) {
+  const [draggedItemId, setDraggedItemId] = useState<unknown | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
   // Create a map of IDs to indices for quick lookup
-  const idToIndexMap = items.reduce(
-    (map, item, index) => {
-      map[item[idField]] = index;
-      return map;
-    },
-    {} as Record<string, number>
-  );
+  const idToIndexMap = items.reduce<Record<string, number>>((map, item, index) => {
+    const id = String(item[idField]);
+    map[id] = index;
+    return map;
+  }, {});
 
   // Handle drag start
-  const handleDragStart = useCallback((e: React.DragEvent<HTMLElement>, itemId: any) => {
+  const handleDragStart = useCallback((e: React.DragEvent<HTMLElement>, itemId: unknown) => {
     // Set data transfer
-    e.dataTransfer.setData("text/plain", itemId);
+    e.dataTransfer.setData("text/plain", String(itemId));
     e.dataTransfer.effectAllowed = "move";
 
     // Update state
@@ -70,7 +72,7 @@ export function useDrag<T extends Record<string, any>>(items: T[], idField: keyo
 
   // Handle drop
   const handleDrop = useCallback(
-    async (e: React.DragEvent<HTMLElement>, targetItemId: any) => {
+    async (e: React.DragEvent<HTMLElement>, targetItemId: unknown) => {
       e.preventDefault();
       const sourceItemId = e.dataTransfer.getData("text/plain");
 
@@ -81,7 +83,7 @@ export function useDrag<T extends Record<string, any>>(items: T[], idField: keyo
 
       // Get indices
       const sourceIndex = idToIndexMap[sourceItemId];
-      const targetIndex = idToIndexMap[targetItemId];
+      const targetIndex = idToIndexMap[String(targetItemId)];
 
       if (sourceIndex === undefined || targetIndex === undefined) {
         return;
@@ -109,7 +111,7 @@ export function useDrag<T extends Record<string, any>>(items: T[], idField: keyo
 
   // Provide props to be spread onto draggable elements
   const getDragProps = useCallback(
-    (itemId: any): DragProps => ({
+    (itemId: unknown): DragProps => ({
       draggable: true,
       onDragStart: (e) => handleDragStart(e, itemId),
       onDragEnd: handleDragEnd,

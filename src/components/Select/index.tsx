@@ -5,9 +5,8 @@ import {
   SelectItem,
   SelectLabel,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from "@/components/ui/select";
-import type { ReactNode } from "react";
 
 export interface SelectOption {
   value: string;
@@ -33,7 +32,6 @@ type SelectProps = React.ComponentProps<typeof SelectRoot> & {
 export default function Select({
   options,
   placeholder = "Wybierz opcję",
-  label,
   width = "w-full",
   onChange,
   value,
@@ -41,7 +39,7 @@ export default function Select({
   ...props
 }: SelectProps) {
   const isGroupArray = (items: SelectOption[] | SelectGroup[]): items is SelectGroup[] => {
-    return items.length > 0 && 'options' in items[0];
+    return items.length > 0 && "options" in items[0];
   };
 
   const hasGroups = isGroup || isGroupArray(options);
@@ -52,46 +50,28 @@ export default function Select({
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
-        {hasGroups ? (
-          // Render groups
-          (options as SelectGroup[]).map((group) => (
-            <SelectGroup key={group.label}>
-              <SelectLabel>{group.label}</SelectLabel>
-              {group.options.map((option) => (
-                <SelectItem 
-                  key={option.value} 
-                  value={option.value}
-                  disabled={option.disabled}
-                >
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          ))
-        ) : (
-          // Render flat options
-          (options as SelectOption[]).map((option) => (
-            <SelectItem 
-              key={option.value} 
-              value={option.value}
-              disabled={option.disabled}
-            >
-              {option.label}
-            </SelectItem>
-          ))
-        )}
+        {hasGroups
+          ? // Render groups
+            (options as SelectGroup[]).map((group) => (
+              <SelectGroup key={group.label}>
+                <SelectLabel>{group.label}</SelectLabel>
+                {group.options.map((option) => (
+                  <SelectItem key={option.value} value={option.value} disabled={option.disabled}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            ))
+          : // Render flat options
+            (options as SelectOption[]).map((option) => (
+              <SelectItem key={option.value} value={option.value} disabled={option.disabled}>
+                {option.label}
+              </SelectItem>
+            ))}
       </SelectContent>
     </SelectRoot>
   );
 }
 
 // Export individual components for more complex use cases
-export {
-  SelectRoot,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue
-};
+export { SelectRoot, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue };

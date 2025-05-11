@@ -14,27 +14,25 @@ interface UseDeleteProjectResult {
   cancelDelete: () => void;
 }
 
-export function useDeleteProject(
-  onDelete?: (id: string) => Promise<void>
-): UseDeleteProjectResult {
+export function useDeleteProject(onDelete?: (id: string) => Promise<void>): UseDeleteProjectResult {
   // Modal open state
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  
+
   // Project to delete
   const [projectToDelete, setProjectToDelete] = useState<ProjectViewModel | null>(null);
-  
+
   // Deleting state
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
-  
+
   // Error state
   const [error, setError] = useState<Error | null>(null);
-  
+
   // Get notifications context
   const { showNotification } = useNotifications();
-  
+
   // Track if component is mounted
   const [isMounted, setIsMounted] = useState(true);
-  
+
   useEffect(() => {
     setIsMounted(true);
     return () => setIsMounted(false);
@@ -50,10 +48,10 @@ export function useDeleteProject(
   // Close the modal
   const closeModal = useCallback(() => {
     if (isDeleting) return; // Prevent closing while delete in progress
-    
+
     setIsOpen(false);
     setError(null);
-    
+
     // Clear the project after animation completes for smooth transitions
     setTimeout(() => {
       if (isMounted) {
@@ -73,13 +71,13 @@ export function useDeleteProject(
   // Confirm the deletion
   const confirmDelete = useCallback(async () => {
     if (!projectToDelete) return;
-    
+
     setIsDeleting(true);
     setError(null);
-    
+
     try {
       await deleteHandler(projectToDelete.id);
-      
+
       if (isMounted) {
         // Show success notification when needed by the component using this hook
         // showNotification is already called in the parent component (useProjectsList)
@@ -87,10 +85,8 @@ export function useDeleteProject(
       }
     } catch (err) {
       if (isMounted) {
-        const errorMessage = err instanceof Error 
-          ? err.message 
-          : 'Nieznany błąd podczas usuwania projektu.';
-        
+        const errorMessage = err instanceof Error ? err.message : "Nieznany błąd podczas usuwania projektu.";
+
         setError(err instanceof Error ? err : new Error(errorMessage));
         showNotification(errorMessage, "error");
       }
@@ -109,13 +105,13 @@ export function useDeleteProject(
   // Handle escape key to close modal
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen && !isDeleting) {
+      if (e.key === "Escape" && isOpen && !isDeleting) {
         closeModal();
       }
     };
-    
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
+
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
   }, [isOpen, isDeleting, closeModal]);
 
   return {
@@ -126,6 +122,6 @@ export function useDeleteProject(
     openModal,
     closeModal,
     confirmDelete,
-    cancelDelete
+    cancelDelete,
   };
 }

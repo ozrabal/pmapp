@@ -32,19 +32,21 @@ interface NotificationProviderProps {
 export function NotificationProvider({ children }: NotificationProviderProps) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
-  const showNotification = useCallback((message: string, type: NotificationType) => {
-    const id = Date.now().toString();
-    setNotifications(prev => [...prev, { id, message, type }]);
-    
-    // Automatically remove notifications after 5 seconds
-    setTimeout(() => {
-      removeNotification(id);
-    }, 5000);
-  }, []);
-
   const removeNotification = useCallback((id: string) => {
-    setNotifications(prev => prev.filter(notification => notification.id !== id));
+    setNotifications((prev) => prev.filter((notification) => notification.id !== id));
   }, []);
+  const showNotification = useCallback(
+    (message: string, type: NotificationType) => {
+      const id = Date.now().toString();
+      setNotifications((prev) => [...prev, { id, message, type }]);
+
+      // Automatically remove notifications after 5 seconds
+      setTimeout(() => {
+        removeNotification(id);
+      }, 5000);
+    },
+    [removeNotification]
+  );
 
   // Add event listener for custom toast events
   useEffect(() => {
@@ -55,10 +57,10 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
       }
     };
 
-    document.addEventListener('toast', handleToastEvent as EventListener);
-    
+    document.addEventListener("toast", handleToastEvent as EventListener);
+
     return () => {
-      document.removeEventListener('toast', handleToastEvent as EventListener);
+      document.removeEventListener("toast", handleToastEvent as EventListener);
     };
   }, [showNotification]);
 
@@ -66,7 +68,7 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
     <NotificationContext.Provider value={{ notifications, showNotification, removeNotification }}>
       {children}
       <div className="fixed bottom-4 left-0 right-0 flex flex-col items-center gap-2 z-50">
-        {notifications.map(notification => (
+        {notifications.map((notification) => (
           <NotificationToast
             key={notification.id}
             message={notification.message}

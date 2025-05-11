@@ -32,26 +32,21 @@ const ScheduleContainerContent: React.FC = () => {
 
   // Handle form submission for adding/editing stages
   const handleSubmitStageForm = async (stageData: Partial<ScheduleStageViewModel>) => {
-    try {
-      if (editingStage) {
-        // Update existing stage
-        await updateStage(editingStage.id, stageData);
-      } else {
-        // Add new stage
-        await addStage({
-          name: stageData.name || "",
-          description: stageData.description || "",
-          dependencies: stageData.dependencies || [],
-          relatedBlocks: [],
-          order: schedule?.stages.length ? schedule.stages.length : 0,
-        });
-      }
-      setIsModalOpen(false);
-      setEditingStage(null);
-    } catch (err) {
-      console.error("Error saving stage:", err);
-      throw err; // Let the modal component handle the error
+    if (editingStage) {
+      // Update existing stage
+      await updateStage(editingStage.id, stageData);
+    } else {
+      // Add new stage
+      await addStage({
+        name: stageData.name || "",
+        description: stageData.description || "",
+        dependencies: stageData.dependencies || [],
+        relatedBlocks: [],
+        order: schedule?.stages.length ? schedule.stages.length : 0,
+      });
     }
+    setIsModalOpen(false);
+    setEditingStage(null);
   };
 
   // Handle opening the form modal for adding a new stage

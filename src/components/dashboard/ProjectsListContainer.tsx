@@ -38,7 +38,6 @@ function ProjectsListContainerContent() {
     confirmDelete,
     cancelDelete,
   } = useDeleteProject(deleteProject);
-  console.log("ProjectsListContainer", projects);
   // Handle delete button click on project card
   const handleDeleteClick = (project: ProjectViewModel) => {
     openModal(project);
@@ -56,16 +55,6 @@ function ProjectsListContainerContent() {
       }, 50);
     }
   }, [isOpen]);
-
-  // Track page views
-  useEffect(() => {
-    // In a real app, this would track analytics
-    const pageViewData = {
-      page: "dashboard",
-      filters: filters,
-    };
-    console.log("Page view:", pageViewData);
-  }, [filters]);
 
   // Show error state if there's an error loading projects
   if (error && !isLoading) {

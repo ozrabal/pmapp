@@ -61,8 +61,6 @@ export async function POST({ params, locals }: APIContext) {
 
     return new Response(JSON.stringify(response), { status: 200, headers: { "Content-Type": "application/json" } });
   } catch (error) {
-    console.error("Error generating project schedule:", error);
-
     // Handle specific error types
     if (error instanceof Error) {
       const status =

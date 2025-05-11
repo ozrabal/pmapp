@@ -8,7 +8,6 @@ const { id } = Astro.params;
 
 // Set page metadata
 const pageTitle = "Edycja projektu";
-const pageDescription = "Aktualizacja informacji o projekcie";
 ---
 
 <Layout title={pageTitle}>
@@ -17,16 +16,16 @@ const pageDescription = "Aktualizacja informacji o projekcie";
       <nav class="mb-4" aria-label="Ścieżka nawigacji">
         <ol class="flex text-sm">
           <li class="flex items-center">
-            <a 
-              href="/dashboard" 
+            <a
+              href="/dashboard"
               class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
             >
               Dashboard
             </a>
-            <svg 
-              class="h-4 w-4 mx-2 text-gray-400" 
-              fill="none" 
-              viewBox="0 0 24 24" 
+            <svg
+              class="h-4 w-4 mx-2 text-gray-400"
+              fill="none"
+              viewBox="0 0 24 24"
               stroke="currentColor"
               aria-hidden="true"
             >
@@ -34,16 +33,16 @@ const pageDescription = "Aktualizacja informacji o projekcie";
             </svg>
           </li>
           <li class="flex items-center">
-            <a 
-              href={`/projects/${id}`} 
+            <a
+              href={`/projects/${id}`}
               class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
             >
               Szczegóły projektu
             </a>
-            <svg 
-              class="h-4 w-4 mx-2 text-gray-400" 
-              fill="none" 
-              viewBox="0 0 24 24" 
+            <svg
+              class="h-4 w-4 mx-2 text-gray-400"
+              fill="none"
+              viewBox="0 0 24 24"
               stroke="currentColor"
               aria-hidden="true"
             >
@@ -55,15 +54,13 @@ const pageDescription = "Aktualizacja informacji o projekcie";
           </li>
         </ol>
       </nav>
-      
+
       <header>
         <h1 class="text-3xl font-bold tracking-tight">{pageTitle}</h1>
-        <p class="text-slate-500 dark:text-slate-400 mt-2">
-          Zaktualizuj informacje o swoim projekcie poniżej.
-        </p>
+        <p class="text-slate-500 dark:text-slate-400 mt-2">Zaktualizuj informacje o swoim projekcie poniżej.</p>
       </header>
     </div>
-    
+
     <section aria-labelledby="edit-project-form">
       <h2 id="edit-project-form" class="sr-only">Formularz edycji projektu</h2>
       <ErrorBoundary client:load>

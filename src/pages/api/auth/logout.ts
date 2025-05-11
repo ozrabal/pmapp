@@ -2,7 +2,7 @@ import type { APIRoute } from "astro";
 
 export const prerender = false;
 
-export const POST: APIRoute = async ({ request, locals }) => {
+export const POST: APIRoute = async ({ locals }) => {
   try {
     // Get user data before signing out to update session records
     const {
@@ -41,6 +41,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
           .eq("user_id", user.id)
           .eq("is_active", true);
       } catch (sessionError) {
+        // eslint-disable-next-line no-console
         console.error("Error updating session records:", sessionError);
         // Don't interrupt the logout process for session recording errors
       }
@@ -57,9 +58,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
         },
       }
     );
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
-    console.error("Logout error:", error);
-
     return new Response(
       JSON.stringify({
         error: {

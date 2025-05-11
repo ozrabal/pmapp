@@ -1,5 +1,5 @@
-import type { FeedbackItemDto, SuggestionDto } from '../../../types';
-import type { AssumptionsViewModel } from '../types';
+import type { FeedbackItemDto, SuggestionDto } from "../../../types";
+import type { AssumptionsViewModel } from "../types";
 
 // Extended view model types for suggestions and feedback
 export interface SuggestionViewModel extends SuggestionDto {
@@ -63,7 +63,7 @@ export interface AssumptionFieldProps {
   value: string;
   onChange: (value: string) => void;
   suggestions?: SuggestionViewModel[];
-  feedback?: FeedbackItemViewModel[];  // Added feedback array for field-specific validation results
+  feedback?: FeedbackItemViewModel[]; // Added feedback array for field-specific validation results
   fieldRef: React.RefObject<HTMLTextAreaElement>;
   maxLength?: number;
   isLoading?: boolean;

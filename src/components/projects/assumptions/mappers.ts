@@ -1,7 +1,7 @@
-import type { Json } from '../../../db/database.types';
-import type { SuggestionDto, FeedbackItemDto } from '../../../types';
-import type { AssumptionsViewModel } from '../types';
-import type { SuggestionViewModel, FeedbackItemViewModel } from './types';
+import type { Json } from "../../../db/database.types";
+import type { SuggestionDto, FeedbackItemDto } from "../../../types";
+import type { AssumptionsViewModel } from "../types";
+import type { SuggestionViewModel, FeedbackItemViewModel } from "./types";
 
 /**
  * Utility functions for mapping between API data types and view models
@@ -12,15 +12,15 @@ export const AssumptionsMappers = {
    */
   jsonToViewModel(json: Json | null): AssumptionsViewModel | null {
     if (!json) return null;
-    
+
     // Use type assertion but safely check each field with nullish coalescing
-    const assumptions = json as Record<string, any>;
+    const assumptions = json as Record<string, unknown>;
     return {
-      projectGoals: assumptions?.projectGoals ?? '',
-      targetAudience: assumptions?.targetAudience ?? '',
-      keyFeatures: assumptions?.keyFeatures ?? '',
-      technologyStack: assumptions?.technologyStack ?? '',
-      constraints: assumptions?.constraints ?? '',
+      projectGoals: typeof assumptions?.projectGoals === "string" ? assumptions.projectGoals : "",
+      targetAudience: typeof assumptions?.targetAudience === "string" ? assumptions.targetAudience : "",
+      keyFeatures: typeof assumptions?.keyFeatures === "string" ? assumptions.keyFeatures : "",
+      technologyStack: typeof assumptions?.technologyStack === "string" ? assumptions.technologyStack : "",
+      constraints: typeof assumptions?.constraints === "string" ? assumptions.constraints : "",
     };
   },
 
@@ -29,13 +29,13 @@ export const AssumptionsMappers = {
    */
   viewModelToJson(viewModel: AssumptionsViewModel | null): Json | null {
     if (!viewModel) return null;
-    
+
     return {
-      projectGoals: viewModel.projectGoals || '',
-      targetAudience: viewModel.targetAudience || '',
-      keyFeatures: viewModel.keyFeatures || '',
-      technologyStack: viewModel.technologyStack || '',
-      constraints: viewModel.constraints || '',
+      projectGoals: viewModel.projectGoals || "",
+      targetAudience: viewModel.targetAudience || "",
+      keyFeatures: viewModel.keyFeatures || "",
+      technologyStack: viewModel.technologyStack || "",
+      constraints: viewModel.constraints || "",
     };
   },
 
@@ -44,13 +44,13 @@ export const AssumptionsMappers = {
    */
   getFieldLabel(field: string): string {
     const fieldLabels: Record<string, string> = {
-      'projectGoals': 'Project Goals',
-      'targetAudience': 'Target Audience',
-      'keyFeatures': 'Key Features',
-      'technologyStack': 'Technology Stack',
-      'constraints': 'Constraints'
+      projectGoals: "Project Goals",
+      targetAudience: "Target Audience",
+      keyFeatures: "Key Features",
+      technologyStack: "Technology Stack",
+      constraints: "Constraints",
     };
-    
+
     return fieldLabels[field] || field;
   },
 
@@ -62,7 +62,7 @@ export const AssumptionsMappers = {
       ...dto,
       isAccepted: false,
       isRejected: false,
-      isFeedbackGiven: false
+      isFeedbackGiven: false,
     };
   },
 
@@ -72,7 +72,7 @@ export const AssumptionsMappers = {
   feedbackDtoToViewModel(dto: FeedbackItemDto): FeedbackItemViewModel {
     return {
       ...dto,
-      fieldLabel: this.getFieldLabel(dto.field)
+      fieldLabel: this.getFieldLabel(dto.field),
     };
-  }
+  },
 };

@@ -51,9 +51,9 @@ export function ResetPasswordForm() {
       }
 
       setIsSuccess(true);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       setError("Wystąpił nieoczekiwany błąd. Spróbuj ponownie później.");
-      console.error("Reset password error:", err);
     } finally {
       setIsLoading(false);
     }

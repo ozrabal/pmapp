@@ -1,50 +1,42 @@
-import React from 'react';
-import { AlertCircle, AlertTriangle, Info } from 'lucide-react';
-import { Alert, AlertDescription } from '../../ui/alert';
-import type { FeedbackItemProps } from './types';
+import React from "react";
+import { AlertCircle, AlertTriangle, Info } from "lucide-react";
+import { Alert, AlertDescription } from "../../ui/alert";
+import type { FeedbackItemProps } from "./types";
 
 /**
  * Component for displaying individual feedback items from assumption validation
  */
-export function FeedbackItem({
-  feedback,
-  onFieldFocus,
-  className
-}: FeedbackItemProps) {
+export function FeedbackItem({ feedback, onFieldFocus, className }: FeedbackItemProps) {
   // Determine the appropriate variant and icon based on severity
   const getSeverityProps = () => {
     switch (feedback.severity) {
-      case 'error':
+      case "error":
         return {
-          variant: 'destructive' as const,
-          icon: <AlertCircle className="h-4 w-4" />
+          variant: "destructive" as const,
+          icon: <AlertCircle className="h-4 w-4" />,
         };
-      case 'warning':
+      case "warning":
         return {
-          variant: 'warning' as const,
-          icon: <AlertTriangle className="h-4 w-4" />
+          variant: "warning" as const,
+          icon: <AlertTriangle className="h-4 w-4" />,
         };
-      case 'info':
+      case "info":
       default:
         return {
-          variant: 'info' as const,
-          icon: <Info className="h-4 w-4" />
+          variant: "info" as const,
+          icon: <Info className="h-4 w-4" />,
         };
     }
   };
 
   const { variant, icon } = getSeverityProps();
-  
+
   return (
-    <Alert 
-      variant={variant}
-      className={`py-2 ${className}`}
-    >
-        {icon}
+    <Alert variant={variant} className={`py-2 ${className}`}>
+      {icon}
       <div className="flex gap-2">
         <AlertDescription className="text-sm">
-          <span className="font-medium">{feedback.fieldLabel}:</span>{' '}
-          {feedback.message}
+          <span className="font-medium">{feedback.fieldLabel}:</span> {feedback.message}
           {onFieldFocus && (
             <button
               type="button"

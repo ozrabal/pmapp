@@ -30,7 +30,7 @@ export function DeleteProjectModal({
   onCancel,
 }: DeleteProjectModalProps) {
   const cancelButtonRef = useRef<HTMLButtonElement>(null);
-  
+
   // Focus cancel button when modal opens
   useEffect(() => {
     if (isOpen && !isDeleting && cancelButtonRef.current) {
@@ -39,52 +39,38 @@ export function DeleteProjectModal({
       }, 50);
     }
   }, [isOpen, isDeleting]);
-  
+
   if (!project) {
     return null;
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => {
-      if (!open && !isDeleting) onCancel();
-    }}>
-      <DialogContent
-        className="sm:max-w-md"
-        aria-describedby="delete-project-description"
-      >
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open && !isDeleting) onCancel();
+      }}
+    >
+      <DialogContent className="sm:max-w-md" aria-describedby="delete-project-description">
         <DialogHeader>
           <DialogTitle>Usuń projekt</DialogTitle>
           <DialogDescription id="delete-project-description">
             Czy na pewno chcesz usunąć projekt <strong>{project.name}</strong>? Tej operacji nie można cofnąć.
           </DialogDescription>
         </DialogHeader>
-        
+
         {error && (
           <Alert variant="destructive" className="mt-2">
             <AlertTriangle className="h-4 w-4" />
-            <AlertDescription>
-              {error.message || "Wystąpił błąd podczas usuwania projektu."}
-            </AlertDescription>
+            <AlertDescription>{error.message || "Wystąpił błąd podczas usuwania projektu."}</AlertDescription>
           </Alert>
         )}
-        
+
         <DialogFooter className="flex sm:justify-end gap-2 mt-4">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onCancel}
-            disabled={isDeleting}
-            ref={cancelButtonRef}
-          >
+          <Button type="button" variant="outline" onClick={onCancel} disabled={isDeleting} ref={cancelButtonRef}>
             Anuluj
           </Button>
-          <Button
-            type="button"
-            variant="destructive"
-            onClick={onConfirm}
-            disabled={isDeleting}
-            className="gap-2"
-          >
+          <Button type="button" variant="destructive" onClick={onConfirm} disabled={isDeleting} className="gap-2">
             {isDeleting ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />

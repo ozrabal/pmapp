@@ -69,9 +69,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
       }),
       { status: 201 }
     );
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
-    console.error("Registration error:", error);
-
     // Return generic error for unexpected issues
     return new Response(
       JSON.stringify({

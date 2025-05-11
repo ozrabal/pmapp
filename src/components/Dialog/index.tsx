@@ -6,7 +6,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
@@ -74,9 +74,9 @@ export default function Dialog({
         const handleClick = () => {
           setInternalOpen(true);
         };
-        externalTrigger.addEventListener('click', handleClick);
+        externalTrigger.addEventListener("click", handleClick);
         return () => {
-          externalTrigger.removeEventListener('click', handleClick);
+          externalTrigger.removeEventListener("click", handleClick);
         };
       }
     }
@@ -106,13 +106,13 @@ export default function Dialog({
   // If custom actions are provided, use them. Otherwise use default confirm/cancel buttons if callbacks are provided
   const footerActions = actions || [
     ...(onCancel ? [{ label: cancelLabel, onClick: handleCancel, variant: "outline" as const }] : []),
-    ...(onConfirm ? [{ label: confirmLabel, onClick: handleConfirm, variant: confirmVariant }] : [])
+    ...(onConfirm ? [{ label: confirmLabel, onClick: handleConfirm, variant: confirmVariant }] : []),
   ];
 
   return (
     <DialogRoot open={isOpen} onOpenChange={handleOpenChange}>
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
-      
+
       <DialogContent className={`${width} ${className || ""}`}>
         {(title || description) && (
           <DialogHeader>
@@ -120,11 +120,11 @@ export default function Dialog({
             {description && <DialogDescription>{description}</DialogDescription>}
           </DialogHeader>
         )}
-        
+
         {content && content}
         {contentHTML && <div dangerouslySetInnerHTML={{ __html: contentHTML }} />}
         {children}
-        
+
         {footerActions.length > 0 && (
           <DialogFooter className="gap-2 sm:gap-0">
             {footerActions.map((action, index) => (
@@ -146,12 +146,4 @@ export default function Dialog({
 }
 
 // Export individual components for more complex use cases
-export {
-  DialogRoot,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
-};
+export { DialogRoot, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger };

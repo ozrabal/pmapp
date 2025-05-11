@@ -1,5 +1,4 @@
 import { Avatar as AvatarRoot, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import type { ComponentProps } from "react";
 
 type AvatarProps = React.ComponentProps<typeof AvatarRoot> & {
   image: string;

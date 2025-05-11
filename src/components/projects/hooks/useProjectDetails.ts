@@ -1,14 +1,14 @@
-import { useState, useCallback, useEffect } from 'react';
-import type { ProjectDto } from '../../../types';
-import { 
+import { useState, useCallback, useEffect } from "react";
+import type { ProjectDto } from "../../../types";
+import {
   createApiError,
   parseApiErrorResponse,
-  handleNetworkError, 
+  handleNetworkError,
   handleDataValidationError,
   isSessionExpiredError,
   getUserFriendlyErrorMessage,
-  type ApiError
-} from '../../../lib/services/error.service';
+  type ApiError,
+} from "../../../lib/services/error.service";
 
 /**
  * Hook to fetch and manage project details data with enhanced error handling
@@ -22,46 +22,43 @@ export function useProjectDetails(projectId: string) {
 
   const fetchProject = useCallback(async () => {
     if (!projectId) {
-      setError(createApiError('Project ID is required', 400, 'missing_parameter'));
+      setError(createApiError("Project ID is required", 400, "missing_parameter"));
       setIsLoading(false);
       return;
     }
-    
+
     setIsLoading(true);
     setError(null);
-    
+
     try {
       // Fetch project details from API
       const response = await fetch(`/api/projects/${projectId}`);
-      
+
       if (!response.ok) {
         // Handle HTTP errors
         const apiError = await parseApiErrorResponse(response);
-        
+
         // Handle session expiration
         if (isSessionExpiredError(apiError)) {
           const returnPath = encodeURIComponent(window.location.pathname);
           window.location.href = `/login?redirectTo=${returnPath}`;
         }
-        
+
         throw apiError;
       }
-      
+
       const data = await response.json();
-      
+
       // Additional validation for expected project structure
-      if (!data || typeof data !== 'object') {
-        throw handleDataValidationError('project', new Error('Invalid project data format'));
+      if (!data || typeof data !== "object") {
+        throw handleDataValidationError("project", new Error("Invalid project data format"));
       }
-      
+
       setProject(data);
     } catch (err) {
       // Handle different types of errors
-      const apiError = err instanceof Error && 'isApiError' in err 
-        ? err as ApiError
-        : handleNetworkError(err);
-        
-      console.error('Error fetching project details:', apiError);
+      const apiError = err instanceof Error && "isApiError" in err ? (err as ApiError) : handleNetworkError(err);
+
       setError(apiError);
     } finally {
       setIsLoading(false);
@@ -71,32 +68,42 @@ export function useProjectDetails(projectId: string) {
   // Validate project data structure
   const validateProjectData = useCallback(() => {
     if (!project) return;
-    
+
     setIsValidating(true);
-    
+
     try {
       // Validate assumptions structure
-      if (project.assumptions && typeof project.assumptions !== 'object') {
-        throw handleDataValidationError('assumptions', new Error('Invalid assumptions format'));
+      if (project.assumptions && typeof project.assumptions !== "object") {
+        throw handleDataValidationError("assumptions", new Error("Invalid assumptions format"));
       }
-      
+
       // Validate functional blocks structure
       if (project.functionalBlocks) {
-        const blocks = project.functionalBlocks as any;
-        if (!blocks.blocks || !Array.isArray(blocks.blocks)) {
-          throw handleDataValidationError('functionalBlocks', new Error('Invalid functional blocks format'));
+        const blocks = project.functionalBlocks as unknown;
+        if (
+          typeof blocks !== "object" ||
+          blocks === null ||
+          !("blocks" in blocks) ||
+          !Array.isArray((blocks as Record<string, unknown>).blocks)
+        ) {
+          throw handleDataValidationError("functionalBlocks", new Error("Invalid functional blocks format"));
         }
       }
-      
+
       // Validate schedule structure
       if (project.schedule) {
-        const schedule = project.schedule as any;
-        if (!schedule.stages || !Array.isArray(schedule.stages)) {
-          throw handleDataValidationError('schedule', new Error('Invalid schedule format'));
+        const schedule = project.schedule as unknown;
+        if (
+          typeof schedule !== "object" ||
+          schedule === null ||
+          !("stages" in schedule) ||
+          !Array.isArray((schedule as Record<string, unknown>).stages)
+        ) {
+          throw handleDataValidationError("schedule", new Error("Invalid schedule format"));
         }
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
-      console.error('Project data validation error:', err);
       // We don't set the error state here as it's not a fatal error
       // Just log for debugging purposes
     } finally {

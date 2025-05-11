@@ -8,16 +8,22 @@ export const prerender = false;
 // Input validation schema
 const inputSchema = z.object({
   projectId: z.string(),
-  context: z.object({
-    id: z.string(),
-    name: z.string(),
-    description: z.string().nullable(),
-    assumptions: z.any().nullable(),
-    functionalBlocks: z.any(),
-  }),
+  context: z
+    .object({
+      id: z.string(),
+      name: z.string(),
+      description: z.string().nullable(),
+      assumptions: z.any().nullable(),
+      functionalBlocks: z.any(),
+    })
+    .transform((data) => ({
+      ...data,
+      assumptions: data.assumptions ?? [], // Ensure assumptions is never null/undefined
+      functionalBlocks: data.functionalBlocks ?? [], // Ensure functionalBlocks is never undefined
+    })),
 });
 
-export const POST: APIRoute = async ({ request, locals }) => {
+export const POST: APIRoute = async ({ request }) => {
   try {
     // Parse and validate input
     const rawData = await request.json();
@@ -34,8 +40,6 @@ export const POST: APIRoute = async ({ request, locals }) => {
       },
     });
   } catch (error) {
-    console.error("Error generating project schedule:", error);
-
     // If it's a validation error, return a 400
     if (error instanceof z.ZodError) {
       return new Response(
@@ -54,12 +58,13 @@ export const POST: APIRoute = async ({ request, locals }) => {
     }
 
     // For other errors, return a 500
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
     return new Response(
       JSON.stringify({
         error: {
           code: "UNKNOWN_ERROR",
           message: "An unexpected error occurred",
-          details: { originalMessage: error.message || "Unknown error" },
+          details: { originalMessage: errorMessage },
         },
       }),
       {

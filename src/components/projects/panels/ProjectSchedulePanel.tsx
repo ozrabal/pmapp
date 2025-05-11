@@ -1,8 +1,8 @@
-import React from 'react';
-import { Card, CardContent } from '../../ui/card';
-import { Alert, AlertDescription } from '../../ui/alert';
-import { LoadingSkeleton } from '../LoadingSkeleton';
-import type { ProjectSchedulePanelProps } from '../types';
+import React from "react";
+import { Card, CardContent } from "../../ui/card";
+import { Alert, AlertDescription } from "../../ui/alert";
+import { LoadingSkeleton } from "../LoadingSkeleton";
+import type { ProjectSchedulePanelProps } from "../types";
 
 export const ProjectSchedulePanel: React.FC<ProjectSchedulePanelProps> = ({
   schedule,
@@ -34,17 +34,17 @@ export const ProjectSchedulePanel: React.FC<ProjectSchedulePanelProps> = ({
   try {
     // Sort stages by order with validation
     const sortedStages = [...schedule.stages]
-      .filter(stage => typeof stage === 'object' && stage !== null)
+      .filter((stage) => typeof stage === "object" && stage !== null)
       .sort((a, b) => {
-        if (typeof a.order !== 'number' || typeof b.order !== 'number') {
+        if (typeof a.order !== "number" || typeof b.order !== "number") {
           // If order is not a number, maintain original array order
           return 0;
         }
         return a.order - b.order;
       });
-    
+
     if (sortedStages.length === 0) {
-      throw new Error('No valid stages found in schedule data');
+      throw new Error("No valid stages found in schedule data");
     }
 
     return (
@@ -53,11 +53,8 @@ export const ProjectSchedulePanel: React.FC<ProjectSchedulePanelProps> = ({
           <h3 className="text-lg font-medium">Project Timeline</h3>
           <div className="relative">
             {/* Timeline connector */}
-            <div 
-              className="absolute top-0 bottom-0 left-7 w-0.5 bg-gray-200 dark:bg-gray-700" 
-              aria-hidden="true"
-            />
-            
+            <div className="absolute top-0 bottom-0 left-7 w-0.5 bg-gray-200 dark:bg-gray-700" aria-hidden="true" />
+
             {/* Timeline items */}
             <div className="space-y-8">
               {sortedStages.map((stage, index) => (
@@ -68,30 +65,30 @@ export const ProjectSchedulePanel: React.FC<ProjectSchedulePanelProps> = ({
                       {index + 1}
                     </div>
                   </div>
-                  
+
                   <Card className="overflow-hidden">
                     <CardContent className="p-4">
-                      <h4 className="font-medium text-md mb-1">{stage.name || 'Unnamed Stage'}</h4>
-                      <p className="text-sm text-muted-foreground mb-3">{stage.description || 'No description provided'}</p>
-                      
+                      <h4 className="font-medium text-md mb-1">{stage.name || "Unnamed Stage"}</h4>
+                      <p className="text-sm text-muted-foreground mb-3">
+                        {stage.description || "No description provided"}
+                      </p>
+
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {stage.dependencies && Array.isArray(stage.dependencies) && stage.dependencies.length > 0 && (
                           <div className="text-xs">
                             <span className="font-medium">Dependencies: </span>
-                            <span className="text-muted-foreground">
-                              {stage.dependencies.join(', ')}
-                            </span>
+                            <span className="text-muted-foreground">{stage.dependencies.join(", ")}</span>
                           </div>
                         )}
-                        
-                        {stage.relatedBlocks && Array.isArray(stage.relatedBlocks) && stage.relatedBlocks.length > 0 && (
-                          <div className="text-xs">
-                            <span className="font-medium">Related functional blocks: </span>
-                            <span className="text-muted-foreground">
-                              {stage.relatedBlocks.join(', ')}
-                            </span>
-                          </div>
-                        )}
+
+                        {stage.relatedBlocks &&
+                          Array.isArray(stage.relatedBlocks) &&
+                          stage.relatedBlocks.length > 0 && (
+                            <div className="text-xs">
+                              <span className="font-medium">Related functional blocks: </span>
+                              <span className="text-muted-foreground">{stage.relatedBlocks.join(", ")}</span>
+                            </div>
+                          )}
                       </div>
                     </CardContent>
                   </Card>
@@ -102,8 +99,8 @@ export const ProjectSchedulePanel: React.FC<ProjectSchedulePanelProps> = ({
         </div>
       </div>
     );
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
-    console.error('Error rendering schedule:', error);
     return (
       <Alert variant="warning" className={className}>
         <AlertDescription>Unable to display project schedule due to invalid data format.</AlertDescription>

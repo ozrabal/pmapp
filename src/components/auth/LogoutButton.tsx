@@ -33,11 +33,10 @@ export function LogoutButton({
         // Server-side redirect after successful logout
         window.location.href = redirectTo;
       } else {
-        console.error("Logout failed:", await response.json());
         setIsLoading(false);
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      console.error("Logout error:", error);
       setIsLoading(false);
     }
   };

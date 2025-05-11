@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
-import type { ReactNode, ErrorInfo } from 'react';
-import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
-import { Button } from '../ui/button';
-import type { ErrorBoundaryProps } from '../projects/types';
+import React, { Component } from "react";
+import type { ReactNode, ErrorInfo } from "react";
+import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
+import { Button } from "../ui/button";
+import type { ErrorBoundaryProps } from "../projects/types";
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -14,7 +14,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     super(props);
     this.state = {
       hasError: false,
-      error: null
+      error: null,
     };
   }
 
@@ -22,19 +22,20 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     // Update state so the next render will show the fallback UI
     return {
       hasError: true,
-      error
+      error,
     };
   }
 
   componentDidCatch(error: Error, info: ErrorInfo): void {
     // Log the error to an error reporting service
-    console.error('ErrorBoundary caught an error:', error, info);
+    // eslint-disable-next-line no-console
+    console.error("ErrorBoundary caught an error:", error, info);
   }
 
   resetErrorState = (): void => {
     this.setState({
       hasError: false,
-      error: null
+      error: null,
     });
   };
 
@@ -42,7 +43,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     if (this.state.hasError) {
       // Check for custom fallback component
       if (this.props.fallback) {
-        if (typeof this.props.fallback === 'function') {
+        if (typeof this.props.fallback === "function") {
           return this.props.fallback(this.state.error as Error);
         }
         return this.props.fallback;
@@ -53,18 +54,12 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
         <Alert variant="destructive" className="mb-6">
           <AlertTitle>Something went wrong</AlertTitle>
           <AlertDescription className="space-y-3">
-            <p>{this.state.error?.message || 'An unexpected error occurred'}</p>
+            <p>{this.state.error?.message || "An unexpected error occurred"}</p>
             <div className="flex space-x-2 mt-4">
-              <Button 
-                onClick={this.resetErrorState}
-                variant="destructive"
-              >
+              <Button onClick={this.resetErrorState} variant="destructive">
                 Try again
               </Button>
-              <Button 
-                onClick={() => window.location.href = '/dashboard'}
-                variant="outline"
-              >
+              <Button onClick={() => (window.location.href = "/dashboard")} variant="outline">
                 Back to Dashboard
               </Button>
             </div>

@@ -23,22 +23,17 @@ export function NotificationButton({
   const handleClick = () => {
     // Use custom event to communicate with the NotificationProvider
     document.dispatchEvent(
-      new CustomEvent('toast', {
+      new CustomEvent("toast", {
         detail: {
           message,
-          type
-        }
+          type,
+        },
       })
     );
   };
 
   return (
-    <Button 
-      onClick={handleClick} 
-      variant={variant} 
-      size={size}
-      className={className}
-    >
+    <Button onClick={handleClick} variant={variant} size={size} className={className}>
       {children}
     </Button>
   );

@@ -13,7 +13,7 @@ const paramsSchema = z.object({
  * POST handler for validating project assumptions
  * Endpoint: /api/projects/{id}/assumptions/validate
  */
-export const POST: APIRoute = async ({ params, request, locals }) => {
+export const POST: APIRoute = async ({ params, locals }) => {
   try {
     const supabase = locals.supabase;
 
@@ -71,9 +71,9 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
         status: 200,
         headers: { "Content-Type": "application/json" },
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Handle specific error cases
-      if (error.message === "Project not found or access denied") {
+      if (error instanceof Error && error.message === "Project not found or access denied") {
         return new Response(
           JSON.stringify({
             error: {
@@ -88,7 +88,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
         );
       }
 
-      if (error.message === "Project assumptions not defined") {
+      if (error instanceof Error && error.message === "Project assumptions not defined") {
         return new Response(
           JSON.stringify({
             error: {
@@ -103,7 +103,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
         );
       }
 
-      if (error.message === "Invalid assumptions format") {
+      if (error instanceof Error && error.message === "Invalid assumptions format") {
         return new Response(
           JSON.stringify({
             error: {
@@ -117,9 +117,6 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
           }
         );
       }
-
-      // Log the error for debugging
-      console.error("Error in assumptions validation:", error);
 
       // Return a generic error response
       return new Response(
@@ -135,10 +132,9 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
         }
       );
     }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     // Catch any uncaught errors
-    console.error("Uncaught error in assumptions validation endpoint:", error);
-
     return new Response(
       JSON.stringify({
         error: {

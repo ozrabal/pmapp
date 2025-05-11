@@ -172,7 +172,6 @@ export class ProjectService {
         .single();
 
       if (error) {
-        console.error("Project creation error:", error);
         throw new Error(`Failed to create project: ${error.message}`);
       }
 
@@ -203,7 +202,6 @@ export class ProjectService {
         .single();
 
       if (error) {
-        console.error("Project creation error:", error);
         throw new Error(`Failed to create project: ${error.message}`);
       }
 
@@ -317,7 +315,6 @@ export class ProjectService {
       .single();
 
     if (error) {
-      console.error(`Error fetching project: ${error.message}`);
       throw new Error("Project not found or access denied");
     }
 
@@ -363,7 +360,6 @@ export class ProjectService {
       .single();
 
     if (error) {
-      console.error(`Error fetching project: ${error.message}`);
       throw new Error("Project not found or access denied");
     }
 
@@ -400,7 +396,6 @@ export class ProjectService {
       .single();
 
     if (error) {
-      console.error(`Error fetching project: ${error.message}`);
       throw new Error("Project not found or access denied");
     }
 
@@ -442,7 +437,6 @@ export class ProjectService {
       .single();
 
     if (error) {
-      console.error(`Error fetching project: ${error.message}`);
       throw new Error("Project not found or access denied");
     }
 

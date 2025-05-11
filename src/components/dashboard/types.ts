@@ -1,11 +1,9 @@
-import type { ProjectSummaryDto, PaginationDto } from "../../types";
-
 // Enum statusów projektu
 export enum ProjectStatusType {
   ALL = "all",
   ACTIVE = "active",
   ARCHIVED = "archived",
-  COMPLETED = "completed"
+  COMPLETED = "completed",
 }
 
 // Enum opcji sortowania
@@ -14,7 +12,7 @@ export enum ProjectSortOption {
   OLDEST = "createdAt:asc",
   NAME_ASC = "name:asc",
   NAME_DESC = "name:desc",
-  UPDATED = "updatedAt:desc"
+  UPDATED = "updatedAt:desc",
 }
 
 // Rozszerzony model projektu na potrzeby UI

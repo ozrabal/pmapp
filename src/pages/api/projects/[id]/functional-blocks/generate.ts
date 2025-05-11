@@ -58,8 +58,6 @@ export async function POST({ params, locals }: APIContext) {
       { status: 200, headers: { "Content-Type": "application/json" } }
     );
   } catch (error) {
-    console.error("Error generating functional blocks:", error);
-
     // Handle specific error types
     if (error instanceof Error) {
       const status =
