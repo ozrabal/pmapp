@@ -11,11 +11,15 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
-// Schema walidacji formularza bloku
+// Block form validation schema
 const functionalBlockFormSchema = z.object({
-  name: z.string().min(1, "Nazwa jest wymagana").max(100, "Nazwa nie może przekraczać 100 znaków").trim(),
-  description: z.string().min(1, "Opis jest wymagany").max(1000, "Opis nie może przekraczać 1000 znaków").trim(),
-  category: z.string().min(1, "Kategoria jest wymagana"),
+  name: z.string().min(1, "Name is required").max(100, "Name cannot exceed 100 characters").trim(),
+  description: z
+    .string()
+    .min(1, "Description is required")
+    .max(1000, "Description cannot exceed 1000 characters")
+    .trim(),
+  category: z.string().min(1, "Category is required"),
   dependencies: z.array(z.string()),
 });
 
@@ -28,7 +32,7 @@ interface FunctionalBlockFormProps {
 }
 
 export function FunctionalBlockForm({ block, allBlocks, onSave, onCancel, inModal = false }: FunctionalBlockFormProps) {
-  // Domyślne wartości formularza
+  // Default form values
   const defaultValues = React.useMemo<FunctionalBlockFormValues>(
     () => ({
       name: block?.name || "",
@@ -67,12 +71,12 @@ export function FunctionalBlockForm({ block, allBlocks, onSave, onCancel, inModa
     }
   }, [block, defaultValues, reset]);
 
-  // Obserwuj zmiany wartości
+  // Watch value changes
   const currentDependencies = watch("dependencies");
 
-  // Walidacja zależności cyklicznych
+  // Validate cyclic dependencies
   const validateDependencies = (values: FunctionalBlockFormValues): boolean => {
-    // Sprawdzenie czy zależności nie tworzą cyklu
+    // Check if dependencies create a cycle
     if (block && values.dependencies.includes(block.id)) {
       return false;
     }
@@ -80,17 +84,17 @@ export function FunctionalBlockForm({ block, allBlocks, onSave, onCancel, inModa
     return true;
   };
 
-  // Obsługa zmiany kategorii
+  // Handle category change
   const handleCategoryChange = (value: string) => {
     setValue("category", value, { shouldValidate: true, shouldDirty: true });
   };
 
-  // Obsługa zmiany zależności
+  // Handle dependencies change
   const handleDependenciesChange = (values: string[]) => {
     setValue("dependencies", values, { shouldValidate: true, shouldDirty: true });
   };
 
-  // Handler dla zapisywania formularza
+  // Handler for saving the form
   const onSubmit = (values: FunctionalBlockFormValues) => {
     if (!validateDependencies(values)) {
       return;
@@ -99,33 +103,33 @@ export function FunctionalBlockForm({ block, allBlocks, onSave, onCancel, inModa
     onSave(block?.id, values);
   };
 
-  // Dostępne bloki do wyboru jako zależności (bez aktualnego bloku)
+  // Available blocks to select as dependencies (excluding the current block)
   const availableBlocks = allBlocks.filter((b) => !block || b.id !== block.id);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      {/* Nazwa bloku */}
+      {/* Block name */}
       <div className="space-y-2">
         <Label htmlFor="name" className="font-medium">
-          Nazwa
+          Name
         </Label>
         <Input
           id="name"
-          placeholder="Wprowadź nazwę bloku funkcjonalnego"
+          placeholder="Enter functional block name"
           {...register("name")}
           className={errors.name ? "border-red-300 focus:border-red-500" : ""}
         />
         {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
       </div>
 
-      {/* Opis */}
+      {/* Description */}
       <div className="space-y-2">
         <Label htmlFor="description" className="font-medium">
-          Opis
+          Description
         </Label>
         <Textarea
           id="description"
-          placeholder="Opisz funkcjonalność tego bloku"
+          placeholder="Describe the functionality of this block"
           rows={4}
           {...register("description")}
           className={errors.description ? "border-red-300 focus:border-red-500" : ""}
@@ -133,10 +137,10 @@ export function FunctionalBlockForm({ block, allBlocks, onSave, onCancel, inModa
         {errors.description && <p className="text-sm text-red-500">{errors.description.message}</p>}
       </div>
 
-      {/* Kategoria */}
+      {/* Category */}
       <div className="space-y-2">
         <Label htmlFor="category" className="font-medium">
-          Kategoria
+          Category
         </Label>
         <BlockCategorySelect
           value={getValues("category")}
@@ -145,10 +149,10 @@ export function FunctionalBlockForm({ block, allBlocks, onSave, onCancel, inModa
         />
       </div>
 
-      {/* Zależności */}
+      {/* Dependencies */}
       <div className="space-y-2">
         <Label htmlFor="dependencies" className="font-medium">
-          Zależności
+          Dependencies
         </Label>
         <BlockDependenciesSelect
           values={currentDependencies}
@@ -156,16 +160,16 @@ export function FunctionalBlockForm({ block, allBlocks, onSave, onCancel, inModa
           availableBlocks={availableBlocks}
           currentBlockId={block?.id}
         />
-        <p className="text-sm text-neutral-500">Wybierz bloki, od których ten blok jest zależny</p>
+        <p className="text-sm text-neutral-500">Select blocks that this block depends on</p>
       </div>
 
-      {/* Przyciski formularza */}
+      {/* Form buttons */}
       <div className={`flex justify-end gap-3 ${inModal ? "" : "border-t pt-4 mt-6"}`}>
         <Button type="button" onClick={onCancel} variant="outline">
-          Anuluj
+          Cancel
         </Button>
         <Button type="submit" disabled={!isValid || !isDirty}>
-          Zapisz
+          Save
         </Button>
       </div>
     </form>

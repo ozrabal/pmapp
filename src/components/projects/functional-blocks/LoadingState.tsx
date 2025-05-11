@@ -4,7 +4,7 @@ interface LoadingStateProps {
   message?: string;
 }
 
-export function LoadingState({ message = "Ładowanie..." }: LoadingStateProps) {
+export function LoadingState({ message = "Loading..." }: LoadingStateProps) {
   return (
     <div className="flex flex-col items-center justify-center p-8 text-center">
       <div className="w-12 h-12 mb-4 relative">

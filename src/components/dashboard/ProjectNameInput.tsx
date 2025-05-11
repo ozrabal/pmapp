@@ -45,11 +45,11 @@ export const ProjectNameInput: React.FC<ProjectNameInputProps> = ({
     <div className="space-y-2">
       <div className="flex justify-between items-baseline">
         <label htmlFor={id} className="block text-sm font-medium">
-          Nazwa projektu{" "}
+          Project name{" "}
           <span className="text-red-500" aria-hidden="true">
             *
           </span>
-          <span className="sr-only"> (wymagane)</span>
+          <span className="sr-only"> (required)</span>
         </label>
 
         {/* Character counter for screen readers */}
@@ -60,7 +60,7 @@ export const ProjectNameInput: React.FC<ProjectNameInputProps> = ({
           aria-live="polite"
           aria-atomic="true"
         >
-          {charsRemaining} {charsRemaining === 1 ? "znak" : charsRemaining < 5 ? "znaki" : "znaków"}
+          {charsRemaining} {charsRemaining === 1 ? "character" : "characters"}
         </span>
       </div>
 
@@ -72,7 +72,7 @@ export const ProjectNameInput: React.FC<ProjectNameInputProps> = ({
         onBlur={onBlur}
         onKeyDown={handleKeyDown}
         disabled={disabled}
-        placeholder="Wpisz nazwę projektu"
+        placeholder="Enter project name"
         maxLength={maxLength}
         autoComplete="off"
         spellCheck="true"

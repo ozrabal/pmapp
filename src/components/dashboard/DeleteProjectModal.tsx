@@ -53,31 +53,31 @@ export function DeleteProjectModal({
     >
       <DialogContent className="sm:max-w-md" aria-describedby="delete-project-description">
         <DialogHeader>
-          <DialogTitle>Usuń projekt</DialogTitle>
+          <DialogTitle>Delete project</DialogTitle>
           <DialogDescription id="delete-project-description">
-            Czy na pewno chcesz usunąć projekt <strong>{project.name}</strong>? Tej operacji nie można cofnąć.
+            Are you sure you want to delete project <strong>{project.name}</strong>? This action cannot be undone.
           </DialogDescription>
         </DialogHeader>
 
         {error && (
           <Alert variant="destructive" className="mt-2">
             <AlertTriangle className="h-4 w-4" />
-            <AlertDescription>{error.message || "Wystąpił błąd podczas usuwania projektu."}</AlertDescription>
+            <AlertDescription>{error.message || "An error occurred while deleting the project."}</AlertDescription>
           </Alert>
         )}
 
         <DialogFooter className="flex sm:justify-end gap-2 mt-4">
           <Button type="button" variant="outline" onClick={onCancel} disabled={isDeleting} ref={cancelButtonRef}>
-            Anuluj
+            Cancel
           </Button>
           <Button type="button" variant="destructive" onClick={onConfirm} disabled={isDeleting} className="gap-2">
             {isDeleting ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                <span>Usuwanie...</span>
+                <span>Deleting...</span>
               </>
             ) : (
-              <span>Usuń</span>
+              <span>Delete</span>
             )}
           </Button>
         </DialogFooter>

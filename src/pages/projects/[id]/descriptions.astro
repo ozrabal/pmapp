@@ -15,7 +15,7 @@ if (!id) {
 }
 
 // Set page metadata
-const pageTitle = "Edycja opisu projektu";
+const pageTitle = "Edit Project Description";
 ---
 
 <Layout title={pageTitle}>
@@ -32,7 +32,7 @@ const pageTitle = "Edycja opisu projektu";
   </div>
 
   <section aria-labelledby="edit-project-description-form" class="mt-8">
-    <h2 id="edit-project-description-form" class="sr-only">Formularz edycji opisu projektu</h2>
+    <h2 id="edit-project-description-form" class="sr-only">Edit Project Description Form</h2>
 
     <ErrorBoundary client:load>
       <EditProjectDescriptionsForm projectId={id} client:load />

@@ -10,17 +10,17 @@ import { AlertCircle, Loader2, CheckCircle } from "lucide-react";
 
 const registerSchema = z
   .object({
-    email: z.string().email("Wprowadź poprawny adres email"),
+    email: z.string().email("Enter a valid email address"),
     password: z
       .string()
-      .min(8, "Hasło musi mieć co najmniej 8 znaków")
-      .regex(/[0-9]/, "Hasło musi zawierać co najmniej jedną cyfrę")
-      .regex(/[a-zA-Z]/, "Hasło musi zawierać co najmniej jedną literę"),
+      .min(8, "Password must be at least 8 characters long")
+      .regex(/[0-9]/, "Password must contain at least one digit")
+      .regex(/[a-zA-Z]/, "Password must contain at least one letter"),
     confirmPassword: z.string(),
-    firstName: z.string().min(1, "Imię jest wymagane"),
+    firstName: z.string().min(1, "First name is required"),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Hasła muszą być identyczne",
+    message: "Passwords must match",
     path: ["confirmPassword"],
   });
 
@@ -65,7 +65,7 @@ export function RegisterForm() {
       const result = await response.json();
 
       if (!response.ok) {
-        setError(result.error?.message || "Wystąpił błąd podczas rejestracji");
+        setError(result.error?.message || "An error occurred during registration");
         return;
       }
 
@@ -73,7 +73,7 @@ export function RegisterForm() {
       setIsSuccess(true);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
-      setError("Wystąpił nieoczekiwany błąd. Spróbuj ponownie później.");
+      setError("An unexpected error occurred. Please try again later.");
     } finally {
       setIsLoading(false);
     }
@@ -85,11 +85,11 @@ export function RegisterForm() {
         <Alert>
           <CheckCircle className="h-4 w-4" />
           <AlertDescription>
-            Konto zostało utworzone. Sprawdź swoją skrzynkę email, aby aktywować konto.
+            Account has been created. Please check your email to activate your account.
           </AlertDescription>
         </Alert>
         <Button onClick={() => (window.location.href = "/auth/login")} className="w-full">
-          Przejdź do logowania
+          Go to login
         </Button>
       </div>
     );
@@ -105,7 +105,7 @@ export function RegisterForm() {
       )}
 
       <div className="space-y-2">
-        <Label htmlFor="firstName">Imię</Label>
+        <Label htmlFor="firstName">First Name</Label>
         <Input
           id="firstName"
           type="text"
@@ -116,7 +116,7 @@ export function RegisterForm() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="email">Adres e-mail</Label>
+        <Label htmlFor="email">Email</Label>
         <Input
           id="email"
           type="email"
@@ -128,7 +128,7 @@ export function RegisterForm() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="password">Hasło</Label>
+        <Label htmlFor="password">Password</Label>
         <Input
           id="password"
           type="password"
@@ -139,7 +139,7 @@ export function RegisterForm() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="confirmPassword">Potwierdź hasło</Label>
+        <Label htmlFor="confirmPassword">Confirm Password</Label>
         <Input
           id="confirmPassword"
           type="password"
@@ -153,17 +153,17 @@ export function RegisterForm() {
         {isLoading ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Rejestracja...
+            Registering...
           </>
         ) : (
-          "Zarejestruj się"
+          "Register"
         )}
       </Button>
 
       <p className="text-center text-sm">
-        Masz już konto?{" "}
+        Already have an account?{" "}
         <a href="/auth/login" className="text-blue-600 hover:underline">
-          Zaloguj się
+          Log in
         </a>
       </p>
     </form>

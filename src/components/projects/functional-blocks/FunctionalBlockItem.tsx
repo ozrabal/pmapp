@@ -15,15 +15,15 @@ interface FunctionalBlockItemProps {
 export function FunctionalBlockItem({ block, isSelected, onEdit, onDelete, allBlocks }: FunctionalBlockItemProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // Znajdź kategorię dla wyświetlenia etykiety
+  // Find category for label display
   const category = BLOCK_CATEGORIES.find((cat) => cat.value === block.category) || {
     value: block.category,
     label: block.category,
   };
 
-  // Pobierz nazwy zależności do wyświetlenia
+  // Get dependency names for display
   const dependencies = block.dependencies
-    .map((depId) => allBlocks.find((b) => b.id === depId)?.name || "Nieznana zależność")
+    .map((depId) => allBlocks.find((b) => b.id === depId)?.name || "Unknown dependency")
     .filter(Boolean);
 
   // Handle expansion toggle
@@ -33,7 +33,7 @@ export function FunctionalBlockItem({ block, isSelected, onEdit, onDelete, allBl
 
   // Confirm block deletion
   const handleDelete = () => {
-    if (window.confirm("Czy na pewno chcesz usunąć ten blok funkcjonalny?")) {
+    if (window.confirm("Are you sure you want to delete this functional block?")) {
       onDelete();
     }
   };
@@ -74,7 +74,7 @@ export function FunctionalBlockItem({ block, isSelected, onEdit, onDelete, allBl
             </span>
             {block.dependencies.length > 0 && (
               <span className="text-xs bg-neutral-100 text-neutral-500 px-2 py-0.5 rounded">
-                {block.dependencies.length} zależności
+                {block.dependencies.length} dependencies
               </span>
             )}
           </div>
@@ -95,7 +95,7 @@ export function FunctionalBlockItem({ block, isSelected, onEdit, onDelete, allBl
           </CardTitle>
         </div>
         <div className="flex gap-1 items-start self-start">
-          <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={onEdit} aria-label="Edytuj blok">
+          <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={onEdit} aria-label="Edit block">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -116,7 +116,7 @@ export function FunctionalBlockItem({ block, isSelected, onEdit, onDelete, allBl
             size="sm"
             className="h-8 w-8 p-0 text-red-500 hover:text-red-600 hover:bg-red-50"
             onClick={handleDelete}
-            aria-label="Usuń blok"
+            aria-label="Delete block"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -142,7 +142,7 @@ export function FunctionalBlockItem({ block, isSelected, onEdit, onDelete, allBl
 
           {dependencies.length > 0 && (
             <div className="mt-4">
-              <p className="text-sm font-medium mb-2 text-neutral-700">Zależności:</p>
+              <p className="text-sm font-medium mb-2 text-neutral-700">Dependencies:</p>
               <ul className="space-y-1">
                 {dependencies.map((dep, index) => (
                   <li key={index} className="text-sm text-neutral-600 flex items-center gap-1">

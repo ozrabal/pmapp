@@ -1,6 +1,6 @@
 import { type FunctionalBlockDto } from "../../../types";
 
-// Model widoku dla zarządzania blokami funkcjonalnymi
+// View model for managing functional blocks
 export interface FunctionalBlocksViewModel {
   blocks: FunctionalBlockDto[];
   isLoading: boolean;
@@ -9,7 +9,7 @@ export interface FunctionalBlocksViewModel {
   error: string | null;
 }
 
-// Wartości formularza dla edycji bloku
+// Form values for block editing
 export interface FunctionalBlockFormValues {
   name: string;
   description: string;
@@ -17,53 +17,53 @@ export interface FunctionalBlockFormValues {
   dependencies: string[];
 }
 
-// Definicja kategorii bloku
+// Block category definition
 export interface BlockCategory {
   value: string;
   label: string;
   description?: string;
 }
 
-// Predefiniowane kategorie bloków
+// Predefined block categories
 export const BLOCK_CATEGORIES: BlockCategory[] = [
   {
     value: "auth",
-    label: "Autentykacja",
-    description: "Funkcjonalności związane z logowaniem, rejestracją i zarządzaniem użytkownikami",
+    label: "Authentication",
+    description: "Features related to login, registration, and user management",
   },
   {
     value: "core",
-    label: "Funkcjonalności podstawowe",
-    description: "Główne funkcjonalności definiujące charakter aplikacji",
+    label: "Core Functionality",
+    description: "Main features defining the application's character",
   },
   {
     value: "ui",
-    label: "Interfejs użytkownika",
-    description: "Komponenty i widoki interfejsu użytkownika",
+    label: "User Interface",
+    description: "User interface components and views",
   },
   {
     value: "data",
-    label: "Zarządzanie danymi",
-    description: "Funkcjonalności związane z przechowywaniem i przetwarzaniem danych",
+    label: "Data Management",
+    description: "Features related to data storage and processing",
   },
   {
     value: "api",
-    label: "Integracje API",
-    description: "Integracje z zewnętrznymi usługami i API",
+    label: "API Integrations",
+    description: "Integrations with external services and APIs",
   },
   {
     value: "admin",
-    label: "Panel administracyjny",
-    description: "Funkcjonalności związane z zarządzaniem aplikacją",
+    label: "Admin Panel",
+    description: "Features related to application management",
   },
   {
     value: "other",
-    label: "Inne",
-    description: "Funkcjonalności niepasujące do pozostałych kategorii",
+    label: "Other",
+    description: "Features not fitting into other categories",
   },
 ];
 
-// Stan przeciągania dla drag & drop
+// Drag state for drag & drop
 export interface DragState {
   isDragging: boolean;
   draggedId: string | null;

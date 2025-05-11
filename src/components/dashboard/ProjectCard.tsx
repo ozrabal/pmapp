@@ -54,7 +54,7 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
         {project.description ? (
           <p className="text-muted-foreground text-sm line-clamp-2">{project.description}</p>
         ) : (
-          <p className="text-muted-foreground text-sm italic">Brak opisu</p>
+          <p className="text-muted-foreground text-sm italic">No description</p>
         )}
       </CardContent>
 
@@ -62,11 +62,11 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
         <div className="flex flex-col sm:flex-row sm:gap-3">
           <div className="flex items-center gap-1">
             <ClockIcon className="h-3 w-3" />
-            <span>Utworzono: {project.formattedCreatedAt}</span>
+            <span>Created: {project.formattedCreatedAt}</span>
           </div>
           <div className="flex items-center gap-1">
             <CalendarIcon className="h-3 w-3" />
-            <span>Aktualizacja: {project.formattedUpdatedAt}</span>
+            <span>Updated: {project.formattedUpdatedAt}</span>
           </div>
         </div>
 

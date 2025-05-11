@@ -47,9 +47,9 @@ export const ExportProjectDialog: React.FC<ExportProjectDialogProps> = ({ projec
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Eksportuj projekt</DialogTitle>
+          <DialogTitle>Export Project</DialogTitle>
           <DialogDescription>
-            Wyeksportuj dane projektu &quot;{project?.name}&quot; do pliku w wybranym formacie.
+            Export project data &quot;{project?.name}&quot; to a file in the selected format.
           </DialogDescription>
         </DialogHeader>
 
@@ -63,17 +63,17 @@ export const ExportProjectDialog: React.FC<ExportProjectDialogProps> = ({ projec
 
           {error && (
             <div className="mt-2 text-sm text-red-500" role="alert">
-              <p>Wystąpił błąd: {error.message}</p>
+              <p>An error occurred: {error.message}</p>
             </div>
           )}
         </div>
 
         <DialogFooter className="flex flex-col sm:flex-row sm:justify-between">
           <Button variant="outline" onClick={onClose} disabled={isExporting}>
-            Anuluj
+            Cancel
           </Button>
           <Button onClick={handleExport} disabled={isExporting || !selectedFormat} className="mt-2 sm:mt-0">
-            {isExporting ? "Eksportowanie..." : "Eksportuj"}
+            {isExporting ? "Exporting..." : "Export"}
           </Button>
         </DialogFooter>
       </DialogContent>

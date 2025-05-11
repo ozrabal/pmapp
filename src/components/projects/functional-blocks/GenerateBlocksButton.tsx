@@ -28,7 +28,7 @@ export function GenerateBlocksButton({ onClick, isLoading, disabled = false }: G
           />
         </svg>
       )}
-      Generuj z AI
+      Generate with AI
     </Button>
   );
 }

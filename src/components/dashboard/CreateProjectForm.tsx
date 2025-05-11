@@ -108,7 +108,7 @@ export function CreateProjectForm() {
             disabled={formState.isSubmitting}
             className="w-full sm:w-auto order-2 sm:order-1"
           >
-            Anuluj
+            Cancel
           </Button>
 
           <Button

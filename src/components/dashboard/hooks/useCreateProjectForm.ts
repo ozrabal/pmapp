@@ -108,7 +108,7 @@ export function useCreateProjectForm(): UseCreateProjectFormResult {
         const errorData: ErrorResponseDto = await response.json().catch(() => ({
           error: {
             code: "unknown_error",
-            message: "Wystąpił nieznany błąd podczas przetwarzania odpowiedzi",
+            message: "An unknown error occurred while processing the response",
           },
         }));
 
@@ -148,7 +148,7 @@ export function useCreateProjectForm(): UseCreateProjectFormResult {
         // Generic error message for other cases
         setFormState((prev) => ({
           ...prev,
-          serverError: errorData.error.message || "Wystąpił błąd podczas tworzenia projektu",
+          serverError: errorData.error.message || "An error occurred while creating the project",
           isSubmitting: false,
         }));
         return;
@@ -160,7 +160,7 @@ export function useCreateProjectForm(): UseCreateProjectFormResult {
         document.dispatchEvent(
           new CustomEvent("toast", {
             detail: {
-              message: "Projekt został pomyślnie utworzony",
+              message: "Project created successfully",
               type: "success",
             },
           })

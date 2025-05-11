@@ -77,7 +77,7 @@ const ScheduleStageItem: React.FC<ScheduleStageItemProps> = ({
       {/* Drag handle icon */}
       <div
         className="absolute left-2 inset-y-0 flex items-center text-muted-foreground/60 cursor-move"
-        aria-label="Przeciągnij, aby zmienić kolejność"
+        aria-label="Drag to reorder"
       >
         <GripVertical className="h-5 w-5" />
       </div>
@@ -97,7 +97,7 @@ const ScheduleStageItem: React.FC<ScheduleStageItemProps> = ({
                     </span>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Ten etap ma zależne etapy. Nie można go usunąć.</p>
+                    <p>This stage has dependent stages. It cannot be deleted.</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -108,7 +108,7 @@ const ScheduleStageItem: React.FC<ScheduleStageItemProps> = ({
             {/* Dependencies badge */}
             {hasDependencies && (
               <Badge variant="outline" className="text-xs font-normal">
-                {dependencies.length} {dependencies.length === 1 ? "zależność" : "zależności"}
+                {dependencies.length} {dependencies.length === 1 ? "dependency" : "dependencies"}
               </Badge>
             )}
 
@@ -118,7 +118,7 @@ const ScheduleStageItem: React.FC<ScheduleStageItemProps> = ({
                 variant="outline"
                 className="text-xs font-normal bg-amber-50 text-amber-800 hover:bg-amber-100 border-amber-200"
               >
-                {dependentStages.length} {dependentStages.length === 1 ? "etap zależny" : "etapów zależnych"}
+                {dependentStages.length} {dependentStages.length === 1 ? "dependent stage" : "dependent stages"}
               </Badge>
             )}
           </div>
@@ -131,7 +131,7 @@ const ScheduleStageItem: React.FC<ScheduleStageItemProps> = ({
             size="sm"
             className="h-8 w-8 p-0 opacity-70 hover:opacity-100"
             onClick={handleEditClick}
-            aria-label="Edytuj etap"
+            aria-label="Edit stage"
           >
             <Edit className="h-4 w-4" />
           </Button>
@@ -142,7 +142,7 @@ const ScheduleStageItem: React.FC<ScheduleStageItemProps> = ({
             className={cn("h-8 w-8 p-0 opacity-70 hover:opacity-100", hasDependents && "opacity-40 cursor-not-allowed")}
             onClick={handleDeleteClick}
             disabled={hasDependents}
-            aria-label={hasDependents ? "Nie można usunąć etapu, który ma etapy zależne" : "Usuń etap"}
+            aria-label={hasDependents ? "Cannot delete a stage with dependent stages" : "Delete stage"}
           >
             <Trash2 className="h-4 w-4" />
           </Button>
@@ -152,7 +152,7 @@ const ScheduleStageItem: React.FC<ScheduleStageItemProps> = ({
             size="sm"
             className="h-8 w-8 p-0 opacity-70 hover:opacity-100"
             onClick={toggleExpand}
-            aria-label={isExpanded ? "Zwiń szczegóły" : "Rozwiń szczegóły"}
+            aria-label={isExpanded ? "Collapse details" : "Expand details"}
             aria-expanded={isExpanded}
           >
             {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
@@ -168,14 +168,14 @@ const ScheduleStageItem: React.FC<ScheduleStageItemProps> = ({
               {stage.description ? (
                 <p className="text-sm text-gray-700 whitespace-pre-wrap">{stage.description}</p>
               ) : (
-                <p className="text-sm text-muted-foreground italic">Brak opisu etapu</p>
+                <p className="text-sm text-muted-foreground italic">No stage description</p>
               )}
             </div>
 
             {/* Dependencies section */}
             {hasDependencies && (
               <div className="mt-4">
-                <h4 className="text-sm font-medium mb-2">Zależności:</h4>
+                <h4 className="text-sm font-medium mb-2">Dependencies:</h4>
                 <div className="flex flex-wrap gap-2">
                   {dependencies.map((dep) => (
                     <Badge key={dep.id} variant="secondary" className="text-xs">
@@ -189,7 +189,7 @@ const ScheduleStageItem: React.FC<ScheduleStageItemProps> = ({
             {/* Dependent stages section */}
             {hasDependents && (
               <div className="mt-4">
-                <h4 className="text-sm font-medium mb-2">Etapy zależne:</h4>
+                <h4 className="text-sm font-medium mb-2">Dependent stages:</h4>
                 <div className="flex flex-wrap gap-2">
                   {dependentStages.map((dep) => (
                     <Badge key={dep.id} variant="secondary" className="text-xs">
@@ -206,14 +206,14 @@ const ScheduleStageItem: React.FC<ScheduleStageItemProps> = ({
             <CardFooter className="flex justify-between p-4 pt-0 border-t">
               <div className="flex items-center text-red-600 gap-2">
                 <AlertCircle className="h-4 w-4" />
-                <p className="text-sm font-medium">Czy na pewno chcesz usunąć ten etap?</p>
+                <p className="text-sm font-medium">Are you sure you want to delete this stage?</p>
               </div>
               <div className="flex gap-2">
                 <Button variant="outline" size="sm" onClick={handleCancelDelete}>
-                  Anuluj
+                  Cancel
                 </Button>
                 <Button variant="destructive" size="sm" onClick={handleConfirmDelete}>
-                  Usuń
+                  Delete
                 </Button>
               </div>
             </CardFooter>

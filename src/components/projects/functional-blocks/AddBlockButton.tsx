@@ -22,7 +22,7 @@ export function AddBlockButton({ onClick }: AddBlockButtonProps) {
       >
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
       </svg>
-      Dodaj nowy blok funkcjonalny
+      Add new functional block
     </Button>
   );
 }

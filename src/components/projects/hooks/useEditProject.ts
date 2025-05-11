@@ -29,21 +29,21 @@ export const useEditProject = (projectId: string) => {
 
     if (response.status === 404) {
       setErrors({
-        general: "Projekt o podanym identyfikatorze nie istnieje.",
+        general: "Project with the given ID does not exist.",
       });
       return;
     }
 
     if (response.status === 403) {
       setErrors({
-        general: "Nie masz uprawnień do edycji tego projektu.",
+        general: "You do not have permission to edit this project.",
       });
       return;
     }
 
     if (response.status === 401) {
       setErrors({
-        general: "Sesja wygasła. Zaloguj się ponownie.",
+        general: "Session expired. Please log in again.",
       });
       return;
     }
@@ -51,11 +51,11 @@ export const useEditProject = (projectId: string) => {
     try {
       const errorData: ErrorResponseDto = await response.json();
       setErrors({
-        general: errorData.error.message || "Wystąpił nieoczekiwany błąd.",
+        general: errorData.error.message || "An unexpected error occurred.",
       });
     } catch {
       setErrors({
-        general: "Wystąpił nieoczekiwany błąd. Spróbuj ponownie.",
+        general: "An unexpected error occurred. Please try again.",
       });
     }
   }, []);
@@ -77,7 +77,7 @@ export const useEditProject = (projectId: string) => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setErrors({
-        general: "Wystąpił błąd podczas pobierania danych projektu. Spróbuj ponownie.",
+        general: "An error occurred while fetching project data. Please try again.",
       });
     } finally {
       setIsLoading(false);
@@ -87,12 +87,12 @@ export const useEditProject = (projectId: string) => {
   // Validation functions
   const validateName = useCallback(() => {
     if (!project.name || project.name.trim() === "") {
-      setErrors((prev) => ({ ...prev, name: "Nazwa projektu jest wymagana." }));
+      setErrors((prev) => ({ ...prev, name: "Project name is required." }));
       return false;
     }
 
     if (project.name.length > 200) {
-      setErrors((prev) => ({ ...prev, name: "Nazwa projektu nie może przekraczać 200 znaków." }));
+      setErrors((prev) => ({ ...prev, name: "Project name cannot exceed 200 characters." }));
       return false;
     }
 
@@ -108,7 +108,7 @@ export const useEditProject = (projectId: string) => {
     if (project.description && project.description.length > 2000) {
       setErrors((prev) => ({
         ...prev,
-        description: "Opis projektu nie może przekraczać 2000 znaków.",
+        description: "Project description cannot exceed 2000 characters.",
       }));
       return false;
     }
@@ -127,9 +127,9 @@ export const useEditProject = (projectId: string) => {
 
     // Real-time validation
     if (!name || name.trim() === "") {
-      setErrors((prev) => ({ ...prev, name: "Nazwa projektu jest wymagana." }));
+      setErrors((prev) => ({ ...prev, name: "Project name is required." }));
     } else if (name.length > 200) {
-      setErrors((prev) => ({ ...prev, name: "Nazwa projektu nie może przekraczać 200 znaków." }));
+      setErrors((prev) => ({ ...prev, name: "Project name cannot exceed 200 characters." }));
     } else {
       setErrors((prev) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -146,7 +146,7 @@ export const useEditProject = (projectId: string) => {
     if (description && description.length > 2000) {
       setErrors((prev) => ({
         ...prev,
-        description: "Opis projektu nie może przekraczać 2000 znaków.",
+        description: "Project description cannot exceed 2000 characters.",
       }));
     } else {
       setErrors((prev) => {
@@ -163,14 +163,14 @@ export const useEditProject = (projectId: string) => {
 
     // Validate name
     if (!project.name || project.name.trim() === "") {
-      newErrors.name = "Nazwa projektu jest wymagana.";
+      newErrors.name = "Project name is required.";
     } else if (project.name.length > 200) {
-      newErrors.name = "Nazwa projektu nie może przekraczać 200 znaków.";
+      newErrors.name = "Project name cannot exceed 200 characters.";
     }
 
     // Validate description
     if (project.description && project.description.length > 2000) {
-      newErrors.description = "Opis projektu nie może przekraczać 2000 znaków.";
+      newErrors.description = "Project description cannot exceed 2000 characters.";
     }
 
     setErrors(newErrors);
@@ -208,7 +208,7 @@ export const useEditProject = (projectId: string) => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setErrors({
-        general: "Wystąpił błąd podczas zapisywania zmian. Spróbuj ponownie.",
+        general: "An error occurred while saving changes. Please try again.",
       });
     } finally {
       setIsSaving(false);

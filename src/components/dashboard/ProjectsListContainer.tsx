@@ -62,11 +62,11 @@ function ProjectsListContainerContent() {
       <div className="w-full space-y-4" ref={containerRef} tabIndex={-1}>
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Błąd</AlertTitle>
-          <AlertDescription>{error.message || "Wystąpił błąd podczas ładowania projektów."}</AlertDescription>
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{error.message || "An error occurred while loading projects."}</AlertDescription>
         </Alert>
         <Button onClick={() => updateFilters({})} variant="outline">
-          Spróbuj ponownie
+          Try again
         </Button>
       </div>
     );

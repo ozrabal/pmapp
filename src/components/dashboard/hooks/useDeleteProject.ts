@@ -85,7 +85,7 @@ export function useDeleteProject(onDelete?: (id: string) => Promise<void>): UseD
       }
     } catch (err) {
       if (isMounted) {
-        const errorMessage = err instanceof Error ? err.message : "Nieznany błąd podczas usuwania projektu.";
+        const errorMessage = err instanceof Error ? err.message : "Unknown error while deleting project.";
 
         setError(err instanceof Error ? err : new Error(errorMessage));
         showNotification(errorMessage, "error");

@@ -24,7 +24,7 @@ export function useFunctionalBlocks(projectId: string) {
 
       setBlocks(functionalBlocksData);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Wystąpił błąd podczas pobierania danych");
+      setError(err instanceof Error ? err.message : "An error occurred while fetching data");
     } finally {
       setIsLoading(false);
     }
@@ -49,12 +49,12 @@ export function useFunctionalBlocks(projectId: string) {
         });
 
         if (!response.ok) {
-          throw new Error("Nie udało się zapisać zmian");
+          throw new Error("Failed to save changes");
         }
 
         setBlocks(updatedBlocks);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Wystąpił błąd podczas zapisywania zmian");
+        setError(err instanceof Error ? err.message : "An error occurred while saving changes");
       } finally {
         setIsLoading(false);
       }

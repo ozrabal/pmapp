@@ -9,8 +9,8 @@ interface ProjectCardExampleProps {
 export function ProjectCardExample({ variant = "normal" }: ProjectCardExampleProps) {
   const projectExample = {
     id: "example-proj-1",
-    name: "Przykładowy Projekt",
-    description: "To jest przykładowy projekt pokazujący, jak wygląda karta projektu w dashboardzie.",
+    name: "Sample Project",
+    description: "This is a sample project showing how a project card looks in the dashboard.",
     formattedCreatedAt: "15 kwi 2025",
     formattedUpdatedAt: "17 kwi 2025",
   };
@@ -22,7 +22,7 @@ export function ProjectCardExample({ variant = "normal" }: ProjectCardExamplePro
       className={`group hover:shadow-md transition-all duration-300 border-border/40 hover:border-border/80 h-full`}
       tabIndex={0}
       role="article"
-      aria-label={`Projekt: ${projectExample.name}`}
+      aria-label={`Project: ${projectExample.name}`}
     >
       <CardHeader className="pb-2">
         <CardTitle className="text-lg font-medium line-clamp-1 group-hover:text-primary transition-colors">
@@ -34,7 +34,7 @@ export function ProjectCardExample({ variant = "normal" }: ProjectCardExamplePro
         {projectExample.description ? (
           <p className="text-muted-foreground text-sm line-clamp-2">{projectExample.description}</p>
         ) : (
-          <p className="text-muted-foreground text-sm italic">Brak opisu</p>
+          <p className="text-muted-foreground text-sm italic">No description</p>
         )}
       </CardContent>
 
@@ -42,11 +42,11 @@ export function ProjectCardExample({ variant = "normal" }: ProjectCardExamplePro
         <div className="flex flex-col sm:flex-row sm:gap-3">
           <div className="flex items-center gap-1">
             <ClockIcon className="h-3 w-3" />
-            <span>Utworzono: {projectExample.formattedCreatedAt}</span>
+            <span>Created: {projectExample.formattedCreatedAt}</span>
           </div>
           <div className="flex items-center gap-1">
             <CalendarIcon className="h-3 w-3" />
-            <span>Aktualizacja: {projectExample.formattedUpdatedAt}</span>
+            <span>Updated: {projectExample.formattedUpdatedAt}</span>
           </div>
         </div>
 
@@ -55,7 +55,7 @@ export function ProjectCardExample({ variant = "normal" }: ProjectCardExamplePro
             variant="ghost"
             size="sm"
             className={`p-1 h-auto ${showActions ? "opacity-100 sm:opacity-100" : "opacity-100 sm:opacity-0"} transition-opacity duration-300 group-hover:opacity-100`}
-            aria-label={`Edytuj projekt ${projectExample.name}`}
+            aria-label={`Edit project ${projectExample.name}`}
           >
             <PencilIcon className="h-4 w-4" />
           </Button>
@@ -64,7 +64,7 @@ export function ProjectCardExample({ variant = "normal" }: ProjectCardExamplePro
             variant="ghost"
             size="sm"
             className={`p-1 h-auto ${showActions ? "opacity-100 sm:opacity-100" : "opacity-100 sm:opacity-0"} transition-opacity duration-300 group-hover:opacity-100`}
-            aria-label={`Usuń projekt ${projectExample.name}`}
+            aria-label={`Delete project ${projectExample.name}`}
           >
             <TrashIcon className="h-4 w-4" />
           </Button>

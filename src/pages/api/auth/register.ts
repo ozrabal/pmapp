@@ -3,13 +3,13 @@ import { z } from "zod";
 
 // Schema for validating registration input
 const registerSchema = z.object({
-  email: z.string().email("Wprowadź poprawny adres email"),
+  email: z.string().email("Enter a valid email address"),
   password: z
     .string()
-    .min(8, "Hasło musi mieć co najmniej 8 znaków")
-    .regex(/[0-9]/, "Hasło musi zawierać co najmniej jedną cyfrę")
-    .regex(/[a-zA-Z]/, "Hasło musi zawierać co najmniej jedną literę"),
-  firstName: z.string().min(1, "Imię jest wymagane"),
+    .min(8, "Password must be at least 8 characters long")
+    .regex(/[0-9]/, "Password must contain at least one digit")
+    .regex(/[a-zA-Z]/, "Password must contain at least one letter"),
+  firstName: z.string().min(1, "First name is required"),
 });
 
 export const prerender = false;
@@ -28,7 +28,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       return new Response(
         JSON.stringify({
           error: {
-            message: "Nieprawidłowe dane formularza",
+            message: "Invalid form data",
             details: result.error.format(),
           },
         }),
@@ -65,7 +65,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     return new Response(
       JSON.stringify({
         user: data.user,
-        message: "Konto zostało utworzone. Sprawdź swoją skrzynkę email, aby aktywować konto.",
+        message: "Account has been created. Check your email inbox to activate your account.",
       }),
       { status: 201 }
     );
@@ -75,7 +75,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     return new Response(
       JSON.stringify({
         error: {
-          message: "Wystąpił nieoczekiwany błąd podczas rejestracji. Spróbuj ponownie później.",
+          message: "An unexpected error occurred during registration. Please try again later.",
         },
       }),
       { status: 500 }

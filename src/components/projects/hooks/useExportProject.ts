@@ -37,7 +37,7 @@ export const useExportProject = (): UseExportProjectReturn => {
   const exportProject = async (project: ProjectDto): Promise<void> => {
     // Handle errors at the beginning (guard clause pattern)
     if (!project) {
-      setError(new Error("Brak danych projektu do eksportu"));
+      setError(new Error("No project data available for export"));
       return;
     }
 
@@ -74,7 +74,7 @@ export const useExportProject = (): UseExportProjectReturn => {
       // Happy path completes last
       setIsExporting(false);
     } catch (err) {
-      setError(err instanceof Error ? err : new Error("Nieznany błąd podczas eksportu projektu"));
+      setError(err instanceof Error ? err : new Error("Unknown error while exporting project"));
       setIsExporting(false);
     }
   };

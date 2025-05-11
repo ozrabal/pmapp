@@ -9,8 +9,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 
 // Schema for login form validation
 const loginSchema = z.object({
-  email: z.string().email("Wprowadź poprawny adres email"),
-  password: z.string().min(1, "Hasło jest wymagane"),
+  email: z.string().email("Enter a valid email address"),
+  password: z.string().min(1, "Password is required"),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -53,7 +53,7 @@ export function LoginForm({ redirect = "/dashboard" }: LoginFormProps) {
       const result = await response.json();
 
       if (!response.ok) {
-        setError(result.error?.message || "Wystąpił błąd podczas logowania");
+        setError(result.error?.message || "An error occurred during login");
         setIsLoading(false);
         return;
       }
@@ -62,7 +62,7 @@ export function LoginForm({ redirect = "/dashboard" }: LoginFormProps) {
       setLoginSuccess(true);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
-      setError("Wystąpił nieoczekiwany błąd. Spróbuj ponownie później.");
+      setError("An unexpected error occurred. Please try again later.");
       setIsLoading(false);
     }
   };
@@ -84,11 +84,11 @@ export function LoginForm({ redirect = "/dashboard" }: LoginFormProps) {
       )}
 
       <div className="space-y-2">
-        <Label htmlFor="email">Adres e-mail</Label>
+        <Label htmlFor="email">Email</Label>
         <Input
           id="email"
           type="email"
-          placeholder="twoj@email.com"
+          placeholder="your@email.com"
           {...register("email")}
           autoComplete="email"
           aria-invalid={errors.email ? "true" : "false"}
@@ -99,9 +99,9 @@ export function LoginForm({ redirect = "/dashboard" }: LoginFormProps) {
 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <Label htmlFor="password">Hasło</Label>
+          <Label htmlFor="password">Password</Label>
           <a href="/auth/reset-password" className="text-xs text-muted-foreground hover:text-primary">
-            Zapomniałeś hasła?
+            Forgot password?
           </a>
         </div>
         <Input
@@ -121,7 +121,7 @@ export function LoginForm({ redirect = "/dashboard" }: LoginFormProps) {
       </div>
 
       <Button type="submit" className="w-full" disabled={isLoading} data-testid="login-submit">
-        {isLoading ? "Logowanie..." : "Zaloguj się"}
+        {isLoading ? "Logging in..." : "Log in"}
       </Button>
     </form>
   );

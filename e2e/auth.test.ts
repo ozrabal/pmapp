@@ -12,7 +12,7 @@ test.describe("Authentication", () => {
     await loginPage.login("invalid@example.com", "wrongpassword");
 
     // Verify error message is displayed
-    await loginPage.expectErrorMessage("Nieprawidłowy email lub hasło");
+    await loginPage.expectErrorMessage("Invalid email or password");
   });
 
   // test("should redirect to dashboard after successful login", async ({ page }) => {

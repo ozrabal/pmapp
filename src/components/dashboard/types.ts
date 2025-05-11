@@ -1,4 +1,4 @@
-// Enum statusów projektu
+// Enum for project statuses
 export enum ProjectStatusType {
   ALL = "all",
   ACTIVE = "active",
@@ -15,7 +15,7 @@ export enum ProjectSortOption {
   UPDATED = "updatedAt:desc",
 }
 
-// Rozszerzony model projektu na potrzeby UI
+// Extended project model for UI purposes
 export interface ProjectViewModel {
   id: string;
   name: string;

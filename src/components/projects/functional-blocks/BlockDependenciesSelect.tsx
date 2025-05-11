@@ -60,7 +60,7 @@ export function BlockDependenciesSelect({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            aria-label="Wybierz zależności"
+            aria-label="Select dependencies"
             disabled={disabled}
             className={cn(
               "w-full justify-between h-auto min-h-10 py-2",
@@ -86,7 +86,7 @@ export function BlockDependenciesSelect({
                   </Badge>
                 ))
               ) : (
-                <span>Wybierz zależności</span>
+                <span>Select dependencies</span>
               )}
             </div>
             <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
@@ -94,8 +94,8 @@ export function BlockDependenciesSelect({
         </PopoverTrigger>
         <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0 max-h-[300px] overflow-auto">
           <Command>
-            <CommandInput placeholder="Szukaj bloków..." />
-            <CommandEmpty>Nie znaleziono bloków</CommandEmpty>
+            <CommandInput placeholder="Search blocks..." />
+            <CommandEmpty>No blocks found</CommandEmpty>
             <CommandGroup>
               {filteredBlocks.map((block) => (
                 <CommandItem key={block.id} value={block.name} onSelect={() => handleSelect(block.id)}>

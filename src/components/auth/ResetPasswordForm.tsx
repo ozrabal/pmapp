@@ -9,7 +9,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Loader2, CheckCircle } from "lucide-react";
 
 const resetPasswordSchema = z.object({
-  email: z.string().email("Wprowadź poprawny adres email"),
+  email: z.string().email("Enter a valid email address"),
 });
 
 type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
@@ -46,14 +46,14 @@ export function ResetPasswordForm() {
       const result = await response.json();
 
       if (!response.ok) {
-        setError(result.error?.message || "Wystąpił błąd podczas wysyłania linku resetowania hasła");
+        setError(result.error?.message || "An error occurred while sending the password reset link");
         return;
       }
 
       setIsSuccess(true);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
-      setError("Wystąpił nieoczekiwany błąd. Spróbuj ponownie później.");
+      setError("An unexpected error occurred. Please try again later.");
     } finally {
       setIsLoading(false);
     }
@@ -65,11 +65,11 @@ export function ResetPasswordForm() {
         <Alert>
           <CheckCircle className="h-4 w-4" />
           <AlertDescription>
-            Jeśli konto o podanym adresie email istnieje, otrzymasz wiadomość z linkiem do zresetowania hasła.
+            If an account with the provided email exists, you will receive a password reset link.
           </AlertDescription>
         </Alert>
         <Button onClick={() => (window.location.href = "/auth/login")} className="w-full">
-          Powrót do logowania
+          Return to login
         </Button>
       </div>
     );
@@ -85,11 +85,11 @@ export function ResetPasswordForm() {
       )}
 
       <div className="space-y-2">
-        <Label htmlFor="email">Adres e-mail</Label>
+        <Label htmlFor="email">Email</Label>
         <Input
           id="email"
           type="email"
-          placeholder="adres@email.com"
+          placeholder="your@email.com"
           {...register("email")}
           aria-invalid={errors.email ? "true" : "false"}
         />
@@ -100,16 +100,16 @@ export function ResetPasswordForm() {
         {isLoading ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Wysyłanie...
+            Sending...
           </>
         ) : (
-          "Wyślij link resetujący hasło"
+          "Send password reset link"
         )}
       </Button>
 
       <p className="text-center text-sm">
         <a href="/auth/login" className="text-blue-600 hover:underline">
-          Powrót do logowania
+          Return to login
         </a>
       </p>
     </form>

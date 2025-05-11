@@ -42,7 +42,7 @@ const EditProjectDescriptionsForm: React.FC<EditProjectDescriptionsFormProps> = 
   if (isLoading) {
     return (
       <Card className="p-6">
-        <div className="space-y-4 animate-pulse" aria-busy="true" aria-label="Ładowanie danych projektu">
+        <div className="space-y-4 animate-pulse" aria-busy="true" aria-label="Loading project data">
           <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-1/3"></div>
           <div className="h-10 bg-slate-200 dark:bg-slate-700 rounded"></div>
           <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-1/4 mt-6"></div>
@@ -93,9 +93,9 @@ const EditProjectDescriptionsForm: React.FC<EditProjectDescriptionsFormProps> = 
 
         <div className="space-y-6">
           <div className="mb-8">
-            <h3 className="text-lg font-medium mb-2">Podstawowe informacje</h3>
+            <h3 className="text-lg font-medium mb-2">Basic Information</h3>
             <p className="text-sm text-slate-500 dark:text-slate-400">
-              Te informacje będą widoczne dla wszystkich użytkowników mających dostęp do projektu.
+              This information will be visible to all users who have access to the project.
             </p>
           </div>
 
@@ -125,15 +125,15 @@ const EditProjectDescriptionsForm: React.FC<EditProjectDescriptionsFormProps> = 
             variant="outline"
             onClick={handleCancel}
             disabled={isSaving}
-            aria-label="Anuluj edycję i wróć do szczegółów projektu"
+            aria-label="Cancel editing and return to project details"
           >
-            Anuluj
+            Cancel
           </Button>
           <Button
             type="submit"
             disabled={isSaving || hasErrors}
             aria-busy={isSaving}
-            aria-label={isSaving ? "Zapisywanie zmian w opisie projektu..." : "Zapisz zmiany w opisie projektu"}
+            aria-label={isSaving ? "Saving changes to project description..." : "Save changes to project description"}
             className="relative"
           >
             {isSaving && (
@@ -152,7 +152,7 @@ const EditProjectDescriptionsForm: React.FC<EditProjectDescriptionsFormProps> = 
                 />
               </svg>
             )}
-            {isSaving ? "Zapisywanie..." : "Zapisz zmiany"}
+            {isSaving ? "Saving..." : "Save changes"}
           </Button>
         </div>
       </form>

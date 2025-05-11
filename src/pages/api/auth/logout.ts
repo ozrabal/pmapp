@@ -16,7 +16,7 @@ export const POST: APIRoute = async ({ locals }) => {
       return new Response(
         JSON.stringify({
           error: {
-            message: "Wystąpił błąd podczas wylogowania",
+            message: "An error occurred during logout",
             details: error.message,
           },
         }),
@@ -49,7 +49,7 @@ export const POST: APIRoute = async ({ locals }) => {
 
     return new Response(
       JSON.stringify({
-        message: "Wylogowano pomyślnie",
+        message: "Logged out successfully",
       }),
       {
         status: 200,
@@ -63,7 +63,7 @@ export const POST: APIRoute = async ({ locals }) => {
     return new Response(
       JSON.stringify({
         error: {
-          message: "Wystąpił nieoczekiwany błąd podczas wylogowania",
+          message: "An unexpected error occurred during logout",
         },
       }),
       {

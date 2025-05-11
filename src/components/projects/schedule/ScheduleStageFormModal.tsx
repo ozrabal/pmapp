@@ -105,7 +105,7 @@ const ScheduleStageFormModal: React.FC<ScheduleStageFormModalProps> = ({
 
       onClose();
     } catch (err) {
-      setServerError(err instanceof Error ? err.message : "Wystąpił błąd podczas zapisywania etapu");
+      setServerError(err instanceof Error ? err.message : "An error occurred while saving the stage");
     } finally {
       setIsSubmitting(false);
     }
@@ -125,11 +125,11 @@ const ScheduleStageFormModal: React.FC<ScheduleStageFormModalProps> = ({
       <DialogContent className="w-full !container ">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>{stage ? "Edytuj etap" : "Dodaj nowy etap"}</DialogTitle>
+            <DialogTitle>{stage ? "Edit stage" : "Add new stage"}</DialogTitle>
             <DialogDescription>
               {stage
-                ? "Zaktualizuj szczegóły wybranego etapu harmonogramu projektu."
-                : "Utwórz nowy etap harmonogramu projektu."}
+                ? "Update the details of the selected project schedule stage."
+                : "Create a new project schedule stage."}
             </DialogDescription>
           </DialogHeader>
 
@@ -137,14 +137,14 @@ const ScheduleStageFormModal: React.FC<ScheduleStageFormModalProps> = ({
             {/* Name input */}
             <div className="space-y-2">
               <Label htmlFor="stage-name" className="text-right">
-                Nazwa etapu <span className="text-red-500">*</span>
+                Stage name <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="stage-name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className={errors.name && showValidationFeedback ? "border-red-500" : ""}
-                placeholder="np. Projektowanie interfejsu użytkownika"
+                placeholder="e.g. User interface design"
                 aria-invalid={errors.name && showValidationFeedback ? "true" : "false"}
                 aria-describedby={errors.name && showValidationFeedback ? "name-error" : undefined}
               />
@@ -159,13 +159,13 @@ const ScheduleStageFormModal: React.FC<ScheduleStageFormModalProps> = ({
             {/* Description textarea */}
             <div className="space-y-2">
               <Label htmlFor="stage-description" className="text-right">
-                Opis
+                Description
               </Label>
               <Textarea
                 id="stage-description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Opisz zakres i cele tego etapu"
+                placeholder="Describe the scope and goals of this stage"
                 rows={4}
               />
             </div>
@@ -173,13 +173,13 @@ const ScheduleStageFormModal: React.FC<ScheduleStageFormModalProps> = ({
             {/* Dependencies select */}
             <div className="space-y-2">
               <Label htmlFor="stage-dependencies" className="text-right">
-                Zależności
+                Dependencies
               </Label>
 
               {availableDependencies.length > 0 ? (
                 <div className="space-y-2">
                   <div className="text-sm text-muted-foreground mb-2">
-                    Wybierz etapy, które muszą być ukończone przed rozpoczęciem tego etapu:
+                    Select stages that must be completed before starting this stage:
                   </div>
                   <div
                     className={`flex flex-wrap gap-2 p-2 border rounded-md ${
@@ -218,13 +218,11 @@ const ScheduleStageFormModal: React.FC<ScheduleStageFormModalProps> = ({
                       <span>{errors.dependencies}</span>
                     </p>
                   )}
-                  <div className="text-xs text-muted-foreground mt-1">Kliknij, aby dodać lub usunąć zależność</div>
+                  <div className="text-xs text-muted-foreground mt-1">Click to add or remove a dependency</div>
                 </div>
               ) : (
                 <div className="text-sm text-muted-foreground p-2 border rounded-md bg-muted/30">
-                  {stage
-                    ? "Brak dostępnych zależności dla tego etapu"
-                    : "Brak istniejących etapów, które można dodać jako zależności"}
+                  {stage ? "No available dependencies for this stage" : "No existing stages to add as dependencies"}
                 </div>
               )}
             </div>
@@ -242,10 +240,10 @@ const ScheduleStageFormModal: React.FC<ScheduleStageFormModalProps> = ({
 
           <DialogFooter className="flex justify-between">
             <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>
-              Anuluj
+              Cancel
             </Button>
             <Button type="submit" disabled={isSubmitting} aria-busy={isSubmitting}>
-              {isSubmitting ? "Zapisywanie..." : stage ? "Zapisz zmiany" : "Dodaj etap"}
+              {isSubmitting ? "Saving..." : stage ? "Save changes" : "Add stage"}
             </Button>
           </DialogFooter>
         </form>

@@ -41,7 +41,7 @@ const EditProjectForm: React.FC<EditProjectFormProps> = ({ projectId }) => {
   if (isLoading) {
     return (
       <Card className="p-6">
-        <div className="space-y-4 animate-pulse" aria-busy="true" aria-label="Ładowanie danych projektu">
+        <div className="space-y-4 animate-pulse" aria-busy="true" aria-label="Loading project data">
           <div className="flex justify-between items-center">
             <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-1/3"></div>
             <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-24"></div>
@@ -124,15 +124,15 @@ const EditProjectForm: React.FC<EditProjectFormProps> = ({ projectId }) => {
             variant="outline"
             onClick={handleCancel}
             disabled={isSaving}
-            aria-label="Anuluj edycję i wróć do poprzedniej strony"
+            aria-label="Cancel editing and return to the previous page"
           >
-            Anuluj
+            Cancel
           </Button>
           <Button
             type="submit"
             disabled={isSaving || hasErrors}
             aria-busy={isSaving}
-            aria-label={isSaving ? "Zapisywanie zmian w projekcie..." : "Zapisz zmiany w projekcie"}
+            aria-label={isSaving ? "Saving project changes..." : "Save project changes"}
             className="relative"
           >
             {isSaving && (
@@ -151,7 +151,7 @@ const EditProjectForm: React.FC<EditProjectFormProps> = ({ projectId }) => {
                 />
               </svg>
             )}
-            {isSaving ? "Zapisywanie..." : "Zapisz zmiany"}
+            {isSaving ? "Saving..." : "Save changes"}
           </Button>
         </div>
       </form>

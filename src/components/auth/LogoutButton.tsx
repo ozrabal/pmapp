@@ -14,7 +14,7 @@ export function LogoutButton({
   variant = "ghost",
   size = "default",
   className = "",
-  children = "Wyloguj się",
+  children = "Logout",
 }: LogoutButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -43,7 +43,7 @@ export function LogoutButton({
 
   return (
     <Button variant={variant} size={size} className={className} onClick={handleLogout} disabled={isLoading}>
-      {isLoading ? "Wylogowywanie..." : children}
+      {isLoading ? "Logging out..." : children}
     </Button>
   );
 }

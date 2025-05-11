@@ -74,7 +74,7 @@ export default function FunctionalBlocksContainer({ projectId }: FunctionalBlock
 
   // If loading initially
   if (isLoading && blocks.length === 0) {
-    return <LoadingState message="Ładowanie bloków funkcjonalnych..." />;
+    return <LoadingState message="Loading functional blocks..." />;
   }
 
   return (
@@ -84,14 +84,14 @@ export default function FunctionalBlocksContainer({ projectId }: FunctionalBlock
         <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-lg">
           <p className="text-red-600 font-medium">{error}</p>
           <button onClick={refreshBlocks} className="mt-2 text-sm text-red-700 hover:text-red-800 font-medium">
-            Spróbuj ponownie
+            Try again
           </button>
         </div>
       )}
 
       {/* Header with actions */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-        <h2 className="text-xl font-semibold text-neutral-800">Bloki funkcjonalne</h2>
+        <h2 className="text-xl font-semibold text-neutral-800">Functional Blocks</h2>
         <GenerateBlocksButton onClick={handleGenerateBlocks} isLoading={isLoading} />
       </div>
 
@@ -120,7 +120,7 @@ export default function FunctionalBlocksContainer({ projectId }: FunctionalBlock
       {/* Loading overlay for async operations */}
       {isLoading && blocks.length > 0 && (
         <div className="fixed inset-0 bg-black/5 flex items-center justify-center z-10">
-          <LoadingState message="Przetwarzanie..." />
+          <LoadingState message="Processing..." />
         </div>
       )}
     </Card>

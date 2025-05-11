@@ -3,7 +3,7 @@ import { createSupabaseServerInstance } from "../../../db/supabase.client";
 import { z } from "zod";
 
 const resetPasswordSchema = z.object({
-  email: z.string().email("Wprowadź poprawny adres email"),
+  email: z.string().email("Enter a valid email address"),
 });
 
 export const POST: APIRoute = async ({ request, cookies }) => {
@@ -16,7 +16,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       return new Response(
         JSON.stringify({
           error: {
-            message: "Nieprawidłowy format danych",
+            message: "Invalid data format",
             issues: validationResult.error.issues,
           },
         }),
@@ -50,7 +50,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   } catch (error) {
     return new Response(
       JSON.stringify({
-        error: { message: "Wystąpił nieoczekiwany błąd. Spróbuj ponownie później." },
+        error: { message: "An unexpected error occurred. Please try again later." },
       }),
       { status: 500 }
     );

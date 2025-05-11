@@ -9,12 +9,12 @@ const newPasswordSchema = z
     code: z.string().optional(),
     password: z
       .string()
-      .min(8, "Hasło musi mieć co najmniej 8 znaków")
-      .regex(/[0-9]/, "Hasło musi zawierać co najmniej jedną cyfrę")
-      .regex(/[a-zA-Z]/, "Hasło musi zawierać co najmniej jedną literę"),
+      .min(8, "Password must be at least 8 characters long")
+      .regex(/[0-9]/, "Password must contain at least one digit")
+      .regex(/[a-zA-Z]/, "Password must contain at least one letter"),
   })
   .refine((data) => data.token || data.code, {
-    message: "Token lub kod autoryzacyjny jest wymagany",
+    message: "Token or authorization code is required",
     path: ["token"],
   });
 
@@ -28,7 +28,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       return new Response(
         JSON.stringify({
           error: {
-            message: "Nieprawidłowy format danych",
+            message: "Invalid data format",
             issues: validationResult.error.issues,
           },
         }),
@@ -68,7 +68,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (err) {
         error = {
-          message: "Wystąpił błąd podczas weryfikacji kodu autoryzacyjnego",
+          message: "An error occurred during authorization code verification",
         };
       }
     } else if (token) {
@@ -89,7 +89,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (err) {
         error = {
-          message: "Wystąpił błąd podczas weryfikacji tokena resetowania hasła",
+          message: "An error occurred during password reset token verification",
         };
       }
     }
@@ -100,7 +100,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
         return new Response(
           JSON.stringify({
             error: {
-              message: "Link resetowania hasła wygasł lub jest nieprawidłowy. Proszę wygenerować nowy.",
+              message: "The password reset link has expired or is invalid. Please generate a new one.",
             },
           }),
           { status: 400 }
@@ -110,7 +110,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       return new Response(
         JSON.stringify({
           error: {
-            message: error.message || "Wystąpił błąd podczas zmiany hasła",
+            message: error.message || "An error occurred while changing the password",
           },
         }),
         { status: 400 }
@@ -122,7 +122,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   } catch (error) {
     return new Response(
       JSON.stringify({
-        error: { message: "Wystąpił nieoczekiwany błąd. Spróbuj ponownie później." },
+        error: { message: "An unexpected error occurred. Please try again later." },
       }),
       { status: 500 }
     );

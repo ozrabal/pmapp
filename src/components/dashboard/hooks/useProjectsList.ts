@@ -111,7 +111,7 @@ export function useProjectsList(): UseProjectsListResult {
       }
     } catch (err) {
       if (isMounted) {
-        const errorMessage = err instanceof Error ? err.message : "Nieznany błąd podczas pobierania projektów.";
+        const errorMessage = err instanceof Error ? err.message : "Unknown error occurred while fetching projects.";
         setError(err instanceof Error ? err : new Error(errorMessage));
         showNotification(errorMessage, "error");
       }
@@ -136,7 +136,7 @@ export function useProjectsList(): UseProjectsListResult {
   // Function to reset filters to defaults
   const resetFilters = useCallback(() => {
     setFilters(defaultFilters);
-    showNotification("Filtry zostały zresetowane", "info");
+    showNotification("Filters have been reset", "info");
   }, [showNotification]);
 
   // Function to change page
@@ -168,7 +168,7 @@ export function useProjectsList(): UseProjectsListResult {
         await ProjectClientService.deleteProject(id);
 
         // Show success notification
-        showNotification(`Projekt "${projectToDelete?.name || ""}" został usunięty`, "success");
+        showNotification(`Project "${projectToDelete?.name || ""}" has been deleted`, "success");
 
         // Success - fetch fresh data to update pagination and total counts
         await fetchProjects();
@@ -176,7 +176,7 @@ export function useProjectsList(): UseProjectsListResult {
         // Revert optimistic update and throw error to be handled by caller
         await fetchProjects();
 
-        const errorMessage = err instanceof Error ? err.message : "Nieznany błąd podczas usuwania projektu.";
+        const errorMessage = err instanceof Error ? err.message : "Unknown error occurred while deleting the project.";
 
         showNotification(errorMessage, "error");
         throw err instanceof Error ? err : new Error(errorMessage);

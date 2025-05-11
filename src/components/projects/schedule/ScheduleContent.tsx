@@ -53,7 +53,7 @@ const ScheduleContent: React.FC<ScheduleContentProps> = ({
       <div className="flex justify-center pt-4">
         <Button variant="outline" onClick={onAddStage} className="flex items-center gap-2">
           <PlusCircle className="h-4 w-4" />
-          Dodaj nowy etap
+          Add new stage
         </Button>
       </div>
     </div>

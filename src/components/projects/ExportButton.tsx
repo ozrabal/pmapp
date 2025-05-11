@@ -33,7 +33,7 @@ export const ExportButton: React.FC<ExportButtonProps> = ({ projectId, projectDa
           setIsLoading(false);
         })
         .catch((err) => {
-          setError(err instanceof Error ? err : new Error("Nieznany błąd"));
+          setError(err instanceof Error ? err : new Error("Unknown error"));
           setIsLoading(false);
         });
     }
@@ -54,7 +54,7 @@ export const ExportButton: React.FC<ExportButtonProps> = ({ projectId, projectDa
         size="sm"
         onClick={handleButtonClick}
         className="flex items-center gap-1"
-        aria-label="Eksportuj projekt"
+        aria-label="Export project"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -70,7 +70,7 @@ export const ExportButton: React.FC<ExportButtonProps> = ({ projectId, projectDa
             d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
           />
         </svg>
-        <span>Eksportuj</span>
+        <span>Export</span>
       </Button>
 
       {isDialogOpen &&
@@ -80,7 +80,7 @@ export const ExportButton: React.FC<ExportButtonProps> = ({ projectId, projectDa
           <ExportProjectDialog
             project={{
               id: projectId,
-              name: "Projekt",
+              name: "Project",
               description: null,
               assumptions: null,
               functionalBlocks: null,
@@ -95,7 +95,7 @@ export const ExportButton: React.FC<ExportButtonProps> = ({ projectId, projectDa
 
       {error && isDialogOpen && (
         <div className="text-sm text-red-500 mt-2" role="alert">
-          <p>Nie można załadować danych projektu: {error.message}</p>
+          <p>Unable to load project data: {error.message}</p>
         </div>
       )}
     </>

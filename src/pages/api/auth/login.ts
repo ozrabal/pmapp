@@ -5,8 +5,8 @@ export const prerender = false;
 
 // Schema for validating login data
 const loginSchema = z.object({
-  email: z.string().email("Wprowadź poprawny adres email"),
-  password: z.string().min(1, "Hasło jest wymagane"),
+  email: z.string().email("Enter a valid email address"),
+  password: z.string().min(1, "Password is required"),
 });
 
 export const POST: APIRoute = async ({ request, locals }) => {
@@ -20,7 +20,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       return new Response(
         JSON.stringify({
           error: {
-            message: "Niepoprawne dane logowania",
+            message: "Invalid login data",
             errors,
           },
         }),
@@ -43,7 +43,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       return new Response(
         JSON.stringify({
           error: {
-            message: "Nieprawidłowy email lub hasło",
+            message: "Invalid email or password",
             details: error.message,
           },
         }),
@@ -66,7 +66,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       return new Response(
         JSON.stringify({
           error: {
-            message: "Wystąpił błąd podczas logowania",
+            message: "An error occurred during login",
           },
         }),
         {
@@ -92,7 +92,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     return new Response(
       JSON.stringify({
-        message: "Zalogowano pomyślnie",
+        message: "Logged in successfully",
         user: {
           id: user.id,
           email: user.email,
@@ -110,7 +110,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     return new Response(
       JSON.stringify({
         error: {
-          message: "Wystąpił błąd podczas logowania. Spróbuj ponownie później.",
+          message: "An error occurred during login. Please try again later.",
         },
       }),
       {

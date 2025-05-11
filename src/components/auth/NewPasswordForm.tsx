@@ -12,13 +12,13 @@ const newPasswordSchema = z
   .object({
     password: z
       .string()
-      .min(8, "Hasło musi mieć co najmniej 8 znaków")
-      .regex(/[0-9]/, "Hasło musi zawierać co najmniej jedną cyfrę")
-      .regex(/[a-zA-Z]/, "Hasło musi zawierać co najmniej jedną literę"),
+      .min(8, "Password must be at least 8 characters long")
+      .regex(/[0-9]/, "Password must contain at least one digit")
+      .regex(/[a-zA-Z]/, "Password must contain at least one letter"),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Hasła muszą być identyczne",
+    message: "Passwords must match",
     path: ["confirmPassword"],
   });
 
@@ -41,7 +41,7 @@ export function NewPasswordForm() {
     const errorDesc = urlParams.get("error_description") || urlHash.get("error_description");
 
     if (errorCode === "otp_expired") {
-      setError(errorDesc?.replace(/\+/g, " ") || "Link resetowania hasła wygasł. Proszę wygenerować nowy link.");
+      setError(errorDesc?.replace(/\+/g, " ") || "The password reset link has expired. Please generate a new link.");
       return;
     }
 
@@ -68,7 +68,7 @@ export function NewPasswordForm() {
 
     // If we don't have a code or token, show error
     if (!dataCode && !urlCode && !dataToken && !urlToken && !hashToken) {
-      setError("Brak wymaganego tokena resetowania hasła. Link może być nieprawidłowy lub wygasły.");
+      setError("Missing required password reset token. The link may be invalid or expired.");
     }
   }, []);
 
@@ -86,7 +86,7 @@ export function NewPasswordForm() {
 
   const onSubmit = async (data: NewPasswordFormData) => {
     if (!code && !token) {
-      setError("Brak wymaganego tokena autoryzacji.");
+      setError("Missing required authorization token.");
       return;
     }
 
@@ -109,14 +109,14 @@ export function NewPasswordForm() {
       const result = await response.json();
 
       if (!response.ok) {
-        setError(result.error?.message || "Wystąpił błąd podczas zmiany hasła");
+        setError(result.error?.message || "An error occurred while changing the password");
         return;
       }
 
       setIsSuccess(true);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
-      setError("Wystąpił nieoczekiwany błąd. Spróbuj ponownie później.");
+      setError("An unexpected error occurred. Please try again later.");
     } finally {
       setIsLoading(false);
     }
@@ -138,10 +138,10 @@ export function NewPasswordForm() {
       <div className="space-y-6">
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{error || "Link resetowania hasła jest nieprawidłowy lub wygasł."}</AlertDescription>
+          <AlertDescription>{error || "The password reset link is invalid or expired."}</AlertDescription>
         </Alert>
         <Button onClick={() => (window.location.href = "/auth/reset-password")} className="w-full">
-          Spróbuj ponownie
+          Try again
         </Button>
       </div>
     );
@@ -153,11 +153,11 @@ export function NewPasswordForm() {
         <Alert>
           <CheckCircle className="h-4 w-4" />
           <AlertDescription>
-            Twoje hasło zostało zmienione. Za chwilę nastąpi przekierowanie do strony logowania...
+            Your password has been changed. You will be redirected to the login page shortly...
           </AlertDescription>
         </Alert>
         <Button onClick={() => (window.location.href = "/auth/login")} className="w-full">
-          Przejdź do logowania
+          Go to login
         </Button>
       </div>
     );
@@ -173,7 +173,7 @@ export function NewPasswordForm() {
       )}
 
       <div className="space-y-2">
-        <Label htmlFor="password">Nowe hasło</Label>
+        <Label htmlFor="password">New Password</Label>
         <Input
           id="password"
           type="password"
@@ -184,7 +184,7 @@ export function NewPasswordForm() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="confirmPassword">Potwierdź hasło</Label>
+        <Label htmlFor="confirmPassword">Confirm Password</Label>
         <Input
           id="confirmPassword"
           type="password"
@@ -198,10 +198,10 @@ export function NewPasswordForm() {
         {isLoading ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Zapisywanie...
+            Saving...
           </>
         ) : (
-          "Ustaw nowe hasło"
+          "Set new password"
         )}
       </Button>
     </form>

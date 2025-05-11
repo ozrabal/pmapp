@@ -30,11 +30,9 @@ export function FunctionalBlockFormDialog({
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{isNewBlock ? "Dodaj nowy blok funkcjonalny" : "Edytuj blok funkcjonalny"}</DialogTitle>
+          <DialogTitle>{isNewBlock ? "Add new functional block" : "Edit functional block"}</DialogTitle>
           <DialogDescription>
-            {isNewBlock
-              ? "Wypełnij formularz, aby utworzyć nowy blok funkcjonalny."
-              : "Zmodyfikuj właściwości bloku funkcjonalnego."}
+            {isNewBlock ? "Fill out the form to create a new functional block." : "Modify functional block properties."}
           </DialogDescription>
         </DialogHeader>
 

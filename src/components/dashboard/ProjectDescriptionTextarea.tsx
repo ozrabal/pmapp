@@ -49,7 +49,7 @@ export const ProjectDescriptionTextarea: React.FC<ProjectDescriptionTextareaProp
     <div className="space-y-2">
       <div className="flex justify-between items-baseline">
         <label htmlFor={id} className="block text-sm font-medium">
-          Opis projektu <span className="text-muted-foreground text-xs">(opcjonalnie)</span>
+          Project description <span className="text-muted-foreground text-xs">(optional)</span>
         </label>
 
         {/* Character counter */}
@@ -61,7 +61,7 @@ export const ProjectDescriptionTextarea: React.FC<ProjectDescriptionTextareaProp
           aria-live="polite"
           aria-atomic="true"
         >
-          {charsRemaining} {charsRemaining === 1 ? "znak" : charsRemaining < 5 ? "znaki" : "znaków"}
+          {charsRemaining} {charsRemaining === 1 ? "character" : "characters"}
         </span>
       </div>
 
@@ -73,7 +73,7 @@ export const ProjectDescriptionTextarea: React.FC<ProjectDescriptionTextareaProp
           onBlur={onBlur}
           onKeyDown={handleKeyDown}
           disabled={disabled}
-          placeholder="Opisz swój projekt (opcjonalnie)"
+          placeholder="Describe your project (optional)"
           rows={4}
           maxLength={maxLength}
           spellCheck="true"
@@ -87,9 +87,9 @@ export const ProjectDescriptionTextarea: React.FC<ProjectDescriptionTextareaProp
         />
 
         <p id={`${id}-hint`} className="mt-1.5 text-xs text-muted-foreground">
-          Krótko opisz czego dotyczy projekt. Możesz dodać szczegóły później.
+          Briefly describe what your project is about. You can add details later.
           <span className="ml-1 inline-block">
-            {isAtLimit ? <span className="text-red-500">(Osiągnięto limit znaków)</span> : null}
+            {isAtLimit ? <span className="text-red-500">(Character limit reached)</span> : null}
           </span>
         </p>
       </div>

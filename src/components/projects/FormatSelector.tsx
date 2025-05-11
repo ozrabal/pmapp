@@ -30,11 +30,11 @@ export const FormatSelector: React.FC<FormatSelectorProps> = ({
   return (
     <div className="space-y-2">
       <label htmlFor="export-format" className="text-sm font-medium">
-        Format eksportu
+        Export format
       </label>
       <Select value={value} onValueChange={handleValueChange} disabled={disabled || availableFormats.length <= 1}>
-        <SelectTrigger id="export-format" className="w-full" aria-label="Wybierz format eksportu">
-          <SelectValue placeholder="Wybierz format" />
+        <SelectTrigger id="export-format" className="w-full" aria-label="Select export format">
+          <SelectValue placeholder="Select format" />
         </SelectTrigger>
         <SelectContent>
           {availableFormats.map((format) => (

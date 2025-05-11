@@ -25,10 +25,10 @@ export function EmptyState({ onGenerate, isLoading }: EmptyStateProps) {
           />
         </svg>
       </div>
-      <h3 className="text-lg font-semibold mb-2 text-neutral-800">Brak bloków funkcjonalnych</h3>
+      <h3 className="text-lg font-semibold mb-2 text-neutral-800">No functional blocks</h3>
       <p className="text-neutral-600 mb-6 max-w-md mx-auto">
-        Bloki funkcjonalne pomagają podzielić projekt na mniejsze, łatwiejsze do zarządzania komponenty. Wygeneruj bloki
-        automatycznie lub dodaj je ręcznie.
+        Functional blocks help divide the project into smaller, easier to manage components. Generate blocks
+        automatically or add them manually.
       </p>
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
         <Button onClick={onGenerate} disabled={isLoading} className="flex items-center gap-2">
@@ -55,7 +55,7 @@ export function EmptyState({ onGenerate, isLoading }: EmptyStateProps) {
               />
             </svg>
           )}
-          Generuj bloki funkcjonalne z AI
+          Generate functional blocks with AI
         </Button>
       </div>
     </div>

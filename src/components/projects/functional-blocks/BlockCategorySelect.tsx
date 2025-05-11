@@ -14,7 +14,7 @@ export function BlockCategorySelect({ value, onChange, error, disabled = false }
     <div className="space-y-1">
       <Select value={value} onValueChange={onChange} disabled={disabled}>
         <SelectTrigger className={`w-full ${error ? "border-red-300 focus:border-red-500" : ""}`}>
-          <SelectValue placeholder="Wybierz kategorię" />
+          <SelectValue placeholder="Select category" />
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>

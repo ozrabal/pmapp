@@ -57,7 +57,7 @@ const ExportScheduleDialog: React.FC<ExportScheduleDialogProps> = ({ isOpen, onC
       onClose();
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
-      setError("Wystąpił błąd podczas eksportowania harmonogramu. Spróbuj ponownie później.");
+      setError("An error occurred while exporting the schedule. Please try again later.");
     } finally {
       setIsExporting(false);
     }
@@ -67,8 +67,8 @@ const ExportScheduleDialog: React.FC<ExportScheduleDialogProps> = ({ isOpen, onC
     <Dialog open={isOpen} onOpenChange={(open) => !isExporting && !open && onClose()}>
       <DialogContent className="sm:max-w-[450px]">
         <DialogHeader>
-          <DialogTitle>Eksport harmonogramu</DialogTitle>
-          <DialogDescription>Wybierz format, w którym chcesz wyeksportować harmonogram projektu.</DialogDescription>
+          <DialogTitle>Export Schedule</DialogTitle>
+          <DialogDescription>Choose the format in which you want to export the project schedule.</DialogDescription>
         </DialogHeader>
 
         <div className="py-4 space-y-4">
@@ -77,18 +77,18 @@ const ExportScheduleDialog: React.FC<ExportScheduleDialogProps> = ({ isOpen, onC
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="json" id="json" />
                 <Label htmlFor="json">JSON</Label>
-                <span className="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded">Zalecany</span>
+                <span className="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded">Recommended</span>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="pdf" id="pdf" disabled />
                 <Label htmlFor="pdf" className="text-muted-foreground">
-                  PDF (Wkrótce)
+                  PDF (Coming soon)
                 </Label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="csv" id="csv" disabled />
                 <Label htmlFor="csv" className="text-muted-foreground">
-                  CSV (Wkrótce)
+                  CSV (Coming soon)
                 </Label>
               </div>
             </div>
@@ -106,11 +106,11 @@ const ExportScheduleDialog: React.FC<ExportScheduleDialogProps> = ({ isOpen, onC
 
         <DialogFooter className="flex justify-between">
           <Button type="button" variant="outline" onClick={onClose} disabled={isExporting}>
-            Anuluj
+            Cancel
           </Button>
           <Button onClick={handleExport} disabled={isExporting} className="flex items-center gap-2">
             <FileDown className="h-4 w-4" />
-            {isExporting ? "Eksportowanie..." : "Eksportuj"}
+            {isExporting ? "Exporting..." : "Export"}
           </Button>
         </DialogFooter>
       </DialogContent>
