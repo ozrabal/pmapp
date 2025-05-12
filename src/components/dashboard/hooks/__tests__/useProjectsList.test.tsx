@@ -193,7 +193,7 @@ describe("useProjectsList", () => {
       page: 1,
       limit: 10,
     });
-    expect(mockShowNotification).toHaveBeenCalledWith("Filtry zostały zresetowane", "info");
+    expect(mockShowNotification).toHaveBeenCalledWith("Filters have been reset", "info");
 
     await vi.waitFor(() => {
       expect(ProjectClientService.listProjects).toHaveBeenCalledWith(
@@ -318,7 +318,7 @@ describe("useProjectsList", () => {
 
     // Assert
     expect(ProjectClientService.deleteProject).toHaveBeenCalledWith("project-1");
-    expect(mockShowNotification).toHaveBeenCalledWith(expect.stringContaining("został usunięty"), "success");
+    expect(mockShowNotification).toHaveBeenCalledWith(expect.stringContaining("has been deleted"), "success");
     expect(ProjectClientService.listProjects).toHaveBeenCalledTimes(1);
   });
 
