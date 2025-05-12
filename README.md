@@ -1,4 +1,4 @@
-# Plan My App
+# Plan My App.
 
 ![Version](https://img.shields.io/badge/version-0.0.1-blue.svg)
 ![License](https://img.shields.io/badge/license-GNU_AFFERO_GPL-green.svg)
