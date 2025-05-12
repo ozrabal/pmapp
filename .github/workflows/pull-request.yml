@@ -87,7 +87,7 @@ jobs:
 
       - name: Upload Playwright Report
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: playwright-report
           path: playwright-report/
@@ -95,7 +95,7 @@ jobs:
 
       - name: Upload test-results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-results
           path: test-results/
@@ -113,6 +113,7 @@ jobs:
           script: |
             const unitTestsResult = '${{ needs.unit-tests.result }}';
             const e2eTestsResult = '${{ needs.e2e-tests.result }}';
+            const lintResult = '${{ needs.lint.result }}';
             
             const allPassed = unitTestsResult === 'success' && e2eTestsResult === 'success';
             
@@ -129,7 +130,7 @@ jobs:
             commentBody += `### Results\n\n`;
             commentBody += `| Check | Status |\n`;
             commentBody += `| ----- | ------ |\n`;
-            commentBody += `| Lint | ${needs.lint.result === 'success' ? '✅ Pass' : '❌ Fail'} |\n`;
+            commentBody += `| Lint | ${lintResult === 'success' ? '✅ Pass' : '❌ Fail'} |\n`;
             commentBody += `| Unit Tests | ${unitTestsResult === 'success' ? '✅ Pass' : '❌ Fail'} |\n`;
             commentBody += `| E2E Tests | ${e2eTestsResult === 'success' ? '✅ Pass' : '❌ Fail'} |\n\n`;
             
