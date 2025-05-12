@@ -1,0 +1,147 @@
+name: Pull Request Workflow
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+  
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: Lint Code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linting
+        run: npm run lint
+
+  unit-tests:
+    name: Run Unit Tests
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests with coverage
+        run: npm run test:coverage
+
+      - name: Upload test coverage
+        uses: actions/upload-artifact@v3
+        with:
+          name: unit-test-coverage
+          path: coverage/
+          retention-days: 7
+
+  e2e-tests:
+    name: Run E2E Tests
+    needs: lint
+    runs-on: ubuntu-latest
+    environment: integration
+    env:
+      E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
+      E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install chromium
+
+      - name: Build the app
+        run: npm run build
+
+      - name: Run E2E tests
+        run: npm run e2e
+
+      - name: Upload Playwright Report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+
+      - name: Upload test-results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: test-results/
+          retention-days: 7
+
+  status-comment:
+    name: Post Status Comment
+    needs: [unit-tests, e2e-tests]
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Status Comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const unitTestsResult = '${{ needs.unit-tests.result }}';
+            const e2eTestsResult = '${{ needs.e2e-tests.result }}';
+            
+            const allPassed = unitTestsResult === 'success' && e2eTestsResult === 'success';
+            
+            let statusEmoji, statusTitle;
+            if (allPassed) {
+              statusEmoji = '✅';
+              statusTitle = 'All checks passed successfully!';
+            } else {
+              statusEmoji = '❌';
+              statusTitle = 'Some checks failed.';
+            }
+            
+            let commentBody = `## ${statusEmoji} Pull Request Status: ${statusTitle}\n\n`;
+            commentBody += `### Results\n\n`;
+            commentBody += `| Check | Status |\n`;
+            commentBody += `| ----- | ------ |\n`;
+            commentBody += `| Lint | ${needs.lint.result === 'success' ? '✅ Pass' : '❌ Fail'} |\n`;
+            commentBody += `| Unit Tests | ${unitTestsResult === 'success' ? '✅ Pass' : '❌ Fail'} |\n`;
+            commentBody += `| E2E Tests | ${e2eTestsResult === 'success' ? '✅ Pass' : '❌ Fail'} |\n\n`;
+            
+            commentBody += `### Test Artifacts\n\n`;
+            commentBody += `- [Unit Test Coverage](${context.payload.repository.html_url}/actions/runs/${context.runId})\n`;
+            commentBody += `- [E2E Test Report](${context.payload.repository.html_url}/actions/runs/${context.runId})\n\n`;
+            
+            commentBody += `_Workflow run: [${context.workflow}#${context.runNumber}](${context.payload.repository.html_url}/actions/runs/${context.runId})_`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: commentBody
+            });
