@@ -48,7 +48,7 @@ jobs:
         run: npm run test:coverage
 
       - name: Upload test coverage
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: unit-test-coverage
           path: coverage/
@@ -59,9 +59,6 @@ jobs:
     needs: lint
     runs-on: ubuntu-latest
     environment: integration
-    env:
-      E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
-      E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
 
     steps:
       - name: Checkout code
@@ -84,6 +81,9 @@ jobs:
 
       - name: Run E2E tests
         run: npm run e2e
+        env:
+          E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
+          E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
 
       - name: Upload Playwright Report
         if: always()
@@ -103,7 +103,7 @@ jobs:
 
   status-comment:
     name: Post Status Comment
-    needs: [unit-tests, e2e-tests]
+    needs: [lint, unit-tests, e2e-tests]
     if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     steps:
