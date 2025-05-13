@@ -204,6 +204,12 @@ export function NewPasswordForm() {
           "Set new password"
         )}
       </Button>
+      <p className="text-center text-sm">
+        Already have an account?{" "}
+        <a href="/auth/login" className="text-blue-600 hover:underline">
+          Log in
+        </a>
+      </p>
     </form>
   );
 }
