@@ -1,8 +1,9 @@
 // filepath: /Users/piotrlepkowski/Private/pmapp/src/pages/api/ai/project-suggestions.ts
 import type { APIRoute } from "astro";
 import { z } from "zod";
-import { aiService } from "../../../lib/services/ai.service";
+import { AiService } from "../../../lib/services/ai.service";
 import { AiServiceError } from "../../../lib/services/errors/ai-service.error";
+import { OPENAI_API_KEY, OPENAI_DEFAULT_MODEL } from "astro:env/server";
 
 export const prerender = false;
 
@@ -34,7 +35,8 @@ export const POST: APIRoute = async ({ request }) => {
     const validatedData = inputSchema.parse(rawData);
 
     // Process with AI service
-    const suggestions = await aiService.generateProjectSuggestions(validatedData.context, validatedData.focus);
+    const ai = new AiService(OPENAI_DEFAULT_MODEL, OPENAI_API_KEY);
+    const suggestions = await ai.generateProjectSuggestions(validatedData.context, validatedData.focus);
 
     // Return response
     return new Response(JSON.stringify({ suggestions }), {

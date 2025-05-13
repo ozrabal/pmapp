@@ -18,7 +18,6 @@ import type {
 } from "../../types";
 import type { ListProjectsQueryParams } from "../schemas/project.schema";
 import { ProjectAssumptionsSchema } from "../schemas/assumptions.schema";
-import { aiService } from "./ai.service";
 
 /**
  * Service for handling project-related database operations
@@ -125,7 +124,6 @@ export class ProjectService {
       .eq("user_id", userId)
       .is("deleted_at", null)
       .single();
-
     if (error) {
       throw new Error(`Failed to fetch project: ${error.message}`);
     }
@@ -329,15 +327,11 @@ export class ProjectService {
       throw new Error("Invalid assumptions format");
     }
 
-    // Use AI service to validate assumptions
-    const validationResult = await aiService.validateProjectAssumptions(parsedAssumptions.data);
+    // Use API endpoint to validate assumptions
+    const validationResult = await ProjectClientService.validateProjectAssumptions(projectId);
 
     // Return the validation result
-    return {
-      isValid: validationResult.isValid,
-      feedback: validationResult.feedback,
-      suggestions: validationResult.suggestions,
-    };
+    return validationResult;
   }
 
   /**
@@ -350,10 +344,10 @@ export class ProjectService {
    * @throws Error if project is not found or user doesn't have access
    */
   async getProjectSuggestions(projectId: string, userId: string, focus?: string): Promise<SuggestionDto[]> {
-    // Get project with all data that might be relevant for suggestions
-    const { data: project, error } = await this.supabase
+    // Check if project exists and user has access
+    const { error } = await this.supabase
       .from("projects")
-      .select("id, name, description, assumptions, functional_blocks, schedule")
+      .select("id")
       .eq("id", projectId)
       .eq("user_id", userId)
       .is("deleted_at", null)
@@ -363,18 +357,9 @@ export class ProjectService {
       throw new Error("Project not found or access denied");
     }
 
-    // Prepare project context for AI suggestion generation
-    const projectContext = {
-      id: project.id,
-      name: project.name,
-      description: project.description,
-      assumptions: project.assumptions,
-      functionalBlocks: project.functional_blocks,
-      schedule: project.schedule,
-    };
-
-    // Use AI service to generate suggestions
-    return aiService.generateProjectSuggestions(projectContext, focus);
+    // Use API endpoint to generate suggestions
+    const response = await ProjectClientService.getProjectSuggestions(projectId, focus);
+    return response.suggestions;
   }
 
   /**
@@ -386,10 +371,10 @@ export class ProjectService {
    * @throws Error if project is not found or user doesn't have access
    */
   async generateFunctionalBlocks(projectId: string, userId: string): Promise<{ blocks: FunctionalBlockDto[] }> {
-    // Get project with data needed for functional blocks generation
-    const { data: project, error } = await this.supabase
+    // Check if project exists and user has access
+    const { error } = await this.supabase
       .from("projects")
-      .select("id, name, description, assumptions")
+      .select("id")
       .eq("id", projectId)
       .eq("user_id", userId)
       .is("deleted_at", null)
@@ -399,18 +384,12 @@ export class ProjectService {
       throw new Error("Project not found or access denied");
     }
 
-    // Prepare project context for AI generation
-    const projectContext = {
-      id: project.id,
-      name: project.name,
-      description: project.description,
-      assumptions: project.assumptions,
-    };
+    const project = await this.getProject(userId, projectId);
 
-    // Use AI service to generate functional blocks
-    const functionalBlocks = await aiService.generateFunctionalBlocks(projectContext);
+    // Use API endpoint to generate functional blocks
+    const functionalBlocks = await ProjectClientService.generateFunctionalBlocks(projectId, project);
+
     // Update the project with the generated functional blocks
-    // Convert functional blocks to JSON-compatible structure
     await this.updateProject(userId, projectId, {
       functionalBlocks: JSON.parse(JSON.stringify({ blocks: functionalBlocks.blocks })),
     });
@@ -427,10 +406,10 @@ export class ProjectService {
    * @throws Error if project is not found or user doesn't have access
    */
   async generateProjectSchedule(projectId: string, userId: string): Promise<{ stages: ScheduleStageDto[] }> {
-    // Get project with data needed for schedule generation
-    const { data: project, error } = await this.supabase
+    // Check if project exists and user has access
+    const { error } = await this.supabase
       .from("projects")
-      .select("id, name, description, assumptions, functional_blocks")
+      .select("id")
       .eq("id", projectId)
       .eq("user_id", userId)
       .is("deleted_at", null)
@@ -440,31 +419,22 @@ export class ProjectService {
       throw new Error("Project not found or access denied");
     }
 
-    // Prepare project context for AI schedule generation
-    const projectContext = {
-      id: project.id,
-      name: project.name,
-      description: project.description,
-      assumptions: project.assumptions,
-      functionalBlocks: project.functional_blocks,
-    };
-
-    // Use AI service to generate schedule
-    const schedule = await aiService.generateSchedule(projectContext);
+    // Use API endpoint to generate schedule
+    const response = await ProjectClientService.generateProjectSchedule(projectId);
 
     // Update the project with the generated schedule
-    // Convert schedule to JSON-compatible structure
     await this.updateProject(userId, projectId, {
-      schedule: JSON.parse(JSON.stringify({ stages: schedule.stages })),
+      schedule: JSON.parse(JSON.stringify(response.schedule)),
     });
 
-    return schedule;
+    return response.schedule;
   }
 }
 
 /**
  * Client service for interacting with the project-related API endpoints
  */
+
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class ProjectClientService {
   private static readonly API_BASE_PATH = "/api/projects";
@@ -506,7 +476,6 @@ export class ProjectClientService {
    */
   static async getProject(id: string): Promise<ProjectDto> {
     const response = await fetch(`${this.API_BASE_PATH}/${id}`);
-
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData?.error?.message || `Failed to fetch project with ID: ${id}`);
@@ -588,11 +557,17 @@ export class ProjectClientService {
    * @returns A promise that resolves to a ValidateProjectAssumptionsResponseDto
    */
   static async validateProjectAssumptions(id: string): Promise<ValidateProjectAssumptionsResponseDto> {
-    const response = await fetch(`${this.API_BASE_PATH}/${id}/assumptions/validate`, {
+    const project = await this.getProject(id);
+    if (!project.assumptions) {
+      throw new Error("Project assumptions not defined");
+    }
+
+    const response = await fetch(`/api/ai/validate-assumptions`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
+      body: JSON.stringify({ projectId: id, assumptions: project.assumptions }),
     });
 
     if (!response.ok) {
@@ -649,5 +624,42 @@ export class ProjectClientService {
     }
 
     return response.json();
+  }
+
+  /**
+   * Generate functional blocks for a project using AI
+   *
+   * @param id - The ID of the project to generate functional blocks for
+   * @returns A promise that resolves to an object with functional blocks
+   */
+  static async generateFunctionalBlocks(id: string, project: ProjectDto): Promise<{ blocks: FunctionalBlockDto[] }> {
+    try {
+      const requestBody = {
+        id: project.id,
+        context: {
+          id: project.id,
+          name: project.name,
+          description: project.description,
+          assumptions: project.assumptions,
+        },
+      };
+      const response = await fetch(`/ai/generate-functional-blocks`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData?.error?.message || `Failed to generate functional blocks for project with ID: ${id}`);
+      }
+
+      return response.json();
+    } catch (error) {
+      throw new Error(
+        `Failed to generate functional blocks: ${error instanceof Error ? error.message : "Unknown error"}`
+      );
+    }
   }
 }

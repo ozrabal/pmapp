@@ -1,6 +1,8 @@
 import type { APIContext } from "astro";
 import { projectIdSchema } from "../../../../../lib/schemas/project.schema";
 import { ProjectService } from "../../../../../lib/services/project.service";
+import { OPENAI_API_KEY, OPENAI_DEFAULT_MODEL } from "astro:env/server";
+import AiService, { type ProjectFunctionalBlockContext } from "@/lib/services/ai.service";
 
 // Set prerender to false for API routes
 export const prerender = false;
@@ -48,7 +50,16 @@ export async function POST({ params, locals }: APIContext) {
 
     // Step 3: Generate functional blocks using ProjectService with the authenticated user's ID
     const projectService = new ProjectService(locals.supabase);
-    const functionalBlocks = await projectService.generateFunctionalBlocks(parsedId.data, user.id);
+    const project = await projectService.getProject(user.id, parsedId.data);
+    // const functionalBlocks = await projectService.generateFunctionalBlocks(parsedId.data, user.id);
+    const requestBody = {
+      id: project.id,
+      name: project.name,
+      description: project.description,
+      assumptions: project.assumptions,
+    };
+    const ai = new AiService(OPENAI_DEFAULT_MODEL, OPENAI_API_KEY);
+    const functionalBlocks = await ai.generateFunctionalBlocks(requestBody as ProjectFunctionalBlockContext);
 
     // Step 4: Return the generated functional blocks
     return new Response(

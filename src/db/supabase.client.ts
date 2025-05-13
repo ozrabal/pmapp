@@ -3,9 +3,10 @@ import { createServerClient, type CookieOptionsWithName } from "@supabase/ssr";
 import type { AstroCookies } from "astro";
 
 import type { Database } from "./database.types";
+import { SUPABASE_KEY, SUPABASE_URL } from "astro:env/server";
 
-const supabaseUrl = import.meta.env.SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.SUPABASE_KEY;
+const supabaseUrl = SUPABASE_URL;
+const supabaseAnonKey = SUPABASE_KEY;
 
 // Standard client for browser usage
 export const supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKey);
@@ -17,7 +18,7 @@ export const DEFAULT_USER_ID = "47d41db2-992a-45c0-9cdf-1e63347cfc35";
 export const cookieOptions: CookieOptionsWithName = {
   path: "/",
   // only in production
-  secure: import.meta.env.PRODUCTION ? true : false,
+  secure: true,
   maxAge: 60 * 60 * 24 * 7, // 1 week
   httpOnly: true,
   sameSite: "lax",

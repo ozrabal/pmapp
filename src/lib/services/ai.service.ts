@@ -113,11 +113,11 @@ export class AiService {
     "gpt-4-all-tools",
   ];
 
-  constructor() {
+  constructor(model: string, apiKey: string) {
     // Initialize with environment variables
-    this.defaultModel = import.meta.env.OPENAI_DEFAULT_MODEL || "gpt-4o";
-    this.fallbackModel = import.meta.env.OPENAI_FALLBACK_MODEL || "gpt-3.5-turbo";
-    this.apiKey = import.meta.env.OPENAI_API_KEY || "";
+    this.defaultModel = model || "gpt-4o";
+    this.fallbackModel = model || "gpt-3.5-turbo";
+    this.apiKey = apiKey || "";
 
     // Only initialize OpenAI client on the server side
     if (!isBrowser()) {
@@ -805,5 +805,4 @@ Provide specific, actionable suggestions to improve this project.`;
   }
 }
 
-// Export a singleton instance of the service
-export const aiService = new AiService();
+export default AiService;

@@ -3,6 +3,8 @@ import type { APIContext } from "astro";
 import { projectIdSchema } from "../../../../../lib/schemas/project.schema";
 import { ProjectService } from "../../../../../lib/services/project.service";
 import type { GenerateScheduleResponseDto } from "../../../../../types";
+import AiService from "@/lib/services/ai.service";
+import { OPENAI_DEFAULT_MODEL, OPENAI_API_KEY } from "astro:env/server";
 
 // Set prerender to false for API routes
 export const prerender = false;
@@ -50,7 +52,17 @@ export async function POST({ params, locals }: APIContext) {
 
     // Step 3: Generate schedule using ProjectService with authenticated user's ID
     const projectService = new ProjectService(locals.supabase);
-    const schedule = await projectService.generateProjectSchedule(parsedId.data, user.id);
+    const project = await projectService.getProject(user.id, parsedId.data);
+    // const schedule = await projectService.generateProjectSchedule(parsedId.data, user.id);
+
+    const ai = new AiService(OPENAI_DEFAULT_MODEL, OPENAI_API_KEY);
+    const schedule = await ai.generateSchedule({
+      id: project.id,
+      name: project.name,
+      description: project.description,
+      assumptions: project.assumptions,
+      functionalBlocks: project.functionalBlocks,
+    });
 
     // Step 4: Return the generated schedule in the expected response format
     const response: GenerateScheduleResponseDto = {

@@ -1,7 +1,8 @@
 // filepath: /Users/piotrlepkowski/Private/pmapp/src/pages/api/ai/generate-functional-blocks.ts
 import type { APIRoute } from "astro";
 import { z } from "zod";
-import { aiService, type ProjectFunctionalBlockContext } from "../../../lib/services/ai.service";
+import { AiService, type ProjectFunctionalBlockContext } from "../../../lib/services/ai.service";
+import { OPENAI_DEFAULT_MODEL, OPENAI_API_KEY } from "astro:env/server";
 
 export const prerender = false;
 
@@ -23,7 +24,8 @@ export const POST: APIRoute = async ({ request }) => {
     const validatedData = inputSchema.parse(rawData);
 
     // Process with AI service
-    const result = await aiService.generateFunctionalBlocks(validatedData.context as ProjectFunctionalBlockContext);
+    const ai = new AiService(OPENAI_DEFAULT_MODEL, OPENAI_API_KEY);
+    const result = await ai.generateFunctionalBlocks(validatedData.context as ProjectFunctionalBlockContext);
 
     // Return response
     return new Response(JSON.stringify(result), {
@@ -34,6 +36,7 @@ export const POST: APIRoute = async ({ request }) => {
     });
   } catch (error) {
     // If it's a validation error, return a 400
+
     if (error instanceof z.ZodError) {
       return new Response(
         JSON.stringify({
