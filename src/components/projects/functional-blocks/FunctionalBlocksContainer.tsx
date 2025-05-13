@@ -96,17 +96,14 @@ export default function FunctionalBlocksContainer({ projectId }: FunctionalBlock
       </div>
 
       {/* Content */}
-      {blocks.length > 0 ? (
-        <FunctionalBlocksList
-          blocks={blocks}
-          onReorder={reorderBlocks}
-          onAddBlock={handleAddBlock}
-          onEditBlock={handleEditBlock}
-          onDeleteBlock={deleteBlock}
-        />
-      ) : (
-        <EmptyState onGenerate={handleGenerateBlocks} isLoading={isLoading} />
-      )}
+      <FunctionalBlocksList
+        blocks={blocks}
+        onReorder={reorderBlocks}
+        onAddBlock={handleAddBlock}
+        onEditBlock={handleEditBlock}
+        onDeleteBlock={deleteBlock}
+      />
+      {!blocks.length && <EmptyState onGenerate={handleGenerateBlocks} isLoading={isLoading} />}
 
       {/* Functional Block Form Dialog */}
       <FunctionalBlockFormDialog
