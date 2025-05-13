@@ -4,9 +4,10 @@ import { CalendarClock, PlusCircle } from "lucide-react";
 
 interface EmptyScheduleStateProps {
   onGenerateSchedule: () => Promise<void>;
+  onAddStage: () => void;
 }
 
-const EmptyScheduleState: React.FC<EmptyScheduleStateProps> = ({ onGenerateSchedule }) => {
+const EmptyScheduleState: React.FC<EmptyScheduleStateProps> = ({ onGenerateSchedule, onAddStage }) => {
   return (
     <div className="flex flex-col items-center justify-center py-12 px-4 border-2 border-dashed border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-900 dark:border-gray-800">
       <div className="mb-4 p-3 bg-primary/10 rounded-full">
@@ -23,7 +24,7 @@ const EmptyScheduleState: React.FC<EmptyScheduleStateProps> = ({ onGenerateSched
           <CalendarClock className="h-4 w-4" />
           Generate schedule
         </Button>
-        <Button variant="outline" className="flex items-center gap-2">
+        <Button variant="outline" className="flex items-center gap-2" onClick={onAddStage}>
           <PlusCircle className="h-4 w-4" />
           Add stage manually
         </Button>

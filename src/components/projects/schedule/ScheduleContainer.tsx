@@ -76,7 +76,6 @@ const ScheduleContainerContent: React.FC = () => {
       </div>
     );
   }
-
   // Render error state
   if (error) {
     return (
@@ -96,18 +95,18 @@ const ScheduleContainerContent: React.FC = () => {
         onGenerateSchedule={generateSchedule}
       />
 
+      <ScheduleContent
+        schedule={schedule || undefined}
+        onAddStage={handleAddStage}
+        onEditStage={handleEditStage}
+        onDeleteStage={deleteStage}
+        onReorderStages={reorderStages}
+      />
       {/* Content area - Empty state or schedule content */}
-      {!schedule || schedule.stages.length === 0 ? (
-        <EmptyScheduleState onGenerateSchedule={generateSchedule} />
-      ) : (
-        <ScheduleContent
-          schedule={schedule}
-          onAddStage={handleAddStage}
-          onEditStage={handleEditStage}
-          onDeleteStage={deleteStage}
-          onReorderStages={reorderStages}
-        />
-      )}
+      {!schedule ||
+        (schedule.stages.length === 0 && (
+          <EmptyScheduleState onGenerateSchedule={generateSchedule} onAddStage={handleAddStage} />
+        ))}
 
       {/* Modal for adding/editing stages */}
       <ScheduleStageFormModal

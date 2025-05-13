@@ -36,7 +36,11 @@ const mapToDto = (schedule: ProjectScheduleViewModel): ProjectDto["schedule"] =>
 
 export const useScheduleState = (projectId: string) => {
   // Schedule state
-  const [schedule, setSchedule] = useState<ProjectScheduleViewModel | null>(null);
+  const [schedule, setSchedule] = useState<ProjectScheduleViewModel>({
+    stages: [],
+    isGeneratedByAI: false,
+    lastUpdated: new Date().toISOString(),
+  });
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -60,7 +64,11 @@ export const useScheduleState = (projectId: string) => {
       if (projectData.schedule) {
         setSchedule(mapToViewModel(projectData.schedule as unknown as ProjectScheduleViewModel));
       } else {
-        setSchedule(null);
+        setSchedule({
+          stages: [],
+          isGeneratedByAI: false,
+          lastUpdated: new Date().toISOString(),
+        });
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error while fetching schedule");

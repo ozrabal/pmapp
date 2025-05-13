@@ -5,7 +5,7 @@ import { type ProjectScheduleViewModel, type ScheduleStageViewModel } from "./ty
 import ScheduleStagesList from "./ScheduleStagesList";
 
 interface ScheduleContentProps {
-  schedule: ProjectScheduleViewModel;
+  schedule?: ProjectScheduleViewModel;
   onAddStage: () => void;
   onEditStage: (stage: ScheduleStageViewModel) => void;
   onDeleteStage: (stageId: string) => Promise<void>;
@@ -23,7 +23,7 @@ const ScheduleContent: React.FC<ScheduleContentProps> = ({
   const getDependenciesMap = (): Record<string, ScheduleStageViewModel[]> => {
     const dependencies: Record<string, ScheduleStageViewModel[]> = {};
 
-    schedule.stages.forEach((stage) => {
+    schedule?.stages.forEach((stage) => {
       stage.dependencies.forEach((dependencyId) => {
         if (!dependencies[dependencyId]) {
           dependencies[dependencyId] = [];
@@ -41,14 +41,15 @@ const ScheduleContent: React.FC<ScheduleContentProps> = ({
   return (
     <div className="space-y-6">
       {/* Schedule stages list */}
-      <ScheduleStagesList
-        stages={schedule.stages}
-        dependencies={dependenciesMap}
-        onEditStage={onEditStage}
-        onDeleteStage={onDeleteStage}
-        onReorderStages={onReorderStages}
-      />
-
+      {schedule?.stages.length !== 0 && (
+        <ScheduleStagesList
+          stages={schedule?.stages || []}
+          dependencies={dependenciesMap}
+          onEditStage={onEditStage}
+          onDeleteStage={onDeleteStage}
+          onReorderStages={onReorderStages}
+        />
+      )}
       {/* Add new stage button */}
       <div className="flex justify-center pt-4">
         <Button variant="outline" onClick={onAddStage} className="flex items-center gap-2">
