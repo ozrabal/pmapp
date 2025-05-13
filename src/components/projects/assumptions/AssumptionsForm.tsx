@@ -73,15 +73,6 @@ export function AssumptionsForm({ projectId, className }: AssumptionsFormProps) 
     );
   }
 
-  if (!project?.assumptions && !project?.isLoading) {
-    return (
-      <Alert className={className}>
-        <AlertCircle className="h-4 w-4" />
-        <AlertTitle>No assumptions defined</AlertTitle>
-        <AlertDescription>This project does not have any assumptions defined yet.</AlertDescription>
-      </Alert>
-    );
-  }
   return (
     <div className={`space-y-6 ${className}`}>
       <Card>
@@ -92,7 +83,7 @@ export function AssumptionsForm({ projectId, className }: AssumptionsFormProps) 
           <AssumptionField
             id="projectGoals"
             label="Project Goals"
-            value={project.assumptions?.projectGoals || ""}
+            value={project?.assumptions?.projectGoals || ""}
             onChange={(value) => updateAssumption("projectGoals", value)}
             suggestions={getSuggestionsForField("projectGoals")}
             feedback={getFeedbackForField("projectGoals")}
@@ -104,7 +95,7 @@ export function AssumptionsForm({ projectId, className }: AssumptionsFormProps) 
           <AssumptionField
             id="targetAudience"
             label="Target Audience"
-            value={project.assumptions?.targetAudience || ""}
+            value={project?.assumptions?.targetAudience || ""}
             onChange={(value) => updateAssumption("targetAudience", value)}
             suggestions={getSuggestionsForField("targetAudience")}
             feedback={getFeedbackForField("targetAudience")}
@@ -116,7 +107,7 @@ export function AssumptionsForm({ projectId, className }: AssumptionsFormProps) 
           <AssumptionField
             id="keyFeatures"
             label="Key Features"
-            value={project.assumptions?.keyFeatures || ""}
+            value={project?.assumptions?.keyFeatures || ""}
             onChange={(value) => updateAssumption("keyFeatures", value)}
             suggestions={getSuggestionsForField("keyFeatures")}
             feedback={getFeedbackForField("keyFeatures")}
@@ -128,7 +119,7 @@ export function AssumptionsForm({ projectId, className }: AssumptionsFormProps) 
           <AssumptionField
             id="technologyStack"
             label="Technology Stack"
-            value={project.assumptions?.technologyStack || ""}
+            value={project?.assumptions?.technologyStack || ""}
             onChange={(value) => updateAssumption("technologyStack", value)}
             suggestions={getSuggestionsForField("technologyStack")}
             feedback={getFeedbackForField("technologyStack")}
@@ -140,7 +131,7 @@ export function AssumptionsForm({ projectId, className }: AssumptionsFormProps) 
           <AssumptionField
             id="constraints"
             label="Constraints"
-            value={project.assumptions?.constraints || ""}
+            value={project?.assumptions?.constraints || ""}
             onChange={(value) => updateAssumption("constraints", value)}
             suggestions={getSuggestionsForField("constraints")}
             feedback={getFeedbackForField("constraints")}
