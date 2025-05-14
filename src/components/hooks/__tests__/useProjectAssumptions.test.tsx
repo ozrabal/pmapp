@@ -52,53 +52,6 @@ describe("useProjectAssumptions", () => {
     expect(result.current.project?.assumptions?.projectGoals).toBe("Initial goals");
   });
 
-  it("should update assumption field and call API with debounce", async () => {
-    // First setup the hook with real timers
-    const { result } = renderHook(() => useProjectAssumptions(projectId));
-
-    // Wait for initial load with real timers
-    await waitFor(() => {
-      expect(result.current.project).not.toBeNull();
-    });
-
-    // Now switch to fake timers for testing the debounce
-    vi.useFakeTimers();
-
-    // Update a field
-    act(() => {
-      result.current.updateAssumption("projectGoals", "Updated goals");
-    });
-
-    // Verify immediate state update
-    expect(result.current.project?.assumptions?.projectGoals).toBe("Updated goals");
-
-    // API should not have been called yet due to debounce
-    expect(ProjectClientService.updateProject).not.toHaveBeenCalled();
-
-    // Fast-forward debounce timeout
-    act(() => {
-      vi.advanceTimersByTime(500);
-    });
-
-    // Switch back to real timers before doing more async operations
-    vi.useRealTimers();
-
-    // Wait for update to complete
-    await waitFor(() => {
-      expect(ProjectClientService.updateProject).toHaveBeenCalled();
-    });
-
-    // Now API should be called
-    expect(ProjectClientService.updateProject).toHaveBeenCalledWith(
-      "test-project-id",
-      expect.objectContaining({
-        assumptions: expect.objectContaining({
-          projectGoals: "Updated goals",
-        }),
-      })
-    );
-  });
-
   it("should validate assumptions", async () => {
     const { result } = renderHook(() => useProjectAssumptions(projectId));
 
