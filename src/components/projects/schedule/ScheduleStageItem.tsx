@@ -84,25 +84,7 @@ const ScheduleStageItem: React.FC<ScheduleStageItemProps> = ({
 
       <CardHeader className="flex flex-row items-center justify-between p-4 pl-8 cursor-pointer" onClick={toggleExpand}>
         <div>
-          <h3 className="text-lg font-medium flex items-center">
-            {stage.name}
-
-            {/* Show icon if there are dependent stages */}
-            {hasDependents && (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span className="inline-flex ml-2">
-                      <AlertTriangle className="h-4 w-4 text-amber-500" aria-hidden="true" />
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>This stage has dependent stages. It cannot be deleted.</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            )}
-          </h3>
+          <h3 className="text-lg font-medium flex items-center">{stage.name}</h3>
 
           <div className="flex flex-wrap gap-2 mt-1">
             {/* Dependencies badge */}
@@ -136,16 +118,54 @@ const ScheduleStageItem: React.FC<ScheduleStageItemProps> = ({
             <Edit className="h-4 w-4" />
           </Button>
 
-          <Button
-            variant="ghost"
-            size="sm"
-            className={cn("h-8 w-8 p-0 opacity-70 hover:opacity-100", hasDependents && "opacity-40 cursor-not-allowed")}
-            onClick={handleDeleteClick}
-            disabled={hasDependents}
-            aria-label={hasDependents ? "Cannot delete a stage with dependent stages" : "Delete stage"}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
+          {isExpanded && (
+            <>
+              {/* Show icon if there are dependent stages */}
+              {hasDependents ? (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div>
+                        <span className="inline-flex ml-2">
+                          <AlertTriangle className="h-4 w-4 text-amber-500" aria-hidden="true" />
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className={cn(
+                            "h-8 w-8 p-0 opacity-70 hover:opacity-100",
+                            hasDependents && "opacity-40 cursor-not-allowed"
+                          )}
+                          onClick={handleDeleteClick}
+                          disabled={hasDependents}
+                          aria-label={hasDependents ? "Cannot delete a stage with dependent stages" : "Delete stage"}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>This stage has dependent stages. It cannot be deleted.</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              ) : (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={cn(
+                    "h-8 w-8 p-0 opacity-70 hover:opacity-100",
+                    hasDependents && "opacity-40 cursor-not-allowed"
+                  )}
+                  onClick={handleDeleteClick}
+                  disabled={hasDependents}
+                  aria-label={hasDependents ? "Cannot delete a stage with dependent stages" : "Delete stage"}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              )}
+            </>
+          )}
 
           <Button
             variant="ghost"
@@ -163,7 +183,7 @@ const ScheduleStageItem: React.FC<ScheduleStageItemProps> = ({
       {/* Expanded content */}
       {isExpanded && (
         <>
-          <CardContent className="px-4 pt-0 pb-3">
+          <CardContent className="px-8 pt-0 pb-3">
             <div className="mb-3">
               {stage.description ? (
                 <p className="text-sm text-gray-700 whitespace-pre-wrap">{stage.description}</p>
