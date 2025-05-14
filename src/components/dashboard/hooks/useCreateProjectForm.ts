@@ -56,9 +56,9 @@ export function useCreateProjectForm(): UseCreateProjectFormResult {
     let error: string | null = null;
 
     if (!formState.name.trim()) {
-      error = "Nazwa projektu jest wymagana";
+      error = "Project name is required";
     } else if (formState.name.length > MAX_NAME_LENGTH) {
-      error = `Nazwa projektu nie może przekraczać ${MAX_NAME_LENGTH} znaków`;
+      error = `Project name cannot exceed ${MAX_NAME_LENGTH} characters`;
     }
 
     setFormState((prev) => ({ ...prev, nameError: error }));
@@ -70,7 +70,7 @@ export function useCreateProjectForm(): UseCreateProjectFormResult {
     let error: string | null = null;
 
     if (formState.description && formState.description.length > MAX_DESCRIPTION_LENGTH) {
-      error = `Opis projektu nie może przekraczać ${MAX_DESCRIPTION_LENGTH} znaków`;
+      error = `Project description cannot exceed ${MAX_DESCRIPTION_LENGTH} characters`;
     }
 
     setFormState((prev) => ({ ...prev, descriptionError: error }));
@@ -122,7 +122,7 @@ export function useCreateProjectForm(): UseCreateProjectFormResult {
           // Project limit exceeded
           setFormState((prev) => ({
             ...prev,
-            serverError: "Osiągnięto limit projektów. Usuń niewykorzystane projekty, aby móc dodać nowy.",
+            serverError: "Project limit reached. Delete unused projects to add a new one.",
             isSubmitting: false,
           }));
           return;
@@ -138,7 +138,7 @@ export function useCreateProjectForm(): UseCreateProjectFormResult {
               ...prev,
               nameError: details.name || prev.nameError,
               descriptionError: details.description || prev.descriptionError,
-              serverError: errorData.error.message || "Popraw błędy w formularzu",
+              serverError: errorData.error.message || "Please correct the form errors",
               isSubmitting: false,
             }));
             return;
@@ -172,7 +172,7 @@ export function useCreateProjectForm(): UseCreateProjectFormResult {
       } catch (parseError) {
         setFormState((prev) => ({
           ...prev,
-          serverError: "Nie udało się przetworzyć odpowiedzi serwera",
+          serverError: "Failed to process server response",
           isSubmitting: false,
         }));
       }
@@ -181,7 +181,7 @@ export function useCreateProjectForm(): UseCreateProjectFormResult {
       // Network or unexpected error
       setFormState((prev) => ({
         ...prev,
-        serverError: "Nie udało się połączyć z serwerem. Sprawdź połączenie internetowe.",
+        serverError: "Could not connect to the server. Please check your internet connection.",
         isSubmitting: false,
       }));
     }
@@ -191,7 +191,7 @@ export function useCreateProjectForm(): UseCreateProjectFormResult {
   const cancel = useCallback(() => {
     // Confirm if form has changes
     if (formState.isDirty && (formState.name.trim() !== "" || formState.description.trim() !== "")) {
-      if (window.confirm("Czy na pewno chcesz anulować? Wprowadzone dane zostaną utracone.")) {
+      if (window.confirm("Are you sure you want to cancel? Your changes will be lost.")) {
         navigate("/dashboard");
       }
     } else {

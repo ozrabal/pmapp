@@ -35,10 +35,10 @@ export function CreateProjectForm() {
 
   // Determine retry message based on error type
   const getRetryAction = () => {
-    if (formState.serverError?.includes("połączyć z serwerem")) {
+    if (formState.serverError?.includes("connect to the server")) {
       return "Sprawdź połączenie i spróbuj ponownie";
     }
-    return "Spróbuj ponownie";
+    return "Try again";
   };
 
   return (
@@ -51,9 +51,9 @@ export function CreateProjectForm() {
         aria-describedby={formState.serverError ? errorId : `${formId}-description`}
       >
         <CardHeader>
-          <CardTitle id={`${formId}-title`}>Utwórz nowy projekt</CardTitle>
+          <CardTitle id={`${formId}-title`}>Create new project</CardTitle>
           <CardDescription id={`${formId}-description`}>
-            Wypełnij poniższy formularz, aby utworzyć nowy projekt. Pola oznaczone gwiazdką (*) są wymagane.
+            Fill out the form below to create a new project. Fields marked with an asterisk (*) are required.
           </CardDescription>
         </CardHeader>
 
