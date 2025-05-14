@@ -49,7 +49,7 @@ jobs:
       OPENAI_FALLBACK_MODEL: ${{ secrets.OPENAI_FALLBACK_MODEL }}
     needs: unit-tests
     # Only run E2E tests on pull requests to main branch to save CI resources
-    # if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
