@@ -148,68 +148,29 @@ export class ProjectService {
    * @returns A promise that resolves to a CreateProjectResponseDto
    */
   async createProject(userId: string, project: CreateProjectRequestDto): Promise<CreateProjectResponseDto> {
-    // When using RLS, we need to ensure we're in the security context of the user
-    // First check if the current Supabase client has an active auth session
-    const { data: sessionData } = await this.supabase.auth.getSession();
+    const { data, error } = await this.supabase
+      .from("projects")
+      .insert([
+        {
+          // No need to set user_id explicitly as RLS will handle this
+          user_id: userId,
+          name: project.name,
+          description: project.description || null,
+        },
+      ])
+      .select()
+      .single();
 
-    if (!sessionData?.session) {
-      // If there's no session, we need to use the admin API to bypass RLS
-      // This requires setting user_id explicitly as we're doing
-
-      // Create project using BYPASSRLS capability (available to service_role)
-      const { data, error } = await this.supabase
-        .from("projects")
-        .insert([
-          {
-            user_id: userId,
-            name: project.name,
-            description: project.description || null,
-          },
-        ])
-        .select()
-        .single();
-
-      if (error) {
-        throw new Error(`Failed to create project: ${error.message}`);
-      }
-
-      return {
-        id: data.id,
-        name: data.name,
-        description: data.description,
-        createdAt: data.created_at,
-      };
-    } else {
-      // If there's an active session, the RLS policies will be applied automatically
-      // Make sure the authenticated user matches the userId parameter
-      if (sessionData.session.user.id !== userId) {
-        throw new Error("User ID mismatch: Cannot create project for another user");
-      }
-
-      const { data, error } = await this.supabase
-        .from("projects")
-        .insert([
-          {
-            // No need to set user_id explicitly as RLS will handle this
-            user_id: userId,
-            name: project.name,
-            description: project.description || null,
-          },
-        ])
-        .select()
-        .single();
-
-      if (error) {
-        throw new Error(`Failed to create project: ${error.message}`);
-      }
-
-      return {
-        id: data.id,
-        name: data.name,
-        description: data.description,
-        createdAt: data.created_at,
-      };
+    if (error) {
+      throw new Error(`Failed to create project: ${error.message}`);
     }
+
+    return {
+      id: data.id,
+      name: data.name,
+      description: data.description,
+      createdAt: data.created_at,
+    };
   }
 
   /**
