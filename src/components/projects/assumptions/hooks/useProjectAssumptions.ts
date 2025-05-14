@@ -92,28 +92,28 @@ export function useProjectAssumptions(projectId: string) {
   const debouncedUpdate = useCallback(
     (field: keyof AssumptionsViewModel, value: string) => {
       const debouncedFn = debounce(async (f: keyof AssumptionsViewModel, v: string) => {
-        setProject((currentProject) => {
-          if (!currentProject?.id || !currentProject.assumptions) return currentProject;
+        setProject((project) => {
+          if (!project?.id) return project;
 
           const updatedAssumptions = {
-            ...currentProject.assumptions,
+            ...project.assumptions,
             [f]: v,
           };
-
-          ProjectClientService.updateProject(currentProject.id, {
+          ProjectClientService.updateProject(project.id, {
             assumptions: AssumptionsMappers.viewModelToJson(updatedAssumptions),
           }).catch((error) => {
             // eslint-disable-next-line no-console
             console.error("Error saving assumptions:", error);
           });
 
-          return currentProject;
+          return project;
         });
-      }, 500);
+      }, 5000);
 
       debouncedFn(field, value);
     },
     [
+      setProject,
       /* Dependencies would go here if needed */
     ]
   );
@@ -139,8 +139,8 @@ export function useProjectAssumptions(projectId: string) {
         ...prev,
         suggestions: prev.suggestions.map((s) => (s.field === field ? { ...s, outdated: true } : s)),
       }));
-
       // Trigger debounced update to API
+
       debouncedUpdate(field, value);
     },
     [debouncedUpdate]

@@ -152,7 +152,6 @@ export class ProjectService {
       .from("projects")
       .insert([
         {
-          // No need to set user_id explicitly as RLS will handle this
           user_id: userId,
           name: project.name,
           description: project.description || null,
@@ -160,7 +159,6 @@ export class ProjectService {
       ])
       .select()
       .single();
-
     if (error) {
       throw new Error(`Failed to create project: ${error.message}`);
     }

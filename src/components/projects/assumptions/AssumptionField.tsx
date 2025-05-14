@@ -1,6 +1,5 @@
 import React from "react";
 import { Label } from "../../ui/label";
-import { Textarea } from "../../ui/textarea";
 import { FeedbackItem } from "./FeedbackItem";
 import type { AssumptionFieldProps } from "./types";
 
@@ -38,15 +37,17 @@ export function AssumptionField({
         </span>
       </div>
 
-      <Textarea
+      <textarea
         id={String(id)}
         ref={fieldRef}
-        value={value || ""}
-        onChange={(e) => onChange(e.target.value)}
+        defaultValue={value || ""}
+        onInput={(e: React.FormEvent<HTMLTextAreaElement>) => {
+          onChange(e.currentTarget.value);
+        }}
         placeholder={`Enter ${label.toLowerCase()}...`}
         disabled={isLoading}
         maxLength={maxLength}
-        className="min-h-24 resize-y"
+        className="border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 flex field-sizing-content min-h-24 w-full rounded-md border bg-transparent px-3 py-2 text-base shadow-xs outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 resize-y"
         aria-describedby={`${id}-description`}
       />
 
