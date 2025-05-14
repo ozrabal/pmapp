@@ -3,6 +3,7 @@ import "../styles/global.css";
 import { NotificationProvider } from "@/components/ui/notification-provider";
 import AppHeader from "@/components/dashboard/AppHeader.astro";
 import { LogoutButton } from "@/components/auth/LogoutButton";
+import { Button } from "@/components/ui/button";
 
 interface Props {
   title?: string;
@@ -34,6 +35,10 @@ const isAuthenticated = !!user;
             isAuthenticated && (
               <div class="flex items-center gap-3">
                 <span class="text-sm text-muted-foreground">{user?.email}</span>
+
+                <a href="/dashboard" class="text-sm hover:underline">
+                  <Button variant="link">Dashboard</Button>
+                </a>
                 <LogoutButton variant="outline" size="sm" client:load />
               </div>
             )
