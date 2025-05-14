@@ -17,7 +17,7 @@ export default defineConfig({
     timeout: 5000,
   },
   /* Run tests in files in parallel */
-  fullyParallel: true,
+  fullyParallel: false,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
@@ -37,6 +37,10 @@ export default defineConfig({
 
     /* Record video only when retrying a test */
     video: "on-first-retry",
+
+    launchOptions: {
+      slowMo: 50,
+    },
   },
 
   /* Configure projects for major browsers */
@@ -60,9 +64,9 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: "npm run preview -- --port 4322",
+    command: "npm run dev:e2e -- --port 4322",
     url: "http://localhost:4322",
-    reuseExistingServer: !process.env.CI,
+    // reuseExistingServer: !process.env.CI,
     timeout: 120000, // Increased timeout to 2 minutes
   },
 });
