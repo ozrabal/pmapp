@@ -4,7 +4,7 @@
 
 Plan My App to aplikacja wspomagana przez sztuczną inteligencję, która ma na celu usprawnienie procesu planowania projektów aplikacji poprzez zapewnienie struktury, doradztwa i automatyzacji elementów planowania. System skierowany jest głównie do menedżerów projektów oraz programistów tworzących samodzielnie aplikacje, którzy potrzebują kompleksowego narzędzia do planowania projektów.
 
-Aplikacja w wersji MVP umożliwia definiowanie podstawowych założeń projektu, podział na bloki funkcjonalne oraz tworzenie prostego harmonogramu. Kluczowym elementem jest wspomaganie decyzji przez AI, które analizuje założenia projektowe i sugeruje optymalne rozwiązania.
+Aplikacja w wersji MVP umożliwia definiowanie podstawowych założeń projektu, podział na bloki funkcjonalne, tworzenie prostego harmonogramu oraz szczegółowe zarządzanie zadaniami w ramach każdego bloku funkcjonalnego. Kluczowym elementem jest wspomaganie decyzji przez AI, które analizuje założenia projektowe, sugeruje optymalne rozwiązania, pomaga w estymacji zadań oraz automatycznie generuje szczegółowe zadania na podstawie opisów bloków funkcjonalnych.
 
 Główne korzyści dla użytkowników:
 - Uproszczenie procesu planowania projektów
@@ -12,6 +12,9 @@ Główne korzyści dla użytkowników:
 - Minimalizacja ryzyka pominięcia kluczowych elementów projektu
 - Dostęp do wsparcia AI w podejmowaniu decyzji projektowych
 - Uporządkowana struktura planowania projektu
+- Szczegółowe zarządzanie zadaniami w ramach bloków funkcjonalnych
+- Automatyczna estymacja czasu i nakładu pracy na zadania
+- Zwiększenie przejrzystości i organizacji pracy zespołu
 
 ## 2. Problem użytkownika
 
@@ -22,10 +25,13 @@ Planowanie procesu tworzenia aplikacji jest złożonym zadaniem, które często 
 - Problem z oszacowaniem czasu potrzebnego na realizację poszczególnych elementów
 - Niepewność co do kolejności realizacji zadań i zależności między nimi
 - Brak dostępu do eksperckiej wiedzy na temat zarządzania projektami
+- Brak centralnego miejsca do tworzenia i organizowania szczegółowych zadań składających się na bloki funkcjonalne
+- Trudności z estymacją czasu i nakładu pracy na poszczególne zadania
+- Problem z zachowaniem przejrzystości i kontroli nad postępem prac w ramach projektu
 
-W wyniku tych problemów, wiele projektów nie jest realizowanych w terminie i budżecie, a niektóre nigdy nie dochodzą do skutku ze względu na zbyt chaotyczne podejście do planowania.
+W wyniku tych problemów, wiele projektów nie jest realizowanych w terminie i budżecie, a niektóre nigdy nie dochodzą do skutku ze względu na zbyt chaotyczne podejście do planowania. Dodatkowo, brak szczegółowego zarządzania zadaniami prowadzi do błędów, nieporozumień i niskiej efektywności zespołu.
 
-Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i automatyzacji procesu planowania, co pozwala użytkownikom na bardziej efektywne zarządzanie czasem i zasobami.
+Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i automatyzacji procesu planowania oraz szczegółowego zarządzania zadaniami, co pozwala użytkownikom na bardziej efektywne zarządzanie czasem i zasobami.
 
 ## 3. Wymagania funkcjonalne
 
@@ -59,6 +65,17 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
 - System oceny "przydatne/nieprzydatne" dla sugestii AI
 - Zbieranie feedbacku od użytkowników w celu doskonalenia algorytmów
 
+### 3.7 Zarządzanie zadaniami w ramach bloków funkcjonalnych
+- Tworzenie, edytowanie i usuwanie zadań w ramach wybranych bloków funkcjonalnych
+- Ręczna estymacja czasu lub nakładu pracy na zadania
+- Estymacja czasu lub nakładu pracy na zadania wspomagana przez AI
+- Przeglądanie zadań w ramach bloków funkcjonalnych
+- Definiowanie prostych zależności między zadaniami (relacje następnik/poprzednik)
+- Automatyczne generowanie zadań przez AI na podstawie opisów bloków funkcjonalnych
+- Walidacja przez AI realności estymacji, kompletności opisów i spójności z blokami funkcjonalnymi
+- Eksport zadań wraz z projektem w formacie JSON
+- Integracja zadań z harmonogramem projektu
+
 ## 4. Granice produktu
 
 ### 4.1 Co nie wchodzi w zakres MVP:
@@ -70,11 +87,21 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
 - Tworzenie organizacji i przypisywanie projektów do organizacji
 - Wspomaganie decyzji dotyczących wyboru technologii
 - Integracja z narzędziami do zarządzania projektami i kalendarzami (planowane w przyszłości)
+- Zaawansowane funkcje zarządzania zadaniami, takie jak różne statusy zadań (poza "do zrobienia")
+- Przypisywanie zadań do członków zespołu
+- Śledzenie postępów realizacji zadań
+- Raportowanie i analityka dotycząca zadań
+- Kopiowanie zadań między blokami funkcjonalnymi
+- Import zadań z zewnętrznych źródeł
+- Zaawansowane zależności między zadaniami poza prostymi relacjami następnik/poprzednik
+- Integracja z zewnętrznymi systemami zarządzania projektami
 
 ### 4.2 Ograniczenia technologiczne:
 - Dostępność zasobów AI wpływająca na szybkość i jakość generowanych sugestii
 - Określony czas na rozwój wpływający na harmonogram wydania MVP
 - Wymagania dotyczące zgodności z RODO przy przechowywaniu danych osobowych
+- Ograniczenia w jednostkach estymacji zadań (ustawiane globalnie przez konfigurację)
+- Potrzeba optymalizacji wydajności przy braku limitów na liczbę zadań w projekcie
 
 ## 5. Historyjki użytkowników
 
@@ -259,9 +286,106 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   4. Wyeksportowany plik zachowuje strukturę i zależności między etapami
   5. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
+### Zarządzanie zadaniami
+
+#### US-019: Tworzenie zadań w ramach bloku funkcjonalnego
+- Jako zalogowany użytkownik, chcę tworzyć zadania w ramach wybranego bloku funkcjonalnego, aby szczegółowo zaplanować prace
+- Kryteria akceptacji:
+  1. Z widoku bloku funkcjonalnego, użytkownik może wybrać opcję utworzenia nowego zadania
+  2. System prezentuje formularz z polami: nazwa, opis, priorytet (Niski/Średni/Wysoki)
+  3. Po wypełnieniu wymaganych pól, zadanie jest zapisywane w systemie
+  4. Nowe zadanie pojawia się na liście zadań w ramach danego bloku funkcjonalnego
+  5. System automatycznie przypisuje zadanie do odpowiedniego bloku funkcjonalnego
+  6. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
+
+#### US-020: Ręczna estymacja zadań
+- Jako zalogowany użytkownik, chcę ręcznie estymować czas lub nakład pracy na zadanie, aby lepiej planować harmonogram
+- Kryteria akceptacji:
+  1. Przy tworzeniu lub edycji zadania, użytkownik może wprowadzić estymację
+  2. System umożliwia wybór jednostek estymacji (godziny lub story points)
+  3. Jednostki estymacji są ustawiane globalnie w konfiguracji aplikacji
+  4. Estymacja jest zapisywana wraz z zadaniem
+  5. System waliduje wprowadzone wartości estymacji (tylko liczby dodatnie)
+  6. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
+
+#### US-021: Estymacja zadań wspomagana przez AI
+- Jako zalogowany użytkownik, chcę otrzymać estymację czasu lub nakładu pracy na zadanie od AI, aby uzyskać obiektywną ocenę
+- Kryteria akceptacji:
+  1. Przy tworzeniu lub edycji zadania, użytkownik może poprosić AI o estymację
+  2. AI analizuje opis zadania, kontekst bloku funkcjonalnego i całego projektu
+  3. System prezentuje sugerowaną estymację wraz z uzasadnieniem
+  4. Użytkownik może zaakceptować, odrzucić lub zmodyfikować sugestię AI
+  5. AI sprawdza realność estymacji i ostrzega przed nierealnymi wartościami
+  6. System zapisuje informację o pochodzeniu estymacji (ręczna/AI)
+  7. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
+
+#### US-022: Przeglądanie zadań w ramach bloku funkcjonalnego
+- Jako zalogowany użytkownik, chcę przeglądać wszystkie zadania w ramach bloku funkcjonalnego, aby kontrolować postęp prac
+- Kryteria akceptacji:
+  1. Z widoku bloku funkcjonalnego, użytkownik widzi listę wszystkich zadań
+  2. Lista zawiera podstawowe informacje o zadaniach (nazwa, priorytet, estymacja)
+  3. Zadania są sortowane według priorytetu i kolejności utworzenia
+  4. Użytkownik może filtrować zadania według priorytetu
+  5. System wyświetla łączną estymację wszystkich zadań w bloku
+  6. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
+
+#### US-023: Edycja i usuwanie zadań
+- Jako zalogowany użytkownik, chcę edytować i usuwać zadania, aby utrzymać aktualność planów
+- Kryteria akceptacji:
+  1. Z listy zadań, użytkownik może wybrać zadanie do edycji
+  2. System wyświetla formularz z aktualnymi danymi zadania
+  3. Użytkownik może modyfikować wszystkie pola zadania
+  4. Użytkownik może usunąć zadanie z odpowiednim potwierdzeniem
+  5. System ostrzega przed usunięciem zadań z zależnościami i sugeruje rozwiązania
+  6. Po zapisaniu zmian, system aktualizuje dane zadania
+  7. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
+
+#### US-024: Definiowanie zależności między zadaniami
+- Jako zalogowany użytkownik, chcę definiować proste zależności między zadaniami, aby zachować logiczną kolejność wykonywania
+- Kryteria akceptacji:
+  1. Przy edycji zadania, użytkownik może wybrać zadania poprzedzające
+  2. System umożliwia definiowanie relacji następnik/poprzednik
+  3. System sprawdza i ostrzega przed tworzeniem cyklicznych zależności
+  4. Zależności są wizualizowane w interfejsie użytkownika
+  5. System automatycznie uwzględnia zależności przy generowaniu harmonogramu
+  6. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
+
+#### US-025: Automatyczne generowanie zadań przez AI
+- Jako zalogowany użytkownik, chcę automatycznie generować zadania na podstawie opisu bloku funkcjonalnego, aby przyspieszyć proces planowania
+- Kryteria akceptacji:
+  1. Z widoku bloku funkcjonalnego, użytkownik może wybrać opcję automatycznego generowania zadań
+  2. AI analizuje opis bloku funkcjonalnego i kontekst całego projektu
+  3. System prezentuje listę proponowanych zadań z opisami i estymacjami
+  4. Użytkownik może wybrać, które zadania chce utworzyć
+  5. Użytkownik może modyfikować proponowane zadania przed utworzeniem
+  6. System tworzy wybrane zadania w ramach danego bloku funkcjonalnego
+  7. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
+
+#### US-026: Walidacja zadań przez AI
+- Jako zalogowany użytkownik, chcę otrzymać walidację zadań od AI, aby upewnić się o ich kompletności i spójności
+- Kryteria akceptacji:
+  1. Użytkownik może poprosić AI o walidację zadań w ramach bloku funkcjonalnego
+  2. AI sprawdza kompletność opisów, realność estymacji i spójność z blokiem funkcjonalnym
+  3. System prezentuje raport z znalezionymi problemami i sugestiami poprawek
+  4. Użytkownik otrzymuje konkretne wskazówki dotyczące każdego problemu
+  5. Użytkownik może zaakceptować sugestie i automatycznie wprowadzić poprawki
+  6. System może ocenić czy zadania w bloku pokrywają całość zaplanowanych funkcjonalności
+  7. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
+
+#### US-027: Eksportowanie projektu z zadaniami
+- Jako zalogowany użytkownik, chcę wyeksportować projekt wraz z zadaniami, aby wykorzystać dane poza aplikacją
+- Kryteria akceptacji:
+  1. Z widoku szczegółów projektu, użytkownik może wybrać opcję eksportu z zadaniami
+  2. System umożliwia wybór formatu eksportu (JSON)
+  3. Wyeksportowany plik zawiera wszystkie informacje o projekcie, blokach funkcjonalnych i zadaniach
+  4. Plik zawiera zależności między zadaniami i informacje o estymacjach
+  5. Użytkownik może pobrać wygenerowany plik
+  6. System zachowuje strukturę hierarchiczną projekt → bloki → zadania
+  7. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
+
 ### Ocena sugestii AI
 
-#### US-019: Ocenianie przydatności sugestii AI
+#### US-028: Ocenianie przydatności sugestii AI
 - Jako zalogowany użytkownik, chcę oceniać przydatność sugestii AI, aby pomóc w doskonaleniu algorytmów
 - Kryteria akceptacji:
   1. Przy każdej sugestii AI dostępne są przyciski "przydatne" i "nieprzydatne"
@@ -270,7 +394,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   4. System wykorzystuje zebrane dane do doskonalenia algorytmów AI
   5. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
-#### US-020: Zgłaszanie nieadekwatnych sugestii AI
+#### US-029: Zgłaszanie nieadekwatnych sugestii AI
 - Jako zalogowany użytkownik, chcę zgłaszać nieadekwatne lub niepoprawne sugestie AI, aby poprawić jakość systemu
 - Kryteria akceptacji:
   1. Użytkownik może zgłosić niepoprawną sugestię AI
@@ -281,7 +405,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
 
 ### Zarządzanie kontem
 
-#### US-021: Edycja profilu użytkownika
+#### US-030: Edycja profilu użytkownika
 - Jako zalogowany użytkownik, chcę edytować swój profil, aby zaktualizować moje dane osobowe
 - Kryteria akceptacji:
   1. Użytkownik ma dostęp do strony edycji profilu
@@ -290,7 +414,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   4. System zapisuje zmiany i aktualizuje dane profilu
   5. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
-#### US-022: Usuwanie konta
+#### US-031: Usuwanie konta
 - Jako zalogowany użytkownik, chcę usunąć moje konto, jeśli nie chcę już korzystać z aplikacji
 - Kryteria akceptacji:
   1. Użytkownik może zainicjować proces usuwania konta z poziomu ustawień profilu
@@ -326,4 +450,14 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
 ### 6.5 Kluczowe wskaźniki efektywności MVP
 - Liczba użytkowników, którzy pomyślnie utworzyli kompletny projekt z wszystkimi elementami: założenia, bloki funkcjonalne, harmonogram (cel: minimum 60% użytkowników)
 - Odsetek użytkowników powracających do aplikacji po tygodniu od rejestracji (cel: minimum 30%)
+- Procent projektów z utworzonymi zadaniami (cel: minimum 60% wszystkich projektów)
+- Średnia liczba zadań na blok funkcjonalny (wskaźnik szczegółowości planowania)
 - Liczba projektów eksportowanych do formatów zewnętrznych (cel: minimum 20% wszystkich projektów)
+
+### 6.6 Metryki zarządzania zadaniami
+- Procent użytkowników wykorzystujących funkcje zarządzania zadaniami (cel: powyżej 70%)
+- Średnia liczba zadań utworzonych przez AI na blok funkcjonalny (wskaźnik efektywności AI)
+- Odsetek zadań z estymacją czasu (cel: powyżej 80%)
+- Procent estymacji wykonanych przez AI vs ręcznie (wskaźnik adopcji AI)
+- Średni czas na utworzenie zadania (cel: poniżej 3 minut)
+- Procent zadań z zdefiniowanymi zależnościami (wskaźnik zaawansowania planowania)
