@@ -13,6 +13,7 @@ Rozszerza funkcjonalność wbudowanej tabeli `auth.users` Supabase o dodatkowe i
 | timezone | VARCHAR(50) | NOT NULL, DEFAULT 'UTC' | Strefa czasowa użytkownika |
 | last_login_at | TIMESTAMP WITH TIME ZONE | | Data i czas ostatniego logowania |
 | projects_limit | INTEGER | NOT NULL, DEFAULT 5 | Limit liczby projektów dla użytkownika |
+| default_estimation_unit | VARCHAR(20) | NOT NULL, DEFAULT 'hours' | Preferowana jednostka estymacji (hours/story_points) |
 | created_at | TIMESTAMP WITH TIME ZONE | NOT NULL, DEFAULT NOW() | Data utworzenia profilu |
 | updated_at | TIMESTAMP WITH TIME ZONE | NOT NULL, DEFAULT NOW() | Data aktualizacji profilu |
 | deleted_at | TIMESTAMP WITH TIME ZONE | | Data usunięcia konta (soft delete) |
@@ -30,11 +31,44 @@ Przechowuje informacje o projektach użytkowników.
 | assumptions | JSONB | | Podstawowe założenia projektu jako struktura JSON |
 | functional_blocks | JSONB | | Bloki funkcjonalne projektu jako zagnieżdżona struktura JSON |
 | schedule | JSONB | | Harmonogram projektu jako serializowany obiekt JSON |
+| estimation_unit | VARCHAR(20) | NOT NULL, DEFAULT 'hours' | Jednostka estymacji dla zadań w projekcie (hours/story_points) |
 | created_at | TIMESTAMP WITH TIME ZONE | NOT NULL, DEFAULT NOW() | Data utworzenia projektu |
 | updated_at | TIMESTAMP WITH TIME ZONE | NOT NULL, DEFAULT NOW() | Data aktualizacji projektu |
 | deleted_at | TIMESTAMP WITH TIME ZONE | | Data usunięcia projektu (soft delete) |
 
-### 1.3 Tabela `user_activities`
+### 1.3 Tabela `tasks`
+Przechowuje zadania należące do bloków funkcjonalnych projektów.
+
+| Kolumna | Typ | Ograniczenia | Opis |
+|---------|-----|--------------|------|
+| id | UUID | PRIMARY KEY, NOT NULL, DEFAULT uuid_generate_v4() | Unikalny identyfikator zadania |
+| project_id | UUID | NOT NULL, REFERENCES projects(id) ON DELETE CASCADE | ID projektu, do którego należy zadanie |
+| functional_block_id | VARCHAR(100) | NOT NULL | Identyfikator bloku funkcjonalnego z JSONB w tabeli projects |
+| name | VARCHAR(200) | NOT NULL | Nazwa zadania |
+| description | TEXT | | Szczegółowy opis zadania |
+| priority | task_priority_enum | NOT NULL, DEFAULT 'medium' | Priorytet zadania (low, medium, high) |
+| estimated_value | DECIMAL(10,2) | | Wartość estymacji (liczba godzin lub story points) |
+| estimated_by_ai | BOOLEAN | NOT NULL, DEFAULT FALSE | Czy estymacja została wykonana przez AI |
+| ai_confidence_score | DECIMAL(3,2) | | Poziom pewności AI w estymacji (0.00-1.00) |
+| ai_suggestion_context | VARCHAR(100) | | Kontekst sugestii AI dla celów feedback |
+| ai_suggestion_hash | VARCHAR(64) | | Hash sugestii AI dla celów feedback |
+| metadata | JSONB | | Dodatkowe metadane zadania |
+| created_at | TIMESTAMP WITH TIME ZONE | NOT NULL, DEFAULT NOW() | Data utworzenia zadania |
+| updated_at | TIMESTAMP WITH TIME ZONE | NOT NULL, DEFAULT NOW() | Data aktualizacji zadania |
+| deleted_at | TIMESTAMP WITH TIME ZONE | | Data usunięcia zadania (soft delete) |
+
+### 1.4 Tabela `task_dependencies`
+Przechowuje zależności między zadaniami (relacje poprzednik/następnik).
+
+| Kolumna | Typ | Ograniczenia | Opis |
+|---------|-----|--------------|------|
+| id | UUID | PRIMARY KEY, NOT NULL, DEFAULT uuid_generate_v4() | Unikalny identyfikator zależności |
+| predecessor_task_id | UUID | NOT NULL, REFERENCES tasks(id) ON DELETE CASCADE | ID zadania poprzedzającego |
+| successor_task_id | UUID | NOT NULL, REFERENCES tasks(id) ON DELETE CASCADE | ID zadania następującego |
+| dependency_type | VARCHAR(50) | NOT NULL, DEFAULT 'finish_to_start' | Typ zależności między zadaniami |
+| created_at | TIMESTAMP WITH TIME ZONE | NOT NULL, DEFAULT NOW() | Data utworzenia zależności |
+
+### 1.5 Tabela `user_activities`
 Rejestruje aktywności użytkowników w systemie.
 
 | Kolumna | Typ | Ograniczenia | Opis |
@@ -46,7 +80,7 @@ Rejestruje aktywności użytkowników w systemie.
 | metadata | JSONB | | Dodatkowe informacje o aktywności |
 | created_at | TIMESTAMP WITH TIME ZONE | NOT NULL, DEFAULT NOW() | Data i czas aktywności |
 
-### 1.4 Tabela `ai_suggestion_feedbacks`
+### 1.6 Tabela `ai_suggestion_feedbacks`
 Przechowuje oceny sugestii AI przez użytkowników.
 
 | Kolumna | Typ | Ograniczenia | Opis |
@@ -60,7 +94,7 @@ Przechowuje oceny sugestii AI przez użytkowników.
 | created_at | TIMESTAMP WITH TIME ZONE | NOT NULL, DEFAULT NOW() | Data i czas udzielenia oceny |
 | updated_at | TIMESTAMP WITH TIME ZONE | NOT NULL, DEFAULT NOW() | Data i czas aktualizacji oceny |
 
-### 1.5 Tabela `user_sessions`
+### 1.7 Tabela `user_sessions`
 Przechowuje informacje o sesjach użytkowników.
 
 | Kolumna | Typ | Ograniczenia | Opis |
@@ -72,7 +106,14 @@ Przechowuje informacje o sesjach użytkowników.
 | total_duration_seconds | INTEGER | | Całkowity czas trwania sesji w sekundach |
 | is_active | BOOLEAN | NOT NULL, DEFAULT TRUE | Czy sesja jest aktywna |
 
-## 2. Relacje między tabelami
+## 2. Typy wyliczeniowe (ENUM)
+
+### 2.1 task_priority_enum
+```sql
+CREATE TYPE task_priority_enum AS ENUM ('low', 'medium', 'high');
+```
+
+## 3. Relacje między tabelami
 
 | Tabela źródłowa | Relacja | Tabela docelowa | Opis |
 |----------------|----------|-----------------|------|
@@ -80,25 +121,38 @@ Przechowuje informacje o sesjach użytkowników.
 | profiles | 1:N | user_activities | Użytkownik może mieć wiele aktywności |
 | profiles | 1:N | ai_suggestion_feedbacks | Użytkownik może mieć wiele ocen sugestii AI |
 | profiles | 1:N | user_sessions | Użytkownik może mieć wiele sesji |
+| projects | 1:N | tasks | Projekt może mieć wiele zadań |
+| tasks | N:N | tasks | Zadania mogą mieć zależności między sobą (przez task_dependencies) |
 
-## 3. Indeksy
+## 4. Indeksy
 
 | Tabela | Kolumna | Typ indeksu | Opis |
 |--------|---------|-------------|------|
+| profiles | default_estimation_unit | B-tree | Przyspiesza filtrowanie po jednostce estymacji |
 | projects | user_id | B-tree | Przyspiesza wyszukiwanie projektów dla danego użytkownika |
 | projects | (functional_blocks) | GIN | Przyspiesza wyszukiwanie w strukturze JSONB bloków funkcjonalnych |
 | projects | (schedule) | GIN | Przyspiesza wyszukiwanie w strukturze JSONB harmonogramów |
 | projects | deleted_at | B-tree | Przyspiesza filtrowanie usuniętych/nieusiniętych projektów |
+| projects | estimation_unit | B-tree | Przyspiesza filtrowanie po jednostce estymacji projektu |
+| tasks | project_id | B-tree | Przyspiesza wyszukiwanie zadań dla danego projektu |
+| tasks | functional_block_id | B-tree | Przyspiesza wyszukiwanie zadań dla danego bloku funkcjonalnego |
+| tasks | (project_id, functional_block_id) | B-tree | Przyspiesza złożone zapytania zadań w ramach bloku |
+| tasks | priority | B-tree | Przyspiesza filtrowanie po priorytecie |
+| tasks | estimated_by_ai | B-tree | Przyspiesza filtrowanie zadań estymowanych przez AI |
+| tasks | deleted_at | B-tree | Przyspiesza filtrowanie usuniętych/nieusiniętych zadań |
+| tasks | (metadata) | GIN | Przyspiesza wyszukiwanie w metadanych JSONB |
+| task_dependencies | predecessor_task_id | B-tree | Przyspiesza wyszukiwanie zależności dla zadania |
+| task_dependencies | successor_task_id | B-tree | Przyspiesza wyszukiwanie zadań zależnych |
+| task_dependencies | (predecessor_task_id, successor_task_id) | UNIQUE B-tree | Zapobiega duplikatom zależności |
 | user_activities | user_id | B-tree | Przyspiesza wyszukiwanie aktywności dla danego użytkownika |
 | user_activities | activity_type | B-tree | Przyspiesza wyszukiwanie po typie aktywności |
 | ai_suggestion_feedbacks | user_id | B-tree | Przyspiesza wyszukiwanie ocen od danego użytkownika |
 | ai_suggestion_feedbacks | (suggestion_context, suggestion_hash) | B-tree | Przyspiesza wyszukiwanie konkretnych sugestii |
 | user_sessions | user_id | B-tree | Przyspiesza wyszukiwanie sesji dla danego użytkownika |
 | user_sessions | is_active | B-tree | Przyspiesza wyszukiwanie aktywnych sesji |
+| ## 5. Zasady PostgreSQL Row Level Security (RLS)
 
-## 4. Zasady PostgreSQL Row Level Security (RLS)
-
-### 4.1 RLS dla tabeli `profiles`
+### 5.1 RLS dla tabeli `profiles`
 
 ```sql
 -- Zasada dostępu do odczytu profilu
@@ -112,7 +166,7 @@ CREATE POLICY "Użytkownicy mogą aktualizować tylko swój profil"
   USING (auth.uid() = id);
 ```
 
-### 4.2 RLS dla tabeli `projects`
+### 5.2 RLS dla tabeli `projects`
 
 ```sql
 -- Zasada dostępu do odczytu projektów
@@ -127,6 +181,215 @@ CREATE POLICY "Użytkownicy mogą tworzyć swoje projekty"
 
 -- Zasada dostępu do aktualizacji projektów
 CREATE POLICY "Użytkownicy mogą aktualizować tylko swoje projekty" 
+  ON projects FOR UPDATE 
+  USING (auth.uid() = user_id AND deleted_at IS NULL);
+
+-- Zasada dostępu do usuwania projektów (soft delete)
+CREATE POLICY "Użytkownicy mogą usuwać tylko swoje projekty" 
+  ON projects FOR UPDATE 
+  USING (auth.uid() = user_id AND deleted_at IS NULL);
+```
+
+### 5.3 RLS dla tabeli `tasks`
+
+```sql
+-- Zasada dostępu do odczytu zadań
+CREATE POLICY "Użytkownicy mogą czytać zadania tylko ze swoich projektów" 
+  ON tasks FOR SELECT 
+  USING (
+    auth.uid() = (SELECT user_id FROM projects WHERE id = project_id) 
+    AND deleted_at IS NULL
+  );
+
+-- Zasada dostępu do tworzenia zadań
+CREATE POLICY "Użytkownicy mogą tworzyć zadania tylko w swoich projektach" 
+  ON tasks FOR INSERT 
+  WITH CHECK (
+    auth.uid() = (SELECT user_id FROM projects WHERE id = project_id)
+  );
+
+-- Zasada dostępu do aktualizacji zadań
+CREATE POLICY "Użytkownicy mogą aktualizować zadania tylko ze swoich projektów" 
+  ON tasks FOR UPDATE 
+  USING (
+    auth.uid() = (SELECT user_id FROM projects WHERE id = project_id) 
+    AND deleted_at IS NULL
+  );
+
+-- Zasada dostępu do usuwania zadań (soft delete)
+CREATE POLICY "Użytkownicy mogą usuwać zadania tylko ze swoich projektów" 
+  ON tasks FOR UPDATE 
+  USING (
+    auth.uid() = (SELECT user_id FROM projects WHERE id = project_id) 
+    AND deleted_at IS NULL
+  );
+```
+
+### 5.4 RLS dla tabeli `task_dependencies`
+
+```sql
+-- Zasada dostępu do odczytu zależności zadań
+CREATE POLICY "Użytkownicy mogą czytać zależności zadań tylko ze swoich projektów" 
+  ON task_dependencies FOR SELECT 
+  USING (
+    auth.uid() = (
+      SELECT p.user_id FROM projects p 
+      JOIN tasks t ON p.id = t.project_id 
+      WHERE t.id = predecessor_task_id OR t.id = successor_task_id
+    )
+  );
+
+-- Zasada dostępu do tworzenia zależności zadań
+CREATE POLICY "Użytkownicy mogą tworzyć zależności zadań tylko w swoich projektach" 
+  ON task_dependencies FOR INSERT 
+  WITH CHECK (
+    auth.uid() = (
+      SELECT p.user_id FROM projects p 
+      JOIN tasks t ON p.id = t.project_id 
+      WHERE t.id = predecessor_task_id
+    ) AND
+    auth.uid() = (
+      SELECT p.user_id FROM projects p 
+      JOIN tasks t ON p.id = t.project_id 
+      WHERE t.id = successor_task_id
+    )
+  );
+
+-- Zasada dostępu do usuwania zależności zadań
+CREATE POLICY "Użytkownicy mogą usuwać zależności zadań tylko ze swoich projektów" 
+  ON task_dependencies FOR DELETE 
+  USING (
+    auth.uid() = (
+      SELECT p.user_id FROM projects p 
+      JOIN tasks t ON p.id = t.project_id 
+      WHERE t.id = predecessor_task_id OR t.id = successor_task_id
+    )
+  );
+```
+
+### 5.5 RLS dla pozostałych tabel
+
+```sql
+-- user_activities
+CREATE POLICY "Użytkownicy mogą czytać tylko swoje aktywności" 
+  ON user_activities FOR SELECT 
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Użytkownicy mogą tworzyć tylko swoje aktywności" 
+  ON user_activities FOR INSERT 
+  WITH CHECK (auth.uid() = user_id);
+
+-- ai_suggestion_feedbacks
+CREATE POLICY "Użytkownicy mogą czytać tylko swoje oceny sugestii" 
+  ON ai_suggestion_feedbacks FOR SELECT 
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Użytkownicy mogą tworzyć tylko swoje oceny sugestii" 
+  ON ai_suggestion_feedbacks FOR INSERT 
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Użytkownicy mogą aktualizować tylko swoje oceny sugestii" 
+  ON ai_suggestion_feedbacks FOR UPDATE 
+  USING (auth.uid() = user_id);
+
+-- user_sessions
+CREATE POLICY "Użytkownicy mogą czytać tylko swoje sesje" 
+  ON user_sessions FOR SELECT 
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Użytkownicy mogą tworzyć tylko swoje sesje" 
+  ON user_sessions FOR INSERT 
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Użytkownicy mogą aktualizować tylko swoje sesje" 
+  ON user_sessions FOR UPDATE 
+  USING (auth.uid() = user_id);
+```
+
+## 6. Ograniczenia i walidacje
+
+### 6.1 Ograniczenia tabel
+
+```sql
+-- Sprawdzenie poprawności jednostek estymacji w profilu
+ALTER TABLE profiles ADD CONSTRAINT check_default_estimation_unit 
+  CHECK (default_estimation_unit IN ('hours', 'story_points'));
+
+-- Sprawdzenie poprawności jednostek estymacji w projekcie
+ALTER TABLE projects ADD CONSTRAINT check_estimation_unit 
+  CHECK (estimation_unit IN ('hours', 'story_points'));
+
+-- Sprawdzenie poprawności wartości estymacji
+ALTER TABLE tasks ADD CONSTRAINT check_estimated_value_positive 
+  CHECK (estimated_value IS NULL OR estimated_value > 0);
+
+-- Sprawdzenie poprawności wyniku pewności AI
+ALTER TABLE tasks ADD CONSTRAINT check_ai_confidence_score_range 
+  CHECK (ai_confidence_score IS NULL OR (ai_confidence_score >= 0 AND ai_confidence_score <= 1));
+
+-- Zapobieganie cyklicznym zależnościom zadań (prostych)
+ALTER TABLE task_dependencies ADD CONSTRAINT check_no_self_dependency 
+  CHECK (predecessor_task_id != successor_task_id);
+```
+
+### 6.2 Triggery
+
+```sql
+-- Trigger automatycznej aktualizacji updated_at w tabeli profiles
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+CREATE TRIGGER update_profiles_updated_at BEFORE UPDATE ON profiles
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_projects_updated_at BEFORE UPDATE ON projects
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_tasks_updated_at BEFORE UPDATE ON tasks
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_ai_suggestion_feedbacks_updated_at BEFORE UPDATE ON ai_suggestion_feedbacks
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+```
+
+## 7. Uwagi projektowe
+
+### 7.1 Decyzje projektowe dotyczące zadań
+
+1. **Jednostki estymacji**: Przechowywane zarówno na poziomie profilu użytkownika (domyślna preferencja) jak i projektu (konkretne ustawienie). Dzięki temu każdy projekt może mieć własną jednostkę estymacji.
+
+2. **Priorytet zadań**: Implementowany jako ENUM z trzema poziomami zgodnie z wymaganiami MVP. Można łatwo rozszerzyć w przyszłości.
+
+3. **Zależności zadań**: Prosta implementacja relacji poprzednik/następnik z możliwością rozszerzenia o różne typy zależności w przyszłości.
+
+4. **Integracja z AI**: Zadania zawierają pola wspierające śledzenie sugestii AI i możliwość zbierania feedback podobnie jak w istniejącym systemie.
+
+5. **Soft delete**: Wszystkie główne tabele wspierają soft delete dla zachowania integralności danych i możliwości odzyskania.
+
+6. **JSONB dla metadanych**: Elastyczne przechowywanie dodatkowych informacji o zadaniach bez konieczności zmian schematu.
+
+### 7.2 Wydajność i skalowalność
+
+1. **Indeksy kompozytowe**: Dla często używanych kombinacji zapytań (np. project_id + functional_block_id).
+
+2. **GIN indeksy**: Dla efektywnego wyszukiwania w strukturach JSONB.
+
+3. **Unikalne ograniczenia**: Zapobieganie duplikatom zależności między zadaniami.
+
+4. **RLS optymalizacja**: Zapytania RLS zoptymalizowane pod kątem wydajności z wykorzystaniem indeksów.
+
+### 7.3 Zgodność z istniejącym systemem
+
+1. **Zachowanie spójności**: Nowe tabele wykorzystują te same wzorce co istniejące (UUID, timestamps, soft delete).
+
+2. **Integracja z functional_blocks**: Zadania referencują bloki funkcjonalne przez identyfikator, co pozwala na elastyczną strukturę bez denormalizacji.
+
+3. **System feedback AI**: Wykorzystuje ten sam wzorzec co istniejąca tabela ai_suggestion_feedbacks. 
   ON projects FOR UPDATE 
   USING (auth.uid() = user_id AND deleted_at IS NULL);
 
