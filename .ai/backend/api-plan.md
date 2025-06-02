@@ -6,6 +6,8 @@
 |----------|---------------|-------------|
 | Users | profiles | User accounts and profiles |
 | Projects | projects | App planning projects created by users |
+| Tasks | tasks | Detailed tasks within functional blocks |
+| Task Dependencies | task_dependencies | Dependencies between tasks |
 | AI Feedbacks | ai_suggestion_feedbacks | User feedback on AI suggestions |
 | User Activities | user_activities | Tracking of user actions in the app |
 | User Sessions | user_sessions | User session information |
@@ -216,7 +218,335 @@
   - 403 Forbidden - Not authorized to delete this project
   - 404 Not Found - Project not found
 
-### 2.4 AI-Assisted Features
+### 2.4 Task Management
+
+#### List Tasks for Functional Block
+- **Method**: GET
+- **Path**: `/api/projects/{id}/functional-blocks/{blockId}/tasks`
+- **Description**: List all tasks for a specific functional block
+- **Query Parameters**:
+  - `page` (optional): Page number for pagination
+  - `limit` (optional): Number of results per page
+  - `priority` (optional): Filter by priority (low, medium, high)
+  - `sort` (optional): Sort field and direction
+- **Response**:
+  ```json
+  {
+    "data": [
+      {
+        "id": "uuid",
+        "name": "string",
+        "description": "string",
+        "priority": "string",
+        "estimatedValue": "number",
+        "estimatedByAI": "boolean",
+        "aiConfidenceScore": "number",
+        "createdAt": "string",
+        "updatedAt": "string"
+      }
+    ],
+    "pagination": {
+      "total": "number",
+      "page": "number",
+      "limit": "number",
+      "pages": "number"
+    }
+  }
+  ```
+- **Success**: 200 OK
+- **Errors**:
+  - 401 Unauthorized - Not authenticated
+  - 403 Forbidden - Not authorized to access this project
+  - 404 Not Found - Project or functional block not found
+
+#### Get Task
+- **Method**: GET
+- **Path**: `/api/tasks/{id}`
+- **Description**: Get a specific task by ID
+- **Response**:
+  ```json
+  {
+    "id": "uuid",
+    "projectId": "uuid",
+    "functionalBlockId": "string",
+    "name": "string",
+    "description": "string",
+    "priority": "string",
+    "estimatedValue": "number",
+    "estimatedByAI": "boolean",
+    "aiConfidenceScore": "number",
+    "aiSuggestionContext": "string",
+    "metadata": {},
+    "createdAt": "string",
+    "updatedAt": "string"
+  }
+  ```
+- **Success**: 200 OK
+- **Errors**:
+  - 401 Unauthorized - Not authenticated
+  - 403 Forbidden - Not authorized to access this task
+  - 404 Not Found - Task not found
+
+#### Create Task
+- **Method**: POST
+- **Path**: `/api/projects/{id}/functional-blocks/{blockId}/tasks`
+- **Description**: Create a new task within a functional block
+- **Request Body**:
+  ```json
+  {
+    "name": "string",
+    "description": "string",
+    "priority": "string",
+    "estimatedValue": "number",
+    "metadata": {}
+  }
+  ```
+- **Response**:
+  ```json
+  {
+    "id": "uuid",
+    "name": "string",
+    "description": "string",
+    "priority": "string",
+    "estimatedValue": "number",
+    "estimatedByAI": false,
+    "createdAt": "string"
+  }
+  ```
+- **Success**: 201 Created
+- **Errors**:
+  - 400 Bad Request - Invalid input
+  - 401 Unauthorized - Not authenticated
+  - 403 Forbidden - Not authorized to access this project
+  - 404 Not Found - Project or functional block not found
+
+#### Update Task
+- **Method**: PATCH
+- **Path**: `/api/tasks/{id}`
+- **Description**: Update a specific task
+- **Request Body** (all fields optional):
+  ```json
+  {
+    "name": "string",
+    "description": "string",
+    "priority": "string",
+    "estimatedValue": "number",
+    "metadata": {}
+  }
+  ```
+- **Response**:
+  ```json
+  {
+    "id": "uuid",
+    "name": "string",
+    "description": "string",
+    "priority": "string",
+    "estimatedValue": "number",
+    "estimatedByAI": "boolean",
+    "aiConfidenceScore": "number",
+    "updatedAt": "string"
+  }
+  ```
+- **Success**: 200 OK
+- **Errors**:
+  - 400 Bad Request - Invalid input
+  - 401 Unauthorized - Not authenticated
+  - 403 Forbidden - Not authorized to update this task
+  - 404 Not Found - Task not found
+
+#### Delete Task
+- **Method**: DELETE
+- **Path**: `/api/tasks/{id}`
+- **Description**: Soft delete a task
+- **Response**:
+  ```json
+  {
+    "message": "Task deleted successfully",
+    "dependencyWarnings": [
+      {
+        "message": "string",
+        "affectedTaskIds": ["uuid"]
+      }
+    ]
+  }
+  ```
+- **Success**: 200 OK
+- **Errors**:
+  - 401 Unauthorized - Not authenticated
+  - 403 Forbidden - Not authorized to delete this task
+  - 404 Not Found - Task not found
+
+#### Generate Tasks for Functional Block
+- **Method**: POST
+- **Path**: `/api/projects/{id}/functional-blocks/{blockId}/tasks/generate`
+- **Description**: Generate tasks using AI for a specific functional block
+- **Response**:
+  ```json
+  {
+    "tasks": [
+      {
+        "id": "uuid",
+        "name": "string",
+        "description": "string",
+        "priority": "string",
+        "estimatedValue": "number",
+        "estimatedByAI": true,
+        "aiConfidenceScore": "number",
+        "aiSuggestionContext": "string",
+        "aiSuggestionHash": "string"
+      }
+    ],
+    "metadata": {
+      "totalTasksGenerated": "number",
+      "aiModel": "string",
+      "generationTime": "string"
+    }
+  }
+  ```
+- **Success**: 200 OK
+- **Errors**:
+  - 401 Unauthorized - Not authenticated
+  - 403 Forbidden - Not authorized to access this project
+  - 404 Not Found - Project or functional block not found
+  - 500 Internal Server Error - AI generation failed
+
+#### Estimate Task with AI
+- **Method**: POST
+- **Path**: `/api/tasks/{id}/estimate`
+- **Description**: Get AI estimation for a task
+- **Response**:
+  ```json
+  {
+    "estimatedValue": "number",
+    "aiConfidenceScore": "number",
+    "reasoning": "string",
+    "aiSuggestionContext": "string",
+    "aiSuggestionHash": "string"
+  }
+  ```
+- **Success**: 200 OK
+- **Errors**:
+  - 401 Unauthorized - Not authenticated
+  - 403 Forbidden - Not authorized to access this task
+  - 404 Not Found - Task not found
+  - 500 Internal Server Error - AI estimation failed
+
+#### Validate Task with AI
+- **Method**: POST
+- **Path**: `/api/tasks/{id}/validate`
+- **Description**: Validate task completeness and consistency using AI
+- **Response**:
+  ```json
+  {
+    "isValid": "boolean",
+    "validation": {
+      "estimationRealistic": "boolean",
+      "descriptionComplete": "boolean",
+      "consistentWithBlock": "boolean"
+    },
+    "feedback": [
+      {
+        "field": "string",
+        "message": "string",
+        "severity": "string"
+      }
+    ],
+    "suggestions": [
+      {
+        "field": "string",
+        "suggestion": "string",
+        "reason": "string"
+      }
+    ]
+  }
+  ```
+- **Success**: 200 OK
+- **Errors**:
+  - 401 Unauthorized - Not authenticated
+  - 403 Forbidden - Not authorized to access this task
+  - 404 Not Found - Task not found
+  - 500 Internal Server Error - AI validation failed
+
+### 2.5 Task Dependencies
+
+#### List Task Dependencies
+- **Method**: GET
+- **Path**: `/api/tasks/{id}/dependencies`
+- **Description**: Get all dependencies for a specific task
+- **Response**:
+  ```json
+  {
+    "predecessors": [
+      {
+        "id": "uuid",
+        "taskId": "uuid",
+        "taskName": "string",
+        "dependencyType": "string",
+        "createdAt": "string"
+      }
+    ],
+    "successors": [
+      {
+        "id": "uuid",
+        "taskId": "uuid",
+        "taskName": "string",
+        "dependencyType": "string",
+        "createdAt": "string"
+      }
+    ]
+  }
+  ```
+- **Success**: 200 OK
+- **Errors**:
+  - 401 Unauthorized - Not authenticated
+  - 403 Forbidden - Not authorized to access this task
+  - 404 Not Found - Task not found
+
+#### Create Task Dependency
+- **Method**: POST
+- **Path**: `/api/tasks/{id}/dependencies`
+- **Description**: Create a dependency relationship where this task depends on another
+- **Request Body**:
+  ```json
+  {
+    "predecessorTaskId": "uuid",
+    "dependencyType": "string"
+  }
+  ```
+- **Response**:
+  ```json
+  {
+    "id": "uuid",
+    "predecessorTaskId": "uuid",
+    "successorTaskId": "uuid",
+    "dependencyType": "string",
+    "createdAt": "string"
+  }
+  ```
+- **Success**: 201 Created
+- **Errors**:
+  - 400 Bad Request - Invalid input or circular dependency detected
+  - 401 Unauthorized - Not authenticated
+  - 403 Forbidden - Not authorized to access these tasks
+  - 404 Not Found - Task not found
+
+#### Delete Task Dependency
+- **Method**: DELETE
+- **Path**: `/api/task-dependencies/{id}`
+- **Description**: Remove a dependency relationship
+- **Response**:
+  ```json
+  {
+    "message": "Dependency removed successfully"
+  }
+  ```
+- **Success**: 200 OK
+- **Errors**:
+  - 401 Unauthorized - Not authenticated
+  - 403 Forbidden - Not authorized to modify this dependency
+  - 404 Not Found - Dependency not found
+
+### 2.6 AI-Assisted Features
 
 #### Validate Project Assumptions
 - **Method**: POST
@@ -360,7 +690,22 @@
   - 403 Forbidden - Not authorized to access this project
   - 404 Not Found - Project not found
 
-### 2.5 AI Feedback
+#### Export Project with Tasks
+- **Method**: GET
+- **Path**: `/api/projects/{id}/export`
+- **Query Parameters**:
+  - `format`: Export format (json)
+  - `includeTasks` (optional): Include tasks in export (default: true)
+- **Description**: Export complete project including tasks in specified format
+- **Response**: JSON
+- **Success**: 200 OK
+- **Errors**:
+  - 400 Bad Request - Invalid format
+  - 401 Unauthorized - Not authenticated
+  - 403 Forbidden - Not authorized to access this project
+  - 404 Not Found - Project not found
+
+### 2.7 AI Feedback
 
 #### Submit AI Suggestion Feedback
 - **Method**: POST
@@ -389,7 +734,7 @@
   - 400 Bad Request - Invalid input
   - 401 Unauthorized - Not authenticated
 
-### 2.6 User Activity
+### 2.8 User Activity
 
 #### Record User Activity
 - **Method**: POST
@@ -466,6 +811,8 @@ All API endpoints will use Zod schemas to validate request inputs before process
 - Password strength: Minimum 8 characters, including numbers and letters
 - Character limits: As specified in database schema
 - JSON structure validation: For complex objects like assumptions, functional_blocks, and schedule
+- Task validation: Name (max 200 chars), priority enum (low/medium/high), estimated value (positive decimal)
+- Task dependency validation: Circular dependency detection, valid task IDs, same project validation
 
 ### 4.2 Business Logic
 
@@ -494,6 +841,26 @@ Key business logic implemented in API endpoints:
    - Calculate and store session durations on session end
    - Associate relevant activities with user sessions
 
+6. **Task Management Logic**:
+   - Validate task belongs to specified functional block and project
+   - Check task ownership through project ownership
+   - Implement circular dependency detection for task dependencies
+   - Handle dependency cascade warnings when deleting tasks with dependencies
+   - Ensure estimation units consistency within project scope
+
+7. **AI Task Generation Logic**:
+   - Generate tasks based on functional block context and project assumptions
+   - Apply project-level estimation unit preferences
+   - Set AI confidence scores based on input quality and AI model certainty
+   - Store AI suggestion context for feedback collection
+   - Validate generated tasks against project constraints
+
+8. **Task Dependency Management**:
+   - Prevent circular dependencies through graph validation
+   - Ensure both tasks belong to the same project
+   - Support simple predecessor/successor relationships only (MVP limitation)
+   - Provide warnings when deleting tasks with existing dependencies
+
 ### 4.3 Error Handling
 
 Standardized error responses will be returned for all API endpoints:
@@ -515,3 +882,15 @@ Common error types:
 - Resource not found errors (404)
 - Rate limit errors (429)
 - Server errors (500)
+
+Specific task-related error codes:
+- `TASK_NOT_FOUND` (404): Task does not exist or user doesn't have access
+- `FUNCTIONAL_BLOCK_NOT_FOUND` (404): Specified functional block doesn't exist in project
+- `CIRCULAR_DEPENDENCY` (400): Attempted to create circular dependency between tasks
+- `INVALID_ESTIMATION_VALUE` (400): Estimation value must be positive number
+- `INVALID_PRIORITY` (400): Priority must be one of: low, medium, high
+- `DEPENDENCY_CONFLICT` (400): Cannot delete task with existing dependencies
+- `AI_GENERATION_FAILED` (500): AI service failed to generate tasks
+- `AI_ESTIMATION_FAILED` (500): AI service failed to estimate task
+- `TASK_LIMIT_EXCEEDED` (400): Maximum number of tasks per functional block reached (if implemented)
+- `INVALID_TASK_NAME` (400): Task name exceeds character limit or is empty
