@@ -4,14 +4,14 @@ import DashboardHeader from "@/components/dashboard/DashboardHeader.astro";
 import { ProjectsListContainer } from "@/components/dashboard/ProjectsListContainer";
 import { ErrorBoundary } from "@/components/dashboard/ErrorBoundary";
 
-// In a real implementation, check auth state from server context
-// const user = Astro.locals.supabase.auth.user();
-const isLoggedIn = true; // Simplified for implementation
+// // In a real implementation, check auth state from server context
+// // const user = Astro.locals.supabase.auth.user();
+// const isLoggedIn = true; // Simplified for implementation
 
-// Redirect if not logged in
-if (!isLoggedIn) {
-  return Astro.redirect("/login?redirect=/dashboard");
-}
+// // Redirect if not logged in
+// if (!isLoggedIn) {
+//   return Astro.redirect("/login?redirect=/dashboard");
+// }
 ---
 
 <Layout title="Dashboard - My Projects | Plan My App">
