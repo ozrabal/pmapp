@@ -7,6 +7,7 @@ Plan My App to aplikacja wspomagana przez sztuczną inteligencję, która ma na 
 Aplikacja w wersji MVP umożliwia definiowanie podstawowych założeń projektu, podział na bloki funkcjonalne, tworzenie prostego harmonogramu oraz szczegółowe zarządzanie zadaniami w ramach każdego bloku funkcjonalnego. Kluczowym elementem jest wspomaganie decyzji przez AI, które analizuje założenia projektowe, sugeruje optymalne rozwiązania, pomaga w estymacji zadań oraz automatycznie generuje szczegółowe zadania na podstawie opisów bloków funkcjonalnych.
 
 Główne korzyści dla użytkowników:
+
 - Uproszczenie procesu planowania projektów
 - Redukcja czasu potrzebnego na przygotowanie planu
 - Minimalizacja ryzyka pominięcia kluczowych elementów projektu
@@ -36,36 +37,43 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
 ## 3. Wymagania funkcjonalne
 
 ### 3.1 System kont użytkowników
+
 - Rejestracja i logowanie użytkowników
 - Zarządzanie profilem użytkownika
 - Przechowywanie danych osobowych i informacji o projektach zgodnie z RODO
 
 ### 3.2 Zarządzanie projektami
+
 - Tworzenie nowych projektów
 - Zapisywanie, odczytywanie i edytowanie podstawowych założeń projektu
 - Przeglądanie listy projektów użytkownika
 - Usuwanie projektów
 
 ### 3.3 Definiowanie założeń projektu
+
 - Ustrukturyzowany formularz do wprowadzania podstawowych założeń
 - Walidacja wprowadzonych danych przez AI
 - Sugestie AI dotyczące definicji projektu
 
 ### 3.4 Podział na bloki funkcjonalne
+
 - Sugerowanie przez AI podziału na bloki funkcjonalne na podstawie założeń
 - Wstępne predefiniowane kategorie (logowanie, rejestracja, edycja projektu, eksport wyników, itp.)
 - Możliwość dostosowania i modyfikacji bloków funkcjonalnych przez użytkownika
 
 ### 3.5 Tworzenie harmonogramu
+
 - Generowanie prostego harmonogramu projektu przez AI
 - Definiowanie kluczowych etapów projektu
 - Określanie zależności między etapami
 
 ### 3.6 Ocena sugestii AI
+
 - System oceny "przydatne/nieprzydatne" dla sugestii AI
 - Zbieranie feedbacku od użytkowników w celu doskonalenia algorytmów
 
 ### 3.7 Zarządzanie zadaniami w ramach bloków funkcjonalnych
+
 - Tworzenie, edytowanie i usuwanie zadań w ramach wybranych bloków funkcjonalnych
 - Ręczna estymacja czasu lub nakładu pracy na zadania
 - Estymacja czasu lub nakładu pracy na zadania wspomagana przez AI
@@ -78,7 +86,8 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
 
 ## 4. Granice produktu
 
-### 4.1 Co nie wchodzi w zakres MVP:
+### 4.1 Co nie wchodzi w zakres MVP
+
 - Określanie zasobów potrzebnych do realizacji projektu
 - Szacowanie budżetu projektu
 - Tworzenie szczegółowego harmonogramu projektu z dokładnymi datami
@@ -96,7 +105,8 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
 - Zaawansowane zależności między zadaniami poza prostymi relacjami następnik/poprzednik
 - Integracja z zewnętrznymi systemami zarządzania projektami
 
-### 4.2 Ograniczenia technologiczne:
+### 4.2 Ograniczenia technologiczne
+
 - Dostępność zasobów AI wpływająca na szybkość i jakość generowanych sugestii
 - Określony czas na rozwój wpływający na harmonogram wydania MVP
 - Wymagania dotyczące zgodności z RODO przy przechowywaniu danych osobowych
@@ -108,6 +118,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
 ### Rejestracja i logowanie
 
 #### US-001: Rejestracja nowego użytkownika
+
 - Jako potencjalny użytkownik, chcę utworzyć nowe konto, aby móc korzystać z funkcji aplikacji
 - Kryteria akceptacji:
   1. Użytkownik może utworzyć konto podając email, hasło oraz imię
@@ -118,6 +129,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   6. Profil użytkownika jest automatycznie tworzony po rejestracji z domyślnymi wartościami (imię: 'User', strefa czasowa: 'UTC', limit projektów: 5)
 
 #### US-002: Logowanie do systemu
+
 - Jako zarejestrowany użytkownik, chcę zalogować się do aplikacji, aby uzyskać dostęp do moich projektów
 - Kryteria akceptacji:
   1. Użytkownik może zalogować się podając email i hasło
@@ -126,6 +138,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   4. Po poprawnym zalogowaniu, użytkownik jest przekierowywany do widoku listy projektów
 
 #### US-003: Odzyskiwanie hasła
+
 - Jako zarejestrowany użytkownik, chcę zresetować zapomniane hasło, aby odzyskać dostęp do mojego konta
 - Kryteria akceptacji:
   1. Użytkownik może zainicjować proces odzyskiwania hasła podając adres email
@@ -137,6 +150,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
 ### Zarządzanie projektami
 
 #### US-004: Tworzenie nowego projektu
+
 - Jako zalogowany użytkownik, chcę utworzyć nowy projekt, aby rozpocząć planowanie mojej aplikacji
 - Kryteria akceptacji:
   1. Z widoku listy projektów, użytkownik może wybrać opcję utworzenia nowego projektu
@@ -146,6 +160,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   5. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 #### US-005: Przeglądanie listy projektów
+
 - Jako zalogowany użytkownik, chcę zobaczyć listę moich projektów, aby zarządzać nimi
 - Kryteria akceptacji:
   1. Po zalogowaniu, użytkownik widzi listę swoich projektów
@@ -155,6 +170,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   5. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 #### US-006: Edycja projektu
+
 - Jako zalogowany użytkownik, chcę edytować istniejący projekt, aby zaktualizować jego szczegóły
 - Kryteria akceptacji:
   1. Z listy projektów, użytkownik może wybrać projekt do edycji
@@ -164,6 +180,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   5. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 #### US-007: Usuwanie projektu
+
 - Jako zalogowany użytkownik, chcę usunąć projekt, którego już nie potrzebuję
 - Kryteria akceptacji:
   1. Z listy projektów, użytkownik może wybrać opcję usunięcia projektu
@@ -173,6 +190,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   5. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 #### US-008: Przeglądanie szczegółów projektu
+
 - Jako zalogowany użytkownik, chcę przeglądać szczegóły mojego projektu, aby zobaczyć wszystkie jego elementy
 - Kryteria akceptacji:
   1. Z listy projektów, użytkownik może wybrać projekt do przeglądania
@@ -182,6 +200,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   5. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 #### US-009: Eksportowanie projektu
+
 - Jako zalogowany użytkownik, chcę wyeksportować projekt do pliku, aby móc go wykorzystać poza aplikacją
 - Kryteria akceptacji:
   1. Z widoku szczegółów projektu, użytkownik może wybrać opcję eksportu
@@ -194,6 +213,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
 ### Definiowanie założeń projektu
 
 #### US-010: Wprowadzanie podstawowych założeń projektu
+
 - Jako zalogowany użytkownik, chcę wprowadzić podstawowe założenia mojego projektu, aby określić jego zakres
 - Kryteria akceptacji:
   1. Użytkownik ma dostęp do ustrukturyzowanego formularza z polami definiującymi założenia projektu
@@ -203,6 +223,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   5. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 #### US-011: Otrzymywanie walidacji założeń od AI
+
 - Jako zalogowany użytkownik, chcę otrzymać informację od AI o poprawności moich założeń, aby upewnić się, że są kompletne i spójne
 - Kryteria akceptacji:
   1. System analizuje wprowadzone założenia przy pomocy AI
@@ -210,15 +231,16 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   3. Użytkownik otrzymuje informację o znalezionych problemach lub brakujących elementach
   4. System sugeruje potencjalne poprawki lub uzupełnienia
   5. Każda sugestia odnosi się do konkretnego pola formularza
-  5. Użytkownik może zaakceptować lub odrzucić sugestie AI
-  6. Po zaakceptowaniu, system automatycznie przenosi focus użytkownika do odpowiedniego pola formularza
-  7. Użytkownik widzi sugestie obok odpowiednich pól formularza
-  7. Użytkownik może wprowadzić poprawki do założeń na podstawie sugestii AI
-  8. System zapisuje zmiany w czasie rzeczywistym
-  9. Użytkownik może w dowolnym momencie ponownie poprosić AI o ponowną walidację założeń
-  10. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
+  6. Użytkownik może zaakceptować lub odrzucić sugestie AI
+  7. Po zaakceptowaniu, system automatycznie przenosi focus użytkownika do odpowiedniego pola formularza
+  8. Użytkownik widzi sugestie obok odpowiednich pól formularza
+  9. Użytkownik może wprowadzić poprawki do założeń na podstawie sugestii AI
+  10. System zapisuje zmiany w czasie rzeczywistym
+  11. Użytkownik może w dowolnym momencie ponownie poprosić AI o ponowną walidację założeń
+  12. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 #### US-012: Uzyskiwanie sugestii dotyczących definicji projektu
+
 - Jako zalogowany użytkownik, chcę otrzymać sugestie od AI dotyczące mojego projektu, aby ulepszyć jego definicję
 - Kryteria akceptacji:
   1. AI analizuje wprowadzone dane i kontekst projektu
@@ -230,6 +252,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
 ### Podział na bloki funkcjonalne
 
 #### US-013: Generowanie bloków funkcjonalnych przez AI
+
 - Jako zalogowany użytkownik, chcę aby AI zaproponowało podział mojego projektu na bloki funkcjonalne, aby ustrukturyzować proces rozwoju
 - Kryteria akceptacji:
   1. AI analizuje założenia projektu i generuje propozycję podziału na bloki funkcjonalne
@@ -239,6 +262,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   5. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 #### US-014: Modyfikacja bloków funkcjonalnych
+
 - Jako zalogowany użytkownik, chcę modyfikować zaproponowane bloki funkcjonalne, aby dostosować je do moich potrzeb
 - Kryteria akceptacji:
   1. Użytkownik może edytować nazwę, opis i zakres każdego bloku
@@ -249,6 +273,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   6. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 #### US-015: Eksportowanie podziału na bloki funkcjonalne
+
 - Jako zalogowany użytkownik, chcę wyeksportować podział na bloki funkcjonalne, aby móc go wykorzystać poza aplikacją
 - Kryteria akceptacji:
   1. Użytkownik może wybrać format eksportu (PDF, CSV, JSON)
@@ -260,6 +285,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
 ### Tworzenie harmonogramu
 
 #### US-016: Generowanie prostego harmonogramu przez AI
+
 - Jako zalogowany użytkownik, chcę aby AI wygenerowało prosty harmonogram projektu, aby lepiej zaplanować prace
 - Kryteria akceptacji:
   1. AI analizuje zdefiniowane bloki funkcjonalne i generuje harmonogram projektu
@@ -269,6 +295,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   5. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 #### US-017: Modyfikacja harmonogramu projektu
+
 - Jako zalogowany użytkownik, chcę modyfikować wygenerowany harmonogram, aby dostosować go do rzeczywistych możliwości
 - Kryteria akceptacji:
   1. Użytkownik może edytować nazwy etapów i ich opisy
@@ -278,6 +305,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   5. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 #### US-018: Eksportowanie harmonogramu projektu
+
 - Jako zalogowany użytkownik, chcę wyeksportować harmonogram projektu, aby móc go wykorzystać poza aplikacją
 - Kryteria akceptacji:
   1. Użytkownik może wybrać format eksportu (PDF, CSV, iCal)
@@ -289,6 +317,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
 ### Zarządzanie zadaniami
 
 #### US-019: Tworzenie zadań w ramach bloku funkcjonalnego
+
 - Jako zalogowany użytkownik, chcę tworzyć zadania w ramach wybranego bloku funkcjonalnego, aby szczegółowo zaplanować prace
 - Kryteria akceptacji:
   1. Z widoku bloku funkcjonalnego, użytkownik może wybrać opcję utworzenia nowego zadania
@@ -299,6 +328,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   6. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 #### US-020: Ręczna estymacja zadań
+
 - Jako zalogowany użytkownik, chcę ręcznie estymować czas lub nakład pracy na zadanie, aby lepiej planować harmonogram
 - Kryteria akceptacji:
   1. Przy tworzeniu lub edycji zadania, użytkownik może wprowadzić estymację
@@ -309,6 +339,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   6. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 #### US-021: Estymacja zadań wspomagana przez AI
+
 - Jako zalogowany użytkownik, chcę otrzymać estymację czasu lub nakładu pracy na zadanie od AI, aby uzyskać obiektywną ocenę
 - Kryteria akceptacji:
   1. Przy tworzeniu lub edycji zadania, użytkownik może poprosić AI o estymację
@@ -320,6 +351,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   7. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 #### US-022: Przeglądanie zadań w ramach bloku funkcjonalnego
+
 - Jako zalogowany użytkownik, chcę przeglądać wszystkie zadania w ramach bloku funkcjonalnego, aby kontrolować postęp prac
 - Kryteria akceptacji:
   1. Z widoku bloku funkcjonalnego, użytkownik widzi listę wszystkich zadań
@@ -330,6 +362,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   6. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 #### US-023: Edycja i usuwanie zadań
+
 - Jako zalogowany użytkownik, chcę edytować i usuwać zadania, aby utrzymać aktualność planów
 - Kryteria akceptacji:
   1. Z listy zadań, użytkownik może wybrać zadanie do edycji
@@ -341,6 +374,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   7. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 #### US-024: Definiowanie zależności między zadaniami
+
 - Jako zalogowany użytkownik, chcę definiować proste zależności między zadaniami, aby zachować logiczną kolejność wykonywania
 - Kryteria akceptacji:
   1. Przy edycji zadania, użytkownik może wybrać zadania poprzedzające
@@ -351,6 +385,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   6. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 #### US-025: Automatyczne generowanie zadań przez AI
+
 - Jako zalogowany użytkownik, chcę automatycznie generować zadania na podstawie opisu bloku funkcjonalnego, aby przyspieszyć proces planowania
 - Kryteria akceptacji:
   1. Z widoku bloku funkcjonalnego, użytkownik może wybrać opcję automatycznego generowania zadań
@@ -362,6 +397,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   7. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 #### US-026: Walidacja zadań przez AI
+
 - Jako zalogowany użytkownik, chcę otrzymać walidację zadań od AI, aby upewnić się o ich kompletności i spójności
 - Kryteria akceptacji:
   1. Użytkownik może poprosić AI o walidację zadań w ramach bloku funkcjonalnego
@@ -373,6 +409,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   7. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 #### US-027: Eksportowanie projektu z zadaniami
+
 - Jako zalogowany użytkownik, chcę wyeksportować projekt wraz z zadaniami, aby wykorzystać dane poza aplikacją
 - Kryteria akceptacji:
   1. Z widoku szczegółów projektu, użytkownik może wybrać opcję eksportu z zadaniami
@@ -386,6 +423,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
 ### Ocena sugestii AI
 
 #### US-028: Ocenianie przydatności sugestii AI
+
 - Jako zalogowany użytkownik, chcę oceniać przydatność sugestii AI, aby pomóc w doskonaleniu algorytmów
 - Kryteria akceptacji:
   1. Przy każdej sugestii AI dostępne są przyciski "przydatne" i "nieprzydatne"
@@ -395,6 +433,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   5. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 #### US-029: Zgłaszanie nieadekwatnych sugestii AI
+
 - Jako zalogowany użytkownik, chcę zgłaszać nieadekwatne lub niepoprawne sugestie AI, aby poprawić jakość systemu
 - Kryteria akceptacji:
   1. Użytkownik może zgłosić niepoprawną sugestię AI
@@ -406,6 +445,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
 ### Zarządzanie kontem
 
 #### US-030: Edycja profilu użytkownika
+
 - Jako zalogowany użytkownik, chcę edytować swój profil, aby zaktualizować moje dane osobowe
 - Kryteria akceptacji:
   1. Użytkownik ma dostęp do strony edycji profilu
@@ -415,6 +455,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
   5. Funkcjonalność nie jest dostępna bez logowania się do systemu (US-002)
 
 #### US-031: Usuwanie konta
+
 - Jako zalogowany użytkownik, chcę usunąć moje konto, jeśli nie chcę już korzystać z aplikacji
 - Kryteria akceptacji:
   1. Użytkownik może zainicjować proces usuwania konta z poziomu ustawień profilu
@@ -427,27 +468,32 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
 ## 6. Metryki sukcesu
 
 ### 6.1 Metryki adopcji i zaangażowania
+
 - Liczba nowych rejestracji (cel: wzrost o 10% miesięcznie)
 - Odsetek użytkowników aktywnie korzystających z aplikacji (cel: 40% w pierwszym miesiącu)
 - Średni czas spędzony w aplikacji (cel: minimum 15 minut na sesję)
 - Liczba utworzonych projektów na użytkownika (cel: minimum 2 projekty)
 
 ### 6.2 Metryki jakości AI
+
 - Odsetek sugestii AI ocenionych jako "przydatne" (cel: powyżej 70%)
 - Liczba modyfikacji wprowadzonych przez użytkowników do sugestii AI (cel: poniżej 30%)
 - Odsetek użytkowników korzystających z sugestii AI (cel: powyżej 80%)
 
 ### 6.3 Metryki efektywności
+
 - Średni czas potrzebny na zdefiniowanie założeń projektu (cel: poniżej 30 minut)
 - Średni czas potrzebny na podział projektu na bloki funkcjonalne (cel: poniżej 20 minut)
 - Średni czas potrzebny na stworzenie harmonogramu (cel: poniżej 15 minut)
 
 ### 6.4 Metryki satysfakcji
+
 - Ogólna ocena aplikacji przez użytkowników (cel: minimum 4.5/5)
 - Odsetek użytkowników polecających aplikację (NPS) (cel: powyżej 40)
 - Odsetek użytkowników zgłaszających problemy lub błędy (cel: poniżej 5%)
 
 ### 6.5 Kluczowe wskaźniki efektywności MVP
+
 - Liczba użytkowników, którzy pomyślnie utworzyli kompletny projekt z wszystkimi elementami: założenia, bloki funkcjonalne, harmonogram (cel: minimum 60% użytkowników)
 - Odsetek użytkowników powracających do aplikacji po tygodniu od rejestracji (cel: minimum 30%)
 - Procent projektów z utworzonymi zadaniami (cel: minimum 60% wszystkich projektów)
@@ -455,6 +501,7 @@ Plan My App adresuje te wyzwania poprzez dostarczenie struktury, wsparcia AI i a
 - Liczba projektów eksportowanych do formatów zewnętrznych (cel: minimum 20% wszystkich projektów)
 
 ### 6.6 Metryki zarządzania zadaniami
+
 - Procent użytkowników wykorzystujących funkcje zarządzania zadaniami (cel: powyżej 70%)
 - Średnia liczba zadań utworzonych przez AI na blok funkcjonalny (wskaźnik efektywności AI)
 - Odsetek zadań z estymacją czasu (cel: powyżej 80%)

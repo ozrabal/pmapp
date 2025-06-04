@@ -3,6 +3,7 @@
 ## 1. Tabele i kolumny
 
 ### 1.1 Tabela `profiles`
+
 Rozszerza funkcjonalność wbudowanej tabeli `auth.users` Supabase o dodatkowe informacje o użytkownikach.
 
 | Kolumna | Typ | Ograniczenia | Opis |
@@ -13,12 +14,13 @@ Rozszerza funkcjonalność wbudowanej tabeli `auth.users` Supabase o dodatkowe i
 | timezone | VARCHAR(50) | NOT NULL, DEFAULT 'UTC' | Strefa czasowa użytkownika |
 | last_login_at | TIMESTAMP WITH TIME ZONE | | Data i czas ostatniego logowania |
 | projects_limit | INTEGER | NOT NULL, DEFAULT 5 | Limit liczby projektów dla użytkownika |
-| default_estimation_unit | VARCHAR(20) | NOT NULL, DEFAULT 'hours' | Preferowana jednostka estymacji (hours/story_points) |
+| default_estimation_unit | estimation_unit_enum | NOT NULL, DEFAULT 'hours' | Preferowana jednostka estymacji (hours/storypoints) |
 | created_at | TIMESTAMP WITH TIME ZONE | NOT NULL, DEFAULT NOW() | Data utworzenia profilu |
 | updated_at | TIMESTAMP WITH TIME ZONE | NOT NULL, DEFAULT NOW() | Data aktualizacji profilu |
 | deleted_at | TIMESTAMP WITH TIME ZONE | | Data usunięcia konta (soft delete) |
 
 ### 1.2 Tabela `projects`
+
 Przechowuje informacje o projektach użytkowników.
 
 | Kolumna | Typ | Ograniczenia | Opis |
@@ -31,12 +33,13 @@ Przechowuje informacje o projektach użytkowników.
 | assumptions | JSONB | | Podstawowe założenia projektu jako struktura JSON |
 | functional_blocks | JSONB | | Bloki funkcjonalne projektu jako zagnieżdżona struktura JSON |
 | schedule | JSONB | | Harmonogram projektu jako serializowany obiekt JSON |
-| estimation_unit | VARCHAR(20) | NOT NULL, DEFAULT 'hours' | Jednostka estymacji dla zadań w projekcie (hours/story_points) |
+| estimation_unit | estimation_unit_enum | NOT NULL, DEFAULT 'hours' | Jednostka estymacji dla zadań w projekcie (hours/storypoints) |
 | created_at | TIMESTAMP WITH TIME ZONE | NOT NULL, DEFAULT NOW() | Data utworzenia projektu |
 | updated_at | TIMESTAMP WITH TIME ZONE | NOT NULL, DEFAULT NOW() | Data aktualizacji projektu |
 | deleted_at | TIMESTAMP WITH TIME ZONE | | Data usunięcia projektu (soft delete) |
 
 ### 1.3 Tabela `tasks`
+
 Przechowuje zadania należące do bloków funkcjonalnych projektów.
 
 | Kolumna | Typ | Ograniczenia | Opis |
@@ -58,6 +61,7 @@ Przechowuje zadania należące do bloków funkcjonalnych projektów.
 | deleted_at | TIMESTAMP WITH TIME ZONE | | Data usunięcia zadania (soft delete) |
 
 ### 1.4 Tabela `task_dependencies`
+
 Przechowuje zależności między zadaniami (relacje poprzednik/następnik).
 
 | Kolumna | Typ | Ograniczenia | Opis |
@@ -65,10 +69,11 @@ Przechowuje zależności między zadaniami (relacje poprzednik/następnik).
 | id | UUID | PRIMARY KEY, NOT NULL, DEFAULT uuid_generate_v4() | Unikalny identyfikator zależności |
 | predecessor_task_id | UUID | NOT NULL, REFERENCES tasks(id) ON DELETE CASCADE | ID zadania poprzedzającego |
 | successor_task_id | UUID | NOT NULL, REFERENCES tasks(id) ON DELETE CASCADE | ID zadania następującego |
-| dependency_type | VARCHAR(50) | NOT NULL, DEFAULT 'finish_to_start' | Typ zależności między zadaniami |
+| dependency_type | task_dependency_type_enum | NOT NULL, DEFAULT 'finish_to_start' | Typ zależności między zadaniami |
 | created_at | TIMESTAMP WITH TIME ZONE | NOT NULL, DEFAULT NOW() | Data utworzenia zależności |
 
 ### 1.5 Tabela `user_activities`
+
 Rejestruje aktywności użytkowników w systemie.
 
 | Kolumna | Typ | Ograniczenia | Opis |
@@ -81,6 +86,7 @@ Rejestruje aktywności użytkowników w systemie.
 | created_at | TIMESTAMP WITH TIME ZONE | NOT NULL, DEFAULT NOW() | Data i czas aktywności |
 
 ### 1.6 Tabela `ai_suggestion_feedbacks`
+
 Przechowuje oceny sugestii AI przez użytkowników.
 
 | Kolumna | Typ | Ograniczenia | Opis |
@@ -95,6 +101,7 @@ Przechowuje oceny sugestii AI przez użytkowników.
 | updated_at | TIMESTAMP WITH TIME ZONE | NOT NULL, DEFAULT NOW() | Data i czas aktualizacji oceny |
 
 ### 1.7 Tabela `user_sessions`
+
 Przechowuje informacje o sesjach użytkowników.
 
 | Kolumna | Typ | Ograniczenia | Opis |
@@ -109,8 +116,21 @@ Przechowuje informacje o sesjach użytkowników.
 ## 2. Typy wyliczeniowe (ENUM)
 
 ### 2.1 task_priority_enum
+
 ```sql
 CREATE TYPE task_priority_enum AS ENUM ('low', 'medium', 'high');
+```
+
+### 2.2 estimation_unit_enum
+
+```sql
+CREATE TYPE estimation_unit_enum AS ENUM ('hours', 'storypoints');
+```
+
+### 2.3 task_dependency_type_enum
+
+```sql
+CREATE TYPE task_dependency_type_enum AS ENUM ('finish_to_start', 'start_to_start', 'finish_to_finish', 'start_to_finish');
 ```
 
 ## 3. Relacje między tabelami
@@ -150,7 +170,8 @@ CREATE TYPE task_priority_enum AS ENUM ('low', 'medium', 'high');
 | ai_suggestion_feedbacks | (suggestion_context, suggestion_hash) | B-tree | Przyspiesza wyszukiwanie konkretnych sugestii |
 | user_sessions | user_id | B-tree | Przyspiesza wyszukiwanie sesji dla danego użytkownika |
 | user_sessions | is_active | B-tree | Przyspiesza wyszukiwanie aktywnych sesji |
-| ## 5. Zasady PostgreSQL Row Level Security (RLS)
+
+## 5. Zasady PostgreSQL Row Level Security (RLS)
 
 ### 5.1 RLS dla tabeli `profiles`
 
@@ -389,15 +410,17 @@ CREATE TRIGGER update_ai_suggestion_feedbacks_updated_at BEFORE UPDATE ON ai_sug
 
 2. **Integracja z functional_blocks**: Zadania referencują bloki funkcjonalne przez identyfikator, co pozwala na elastyczną strukturę bez denormalizacji.
 
-3. **System feedback AI**: Wykorzystuje ten sam wzorzec co istniejąca tabela ai_suggestion_feedbacks. 
-  ON projects FOR UPDATE 
+3. **System feedback AI**: Wykorzystuje ten sam wzorzec co istniejąca tabela ai_suggestion_feedbacks.
+  ON projects FOR UPDATE
   USING (auth.uid() = user_id AND deleted_at IS NULL);
 
+```sql
 -- Zasada dostępu do usuwania projektów (soft delete)
-CREATE POLICY "Użytkownicy mogą usuwać tylko swoje projekty" 
-  ON projects FOR UPDATE 
+CREATE POLICY "Użytkownicy mogą usuwać tylko swoje projekty"
+  ON projects FOR UPDATE
   USING (auth.uid() = user_id AND deleted_at IS NULL)
   WITH CHECK (deleted_at IS NOT NULL);
+
 ```
 
 ### 4.3 RLS dla tabeli `user_activities`
@@ -588,6 +611,7 @@ EXECUTE PROCEDURE update_last_login();
      - `functional_blocks` - bloki funkcjonalne z zależnościami
      - `schedule` - harmonogram projektu
    - Proponowana struktura dla `functional_blocks`:
+
      ```json
      {
        "blocks": [
@@ -604,6 +628,7 @@ EXECUTE PROCEDURE update_last_login();
      ```
 
    - Proponowana struktura dla `schedule`:
+
      ```json
      {
        "stages": [
