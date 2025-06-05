@@ -64,6 +64,7 @@ export interface Database {
       profiles: {
         Row: {
           created_at: string;
+          default_estimation_unit: Database["public"]["Enums"]["estimation_unit_enum"];
           deleted_at: string | null;
           first_name: string;
           id: string;
@@ -75,6 +76,7 @@ export interface Database {
         };
         Insert: {
           created_at?: string;
+          default_estimation_unit?: Database["public"]["Enums"]["estimation_unit_enum"];
           deleted_at?: string | null;
           first_name: string;
           id: string;
@@ -86,6 +88,7 @@ export interface Database {
         };
         Update: {
           created_at?: string;
+          default_estimation_unit?: Database["public"]["Enums"]["estimation_unit_enum"];
           deleted_at?: string | null;
           first_name?: string;
           id?: string;
@@ -103,10 +106,12 @@ export interface Database {
           created_at: string;
           deleted_at: string | null;
           description: string | null;
+          estimation_unit: Database["public"]["Enums"]["estimation_unit_enum"];
           functional_blocks: Json | null;
           id: string;
           name: string;
           schedule: Json | null;
+          status: string;
           updated_at: string;
           user_id: string;
         };
@@ -115,10 +120,12 @@ export interface Database {
           created_at?: string;
           deleted_at?: string | null;
           description?: string | null;
+          estimation_unit?: Database["public"]["Enums"]["estimation_unit_enum"];
           functional_blocks?: Json | null;
           id?: string;
           name: string;
           schedule?: Json | null;
+          status?: string;
           updated_at?: string;
           user_id: string;
         };
@@ -127,10 +134,12 @@ export interface Database {
           created_at?: string;
           deleted_at?: string | null;
           description?: string | null;
+          estimation_unit?: Database["public"]["Enums"]["estimation_unit_enum"];
           functional_blocks?: Json | null;
           id?: string;
           name?: string;
           schedule?: Json | null;
+          status?: string;
           updated_at?: string;
           user_id?: string;
         };
@@ -140,6 +149,107 @@ export interface Database {
             columns: ["user_id"];
             isOneToOne: false;
             referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      task_dependencies: {
+        Row: {
+          created_at: string;
+          dependency_type: Database["public"]["Enums"]["task_dependency_type_enum"];
+          id: string;
+          predecessor_task_id: string;
+          successor_task_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          dependency_type?: Database["public"]["Enums"]["task_dependency_type_enum"];
+          id?: string;
+          predecessor_task_id: string;
+          successor_task_id: string;
+        };
+        Update: {
+          created_at?: string;
+          dependency_type?: Database["public"]["Enums"]["task_dependency_type_enum"];
+          id?: string;
+          predecessor_task_id?: string;
+          successor_task_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "task_dependencies_predecessor_task_id_fkey";
+            columns: ["predecessor_task_id"];
+            isOneToOne: false;
+            referencedRelation: "tasks";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "task_dependencies_successor_task_id_fkey";
+            columns: ["successor_task_id"];
+            isOneToOne: false;
+            referencedRelation: "tasks";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      tasks: {
+        Row: {
+          ai_confidence_score: number | null;
+          ai_suggestion_context: string | null;
+          ai_suggestion_hash: string | null;
+          created_at: string;
+          deleted_at: string | null;
+          description: string | null;
+          estimated_by_ai: boolean;
+          estimated_value: number | null;
+          functional_block_id: string;
+          id: string;
+          metadata: Json | null;
+          name: string;
+          priority: Database["public"]["Enums"]["task_priority_enum"];
+          project_id: string;
+          updated_at: string;
+        };
+        Insert: {
+          ai_confidence_score?: number | null;
+          ai_suggestion_context?: string | null;
+          ai_suggestion_hash?: string | null;
+          created_at?: string;
+          deleted_at?: string | null;
+          description?: string | null;
+          estimated_by_ai?: boolean;
+          estimated_value?: number | null;
+          functional_block_id: string;
+          id?: string;
+          metadata?: Json | null;
+          name: string;
+          priority?: Database["public"]["Enums"]["task_priority_enum"];
+          project_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          ai_confidence_score?: number | null;
+          ai_suggestion_context?: string | null;
+          ai_suggestion_hash?: string | null;
+          created_at?: string;
+          deleted_at?: string | null;
+          description?: string | null;
+          estimated_by_ai?: boolean;
+          estimated_value?: number | null;
+          functional_block_id?: string;
+          id?: string;
+          metadata?: Json | null;
+          name?: string;
+          priority?: Database["public"]["Enums"]["task_priority_enum"];
+          project_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "tasks_project_id_fkey";
+            columns: ["project_id"];
+            isOneToOne: false;
+            referencedRelation: "projects";
             referencedColumns: ["id"];
           },
         ];
@@ -217,7 +327,11 @@ export interface Database {
     };
     Views: Record<never, never>;
     Functions: Record<never, never>;
-    Enums: Record<never, never>;
+    Enums: {
+      estimation_unit_enum: "hours" | "storypoints";
+      task_dependency_type_enum: "finish_to_start" | "start_to_start" | "finish_to_finish" | "start_to_finish";
+      task_priority_enum: "low" | "medium" | "high";
+    };
     CompositeTypes: Record<never, never>;
   };
 }
@@ -322,6 +436,10 @@ export const Constants = {
     Enums: {},
   },
   public: {
-    Enums: {},
+    Enums: {
+      estimation_unit_enum: ["hours", "storypoints"],
+      task_dependency_type_enum: ["finish_to_start", "start_to_start", "finish_to_finish", "start_to_finish"],
+      task_priority_enum: ["low", "medium", "high"],
+    },
   },
 } as const;
