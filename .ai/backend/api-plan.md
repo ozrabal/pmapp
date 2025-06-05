@@ -17,10 +17,12 @@
 ### 2.2 User Profile
 
 #### Get Current User Profile
+
 - **Method**: GET
 - **Path**: `/api/users/profile`
 - **Description**: Get current authenticated user's profile
 - **Response**:
+
   ```json
   {
     "id": "uuid",
@@ -33,15 +35,18 @@
     "createdAt": "string"
   }
   ```
+
 - **Success**: 200 OK
 - **Errors**:
   - 401 Unauthorized - Not authenticated
 
 #### Update User Profile
+
 - **Method**: PATCH
 - **Path**: `/api/users/profile`
 - **Description**: Update current user's profile
 - **Request Body** (all fields optional):
+
   ```json
   {
     "firstName": "string",
@@ -49,7 +54,9 @@
     "timezone": "string"
   }
   ```
+
 - **Response**:
+
   ```json
   {
     "id": "uuid",
@@ -59,27 +66,33 @@
     "updatedAt": "string"
   }
   ```
+
 - **Success**: 200 OK
 - **Errors**:
   - 400 Bad Request - Invalid input
   - 401 Unauthorized - Not authenticated
 
 #### Delete User Account
+
 - **Method**: DELETE
 - **Path**: `/api/users/profile`
 - **Description**: Soft delete user account
 - **Request Body**:
+
   ```json
   {
     "password": "string"
   }
   ```
+
 - **Response**:
+
   ```json
   {
     "message": "Account scheduled for deletion"
   }
   ```
+
 - **Success**: 200 OK
 - **Errors**:
   - 400 Bad Request - Invalid password
@@ -88,6 +101,7 @@
 ### 2.3 Projects
 
 #### List Projects
+
 - **Method**: GET
 - **Path**: `/api/projects`
 - **Description**: List all projects for current user
@@ -97,6 +111,7 @@
   - `limit` (optional): Number of results per page
   - `sort` (optional): Sort field and direction
 - **Response**:
+
   ```json
   {
     "data": [
@@ -116,15 +131,18 @@
     }
   }
   ```
+
 - **Success**: 200 OK
 - **Errors**:
   - 401 Unauthorized - Not authenticated
 
 #### Get Project
+
 - **Method**: GET
 - **Path**: `/api/projects/{id}`
 - **Description**: Get a specific project by ID
 - **Response**:
+
   ```json
   {
     "id": "uuid",
@@ -137,6 +155,7 @@
     "updatedAt": "string"
   }
   ```
+
 - **Success**: 200 OK
 - **Errors**:
   - 401 Unauthorized - Not authenticated
@@ -144,17 +163,21 @@
   - 404 Not Found - Project not found
 
 #### Create Project
+
 - **Method**: POST
 - **Path**: `/api/projects`
 - **Description**: Create a new project
 - **Request Body**:
+
   ```json
   {
     "name": "string",
     "description": "string"
   }
   ```
+
 - **Response**:
+
   ```json
   {
     "id": "uuid",
@@ -163,6 +186,7 @@
     "createdAt": "string"
   }
   ```
+
 - **Success**: 201 Created
 - **Errors**:
   - 400 Bad Request - Invalid input
@@ -170,10 +194,12 @@
   - 403 Forbidden - Projects limit reached
 
 #### Update Project
+
 - **Method**: PATCH
 - **Path**: `/api/projects/{id}`
 - **Description**: Update a specific project
 - **Request Body** (all fields optional):
+
   ```json
   {
     "name": "string",
@@ -183,7 +209,9 @@
     "schedule": {}
   }
   ```
+
 - **Response**:
+
   ```json
   {
     "id": "uuid",
@@ -195,6 +223,7 @@
     "updatedAt": "string"
   }
   ```
+
 - **Success**: 200 OK
 - **Errors**:
   - 400 Bad Request - Invalid input
@@ -203,15 +232,18 @@
   - 404 Not Found - Project not found
 
 #### Delete Project
+
 - **Method**: DELETE
 - **Path**: `/api/projects/{id}`
 - **Description**: Soft delete a project
 - **Response**:
+
   ```json
   {
     "message": "Project deleted successfully"
   }
   ```
+
 - **Success**: 200 OK
 - **Errors**:
   - 401 Unauthorized - Not authenticated
@@ -221,6 +253,7 @@
 ### 2.4 Task Management
 
 #### List Tasks for Functional Block
+
 - **Method**: GET
 - **Path**: `/api/projects/{id}/functional-blocks/{blockId}/tasks`
 - **Description**: List all tasks for a specific functional block
@@ -230,6 +263,7 @@
   - `priority` (optional): Filter by priority (low, medium, high)
   - `sort` (optional): Sort field and direction
 - **Response**:
+
   ```json
   {
     "data": [
@@ -253,6 +287,7 @@
     }
   }
   ```
+
 - **Success**: 200 OK
 - **Errors**:
   - 401 Unauthorized - Not authenticated
@@ -260,10 +295,12 @@
   - 404 Not Found - Project or functional block not found
 
 #### Get Task
+
 - **Method**: GET
 - **Path**: `/api/tasks/{id}`
 - **Description**: Get a specific task by ID
 - **Response**:
+
   ```json
   {
     "id": "uuid",
@@ -281,6 +318,7 @@
     "updatedAt": "string"
   }
   ```
+
 - **Success**: 200 OK
 - **Errors**:
   - 401 Unauthorized - Not authenticated
@@ -288,10 +326,12 @@
   - 404 Not Found - Task not found
 
 #### Create Task
+
 - **Method**: POST
 - **Path**: `/api/projects/{id}/functional-blocks/{blockId}/tasks`
 - **Description**: Create a new task within a functional block
 - **Request Body**:
+
   ```json
   {
     "name": "string",
@@ -301,7 +341,9 @@
     "metadata": {}
   }
   ```
+
 - **Response**:
+
   ```json
   {
     "id": "uuid",
@@ -313,6 +355,7 @@
     "createdAt": "string"
   }
   ```
+
 - **Success**: 201 Created
 - **Errors**:
   - 400 Bad Request - Invalid input
@@ -321,10 +364,12 @@
   - 404 Not Found - Project or functional block not found
 
 #### Update Task
+
 - **Method**: PATCH
 - **Path**: `/api/tasks/{id}`
 - **Description**: Update a specific task
 - **Request Body** (all fields optional):
+
   ```json
   {
     "name": "string",
@@ -334,7 +379,9 @@
     "metadata": {}
   }
   ```
+
 - **Response**:
+
   ```json
   {
     "id": "uuid",
@@ -347,6 +394,7 @@
     "updatedAt": "string"
   }
   ```
+
 - **Success**: 200 OK
 - **Errors**:
   - 400 Bad Request - Invalid input
@@ -355,10 +403,12 @@
   - 404 Not Found - Task not found
 
 #### Delete Task
+
 - **Method**: DELETE
 - **Path**: `/api/tasks/{id}`
 - **Description**: Soft delete a task
 - **Response**:
+
   ```json
   {
     "message": "Task deleted successfully",
@@ -370,6 +420,7 @@
     ]
   }
   ```
+
 - **Success**: 200 OK
 - **Errors**:
   - 401 Unauthorized - Not authenticated
@@ -377,10 +428,12 @@
   - 404 Not Found - Task not found
 
 #### Generate Tasks for Functional Block
+
 - **Method**: POST
 - **Path**: `/api/projects/{id}/functional-blocks/{blockId}/tasks/generate`
 - **Description**: Generate tasks using AI for a specific functional block
 - **Response**:
+
   ```json
   {
     "tasks": [
@@ -403,6 +456,7 @@
     }
   }
   ```
+
 - **Success**: 200 OK
 - **Errors**:
   - 401 Unauthorized - Not authenticated
@@ -411,10 +465,12 @@
   - 500 Internal Server Error - AI generation failed
 
 #### Estimate Task with AI
+
 - **Method**: POST
 - **Path**: `/api/tasks/{id}/estimate`
 - **Description**: Get AI estimation for a task
 - **Response**:
+
   ```json
   {
     "estimatedValue": "number",
@@ -424,6 +480,7 @@
     "aiSuggestionHash": "string"
   }
   ```
+
 - **Success**: 200 OK
 - **Errors**:
   - 401 Unauthorized - Not authenticated
@@ -432,10 +489,12 @@
   - 500 Internal Server Error - AI estimation failed
 
 #### Validate Task with AI
+
 - **Method**: POST
 - **Path**: `/api/tasks/{id}/validate`
 - **Description**: Validate task completeness and consistency using AI
 - **Response**:
+
   ```json
   {
     "isValid": "boolean",
@@ -460,6 +519,7 @@
     ]
   }
   ```
+
 - **Success**: 200 OK
 - **Errors**:
   - 401 Unauthorized - Not authenticated
@@ -470,10 +530,12 @@
 ### 2.5 Task Dependencies
 
 #### List Task Dependencies
+
 - **Method**: GET
 - **Path**: `/api/tasks/{id}/dependencies`
 - **Description**: Get all dependencies for a specific task
 - **Response**:
+
   ```json
   {
     "predecessors": [
@@ -496,6 +558,7 @@
     ]
   }
   ```
+
 - **Success**: 200 OK
 - **Errors**:
   - 401 Unauthorized - Not authenticated
@@ -503,17 +566,21 @@
   - 404 Not Found - Task not found
 
 #### Create Task Dependency
+
 - **Method**: POST
 - **Path**: `/api/tasks/{id}/dependencies`
 - **Description**: Create a dependency relationship where this task depends on another
 - **Request Body**:
+
   ```json
   {
     "predecessorTaskId": "uuid",
     "dependencyType": "string"
   }
   ```
+
 - **Response**:
+
   ```json
   {
     "id": "uuid",
@@ -523,6 +590,7 @@
     "createdAt": "string"
   }
   ```
+
 - **Success**: 201 Created
 - **Errors**:
   - 400 Bad Request - Invalid input or circular dependency detected
@@ -531,15 +599,18 @@
   - 404 Not Found - Task not found
 
 #### Delete Task Dependency
+
 - **Method**: DELETE
 - **Path**: `/api/task-dependencies/{id}`
 - **Description**: Remove a dependency relationship
 - **Response**:
+
   ```json
   {
     "message": "Dependency removed successfully"
   }
   ```
+
 - **Success**: 200 OK
 - **Errors**:
   - 401 Unauthorized - Not authenticated
@@ -549,10 +620,12 @@
 ### 2.6 AI-Assisted Features
 
 #### Validate Project Assumptions
+
 - **Method**: POST
 - **Path**: `/api/projects/{id}/assumptions/validate`
 - **Description**: Validate project assumptions using AI
 - **Response**:
+
   ```json
   {
     "isValid": "boolean",
@@ -573,6 +646,7 @@
     ]
   }
   ```
+
 - **Success**: 200 OK
 - **Errors**:
   - 401 Unauthorized - Not authenticated
@@ -580,16 +654,20 @@
   - 404 Not Found - Project not found
 
 #### Get Project Suggestions
+
 - **Method**: POST
 - **Path**: `/api/projects/{id}/suggestions`
 - **Description**: Get AI suggestions for project definition
 - **Request Body** (optional):
+
   ```json
   {
     "focus": "string"
   }
   ```
+
 - **Response**:
+
   ```json
   {
     "suggestions": [
@@ -602,6 +680,7 @@
     ]
   }
   ```
+
 - **Success**: 200 OK
 - **Errors**:
   - 401 Unauthorized - Not authenticated
@@ -609,10 +688,12 @@
   - 404 Not Found - Project not found
 
 #### Generate Functional Blocks
+
 - **Method**: POST
 - **Path**: `/api/projects/{id}/functional-blocks/generate`
 - **Description**: Generate functional blocks using AI
 - **Response**:
+
   ```json
   {
     "functionalBlocks": {
@@ -629,6 +710,7 @@
     }
   }
   ```
+
 - **Success**: 200 OK
 - **Errors**:
   - 401 Unauthorized - Not authenticated
@@ -636,6 +718,7 @@
   - 404 Not Found - Project not found
 
 #### Export Functional Blocks
+
 - **Method**: GET
 - **Path**: `/api/projects/{id}/functional-blocks/export`
 - **Query Parameters**:
@@ -650,10 +733,12 @@
   - 404 Not Found - Project not found
 
 #### Generate Schedule
+
 - **Method**: POST
 - **Path**: `/api/projects/{id}/schedule/generate`
 - **Description**: Generate project schedule using AI
 - **Response**:
+
   ```json
   {
     "schedule": {
@@ -670,6 +755,7 @@
     }
   }
   ```
+
 - **Success**: 200 OK
 - **Errors**:
   - 401 Unauthorized - Not authenticated
@@ -677,6 +763,7 @@
   - 404 Not Found - Project not found
 
 #### Export Schedule
+
 - **Method**: GET
 - **Path**: `/api/projects/{id}/schedule/export`
 - **Query Parameters**:
@@ -691,6 +778,7 @@
   - 404 Not Found - Project not found
 
 #### Export Project with Tasks
+
 - **Method**: GET
 - **Path**: `/api/projects/{id}/export`
 - **Query Parameters**:
@@ -708,10 +796,12 @@
 ### 2.7 AI Feedback
 
 #### Submit AI Suggestion Feedback
+
 - **Method**: POST
 - **Path**: `/api/ai-feedbacks`
 - **Description**: Submit feedback for an AI suggestion
 - **Request Body**:
+
   ```json
   {
     "suggestionContext": "string",
@@ -720,7 +810,9 @@
     "feedbackText": "string"
   }
   ```
+
 - **Response**:
+
   ```json
   {
     "id": "uuid",
@@ -729,6 +821,7 @@
     "createdAt": "string"
   }
   ```
+
 - **Success**: 201 Created
 - **Errors**:
   - 400 Bad Request - Invalid input
@@ -737,10 +830,12 @@
 ### 2.8 User Activity
 
 #### Record User Activity
+
 - **Method**: POST
 - **Path**: `/api/user-activities`
 - **Description**: Manually record client-side activity
 - **Request Body**:
+
   ```json
   {
     "activityType": "string",
@@ -748,7 +843,9 @@
     "metadata": {}
   }
   ```
+
 - **Response**:
+
   ```json
   {
     "id": "uuid",
@@ -756,22 +853,26 @@
     "createdAt": "string"
   }
   ```
+
 - **Success**: 201 Created
 - **Errors**:
   - 400 Bad Request - Invalid input
   - 401 Unauthorized - Not authenticated
 
 #### Session Heartbeat
+
 - **Method**: POST
 - **Path**: `/api/user-sessions/heartbeat`
 - **Description**: Update session status to keep it active
 - **Response**:
+
   ```json
   {
     "sessionId": "uuid",
     "isActive": true
   }
   ```
+
 - **Success**: 200 OK
 - **Errors**:
   - 401 Unauthorized - Not authenticated
@@ -787,6 +888,7 @@ Authorization: Bearer <jwt-token>
 ```
 
 Authentication flow:
+
 1. User registers or logs in via the auth endpoints
 2. Client receives JWT token
 3. Client includes token in subsequent API requests
@@ -876,6 +978,7 @@ Standardized error responses will be returned for all API endpoints:
 ```
 
 Common error types:
+
 - Validation errors (400)
 - Authentication errors (401)
 - Authorization errors (403)
@@ -884,6 +987,7 @@ Common error types:
 - Server errors (500)
 
 Specific task-related error codes:
+
 - `TASK_NOT_FOUND` (404): Task does not exist or user doesn't have access
 - `FUNCTIONAL_BLOCK_NOT_FOUND` (404): Specified functional block doesn't exist in project
 - `CIRCULAR_DEPENDENCY` (400): Attempted to create circular dependency between tasks
