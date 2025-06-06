@@ -883,7 +883,7 @@
 
 The API will use Supabase Auth for authentication, which provides JWT (JSON Web Token) based authentication. Each API request must include a valid JWT token in the Authorization header:
 
-```
+```text
 Authorization: Bearer <jwt-token>
 ```
 
