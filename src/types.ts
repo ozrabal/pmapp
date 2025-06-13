@@ -78,10 +78,11 @@ export interface ProjectDto {
   name: string;
   description: string | null;
   assumptions: Json | null;
-  functionalBlocks: Json | null;
+  functional_blocks: Json | null;
   schedule: Json | null;
   createdAt: string;
   updatedAt: string;
+  user_id: string;
 }
 
 export interface CreateProjectRequestDto {

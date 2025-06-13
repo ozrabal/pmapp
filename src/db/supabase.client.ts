@@ -18,7 +18,7 @@ export const DEFAULT_USER_ID = "47d41db2-992a-45c0-9cdf-1e63347cfc35";
 export const cookieOptions: CookieOptionsWithName = {
   path: "/",
   // only in production
-  secure: true,
+  secure: false,
   maxAge: 60 * 60 * 24 * 7, // 1 week
   httpOnly: true,
   sameSite: "lax",
