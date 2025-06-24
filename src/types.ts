@@ -136,104 +136,48 @@ export interface TaskDto {
   updatedAt: string;
 }
 
-export interface CreateTaskRequestDto {
+// Lista zadań - uproszczona wersja
+export interface TaskListItemDto {
+  id: string;
   name: string;
-  description?: string | null;
-  priority?: TaskPriorityEnum;
-  estimatedEffort?: number | null;
-  estimationUnit?: EstimationUnitEnum | null;
-  assignedTo?: string | null;
+  description: string | null;
+  priority: TaskPriorityEnum;
+  estimatedValue: number | null;
+  estimatedByAI: boolean;
+  aiConfidenceScore: number | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export interface CreateTaskResponseDto {
+// Szczegóły zadania - pełna wersja
+export interface TaskDetailDto {
   id: string;
+  projectId: string;
   functionalBlockId: string;
   name: string;
   description: string | null;
   priority: TaskPriorityEnum;
+  estimatedValue: number | null;
+  estimatedByAI: boolean;
+  aiConfidenceScore: number | null;
+  aiSuggestionContext: string | null;
+  metadata: Record<string, unknown> | null;
   createdAt: string;
-}
-
-export interface UpdateTaskRequestDto {
-  name?: string;
-  description?: string | null;
-  priority?: TaskPriorityEnum;
-  estimatedEffort?: number | null;
-  estimationUnit?: EstimationUnitEnum | null;
-  actualEffort?: number | null;
-  status?: string;
-  assignedTo?: string | null;
-}
-
-export interface UpdateTaskResponseDto {
-  id: string;
-  name: string;
-  description: string | null;
-  priority: TaskPriorityEnum;
-  estimatedEffort: number | null;
-  estimationUnit: EstimationUnitEnum | null;
-  actualEffort: number | null;
-  status: string;
-  assignedTo: string | null;
   updatedAt: string;
 }
 
-export interface DeleteTaskResponseDto {
-  message: string;
-}
-
-export interface ListTasksResponseDto {
-  data: TaskDto[];
+// Response DTOs
+export interface ListTasksForBlockResponseDto {
+  data: TaskListItemDto[];
   pagination: PaginationDto;
 }
 
-export interface GenerateTasksResponseDto {
-  tasks: TaskDto[];
-}
-
-export interface EstimateTaskResponseDto {
-  taskId: string;
-  estimatedEffort: number;
-  estimationUnit: EstimationUnitEnum;
-  confidence: number;
-  reasoning: string;
-}
-
-export interface ValidateTaskResponseDto {
-  isValid: boolean;
-  feedback: FeedbackItemDto[];
-  suggestions: SuggestionDto[];
-}
-
-// Task Dependencies DTOs
-
-export interface TaskDependencyDto {
-  id: string;
-  dependentTaskId: string;
-  prerequisiteTaskId: string;
-  dependencyType: TaskDependencyTypeEnum;
-  createdAt: string;
-}
-
-export interface CreateTaskDependencyRequestDto {
-  prerequisiteTaskId: string;
-  dependencyType?: TaskDependencyTypeEnum;
-}
-
-export interface CreateTaskDependencyResponseDto {
-  id: string;
-  dependentTaskId: string;
-  prerequisiteTaskId: string;
-  dependencyType: TaskDependencyTypeEnum;
-  createdAt: string;
-}
-
-export interface DeleteTaskDependencyResponseDto {
-  message: string;
-}
-
-export interface ListTaskDependenciesResponseDto {
-  data: TaskDependencyDto[];
+// Query parameters DTOs
+export interface ListTasksQueryDto {
+  page?: number;
+  limit?: number;
+  priority?: TaskPriorityEnum;
+  sort?: string;
 }
 
 // AI-Assisted Feature DTOs

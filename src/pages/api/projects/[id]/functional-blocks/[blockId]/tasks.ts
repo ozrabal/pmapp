@@ -1,5 +1,10 @@
 import type { APIContext } from "astro";
-import { createTaskSchema, uuidSchema } from "../../../../../../lib/schemas/task.schemas";
+import {
+  createTaskSchema,
+  uuidSchema,
+  listTasksParamsSchema,
+  listTasksQuerySchema,
+} from "../../../../../../lib/schemas/task.schemas";
 import { taskService } from "../../../../../../lib/services/task/task.service";
 import type { ErrorResponseDto } from "../../../../../../types";
 import { ZodError } from "zod";
@@ -195,6 +200,143 @@ export async function POST({ params, request, locals }: APIContext) {
     // Log error for debugging in development, but not in production
     if (import.meta.env.DEV) {
       // Using Function constructor to avoid linter warnings in production builds
+      new Function("e", "console.error('Server error:', e)")(error);
+    }
+
+    return new Response(
+      JSON.stringify({
+        error: {
+          code: "INTERNAL_SERVER_ERROR",
+          message: "An unexpected error occurred",
+        },
+      } as ErrorResponseDto),
+      {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  }
+}
+
+/**
+ * GET endpoint for retrieving tasks within a functional block of a project
+ * URL: /api/projects/{id}/functional-blocks/{blockId}/tasks
+ *
+ * @param context - APIContext from Astro
+ * @returns Response with paginated list of tasks or error
+ */
+export async function GET({ params, url, locals }: APIContext) {
+  try {
+    // Check if user is authenticated
+    const user = locals.user;
+    const supabase = locals.supabase;
+
+    if (!user) {
+      return new Response(
+        JSON.stringify({
+          error: {
+            code: "UNAUTHORIZED",
+            message: "Authentication required",
+          },
+        } as ErrorResponseDto),
+        {
+          status: 401,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    }
+
+    // Validate path parameters
+    try {
+      const validatedParams = listTasksParamsSchema.parse(params);
+      const { id: projectId, blockId: functionalBlockId } = validatedParams;
+
+      // Parse and validate query parameters
+      const searchParams = Object.fromEntries(url.searchParams.entries());
+      const validatedQuery = listTasksQuerySchema.parse(searchParams);
+
+      // Validate project access
+      await taskService.validateProjectAccess(supabase, user.id, projectId);
+
+      // Validate functional block exists
+      const project = await taskService.validateProjectAccess(supabase, user.id, projectId);
+      await taskService.validateFunctionalBlockExists(project, functionalBlockId);
+
+      // Get tasks with pagination and filtering
+      const result = await taskService.getTasksForFunctionalBlock(
+        supabase,
+        projectId,
+        functionalBlockId,
+        validatedQuery
+      );
+
+      return new Response(JSON.stringify(result), {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return new Response(
+          JSON.stringify({
+            error: {
+              code: "VALIDATION_ERROR",
+              message: "Invalid request parameters",
+              details: error.flatten(),
+            },
+          } as ErrorResponseDto),
+          {
+            status: 400,
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+      }
+
+      // Handle service-specific errors
+      const isTaskError =
+        error &&
+        typeof error === "object" &&
+        "name" in error &&
+        error.name === "TaskError" &&
+        "errorCode" in error &&
+        "message" in error &&
+        "statusCode" in error;
+
+      if (isTaskError) {
+        const taskError = error as {
+          errorCode: string;
+          message: string;
+          statusCode: number;
+        };
+
+        return new Response(
+          JSON.stringify({
+            error: {
+              code: taskError.errorCode,
+              message: taskError.message,
+            },
+          } as ErrorResponseDto),
+          {
+            status: taskError.statusCode,
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+      }
+
+      throw error;
+    }
+  } catch (error) {
+    // Catch-all error handler
+    if (import.meta.env.DEV) {
       new Function("e", "console.error('Server error:', e)")(error);
     }
 

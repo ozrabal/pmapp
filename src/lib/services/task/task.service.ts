@@ -54,7 +54,6 @@ export class TaskService {
       .select("id, user_id, functional_blocks")
       .eq("id", projectId)
       .single();
-    console.log("Project data:", project, "Error:", projectError);
     if (projectError || !project) {
       throw new TaskError("Project not found", 404, "PROJECT_NOT_FOUND");
     }
@@ -142,6 +141,184 @@ export class TaskService {
       estimatedValue: taskData.estimatedValue || null,
       estimatedByAI: false,
       createdAt: newTask.created_at,
+    };
+  }
+
+  /**
+   * Validates project access for a user
+   * @param supabase - Supabase client instance
+   * @param userId - ID of the authenticated user
+   * @param projectId - ID of the project to validate access for
+   * @returns Project data if user has access
+   * @throws TaskError if user doesn't have access or project doesn't exist
+   */
+  async validateProjectAccess(supabase: SupabaseClient, userId: string, projectId: string): Promise<Project> {
+    const { data: project, error: projectError } = await supabase
+      .from("projects")
+      .select("id, user_id, functional_blocks")
+      .eq("id", projectId)
+      .eq("user_id", userId)
+      .single();
+
+    if (projectError || !project) {
+      throw new TaskError("Project not found or access denied", 404, "PROJECT_NOT_FOUND");
+    }
+
+    return project as unknown as Project;
+  }
+
+  /**
+   * Validates that a functional block exists in a project
+   * @param project - Project data containing functional blocks
+   * @param functionalBlockId - ID of the functional block to validate
+   * @throws TaskError if functional block doesn't exist
+   */
+  async validateFunctionalBlockExists(project: Project, functionalBlockId: string): Promise<void> {
+    if (!project.functional_blocks) {
+      throw new TaskError("Project has no functional blocks", 404, "FUNCTIONAL_BLOCKS_NOT_FOUND");
+    }
+
+    const functionalBlocksData = project.functional_blocks as Json;
+    const functionalBlocks = functionalBlocksData as Record<string, unknown>;
+    const blocks = Array.isArray(functionalBlocks.blocks) ? functionalBlocks.blocks : [];
+
+    const blockExists = blocks.some(
+      (block) => typeof block === "object" && block !== null && "id" in block && block.id === functionalBlockId
+    );
+
+    if (!blockExists) {
+      throw new TaskError("Functional block not found in this project", 404, "FUNCTIONAL_BLOCK_NOT_FOUND");
+    }
+  }
+
+  /**
+   * Retrieves tasks for a specific functional block with pagination and filtering
+   * @param supabase - Supabase client instance
+   * @param projectId - ID of the project
+   * @param functionalBlockId - ID of the functional block
+   * @param options - Query options including pagination, filtering, and sorting
+   * @returns Paginated list of tasks
+   */
+  async getTasksForFunctionalBlock(
+    supabase: SupabaseClient,
+    projectId: string,
+    functionalBlockId: string,
+    options: {
+      page: number;
+      limit: number;
+      priority?: "low" | "medium" | "high";
+      sort?: string;
+    }
+  ) {
+    let query = supabase
+      .from("tasks")
+      .select(
+        "id, name, description, priority, estimated_value, estimated_by_ai, ai_confidence_score, created_at, updated_at",
+        { count: "exact" }
+      )
+      .eq("project_id", projectId)
+      .eq("functional_block_id", functionalBlockId)
+      .is("deleted_at", null);
+
+    // Apply priority filter if specified
+    if (options.priority) {
+      query = query.eq("priority", options.priority);
+    }
+
+    // Apply sorting
+    if (options.sort) {
+      const [field, direction] = options.sort.split(":");
+      query = query.order(field, { ascending: direction === "asc" });
+    } else {
+      query = query.order("created_at", { ascending: false });
+    }
+
+    // Apply pagination
+    const offset = (options.page - 1) * options.limit;
+    query = query.range(offset, offset + options.limit - 1);
+
+    const { data: tasks, error, count } = await query;
+
+    if (error) {
+      throw new TaskError("Failed to fetch tasks", 500, "TASKS_FETCH_FAILED");
+    }
+
+    const totalPages = Math.ceil((count || 0) / options.limit);
+
+    return {
+      data:
+        tasks?.map((task) => ({
+          id: task.id,
+          name: task.name,
+          description: task.description,
+          priority: task.priority,
+          estimatedValue: task.estimated_value,
+          estimatedByAI: task.estimated_by_ai,
+          aiConfidenceScore: task.ai_confidence_score,
+          createdAt: task.created_at,
+          updatedAt: task.updated_at,
+        })) || [],
+      pagination: {
+        total: count || 0,
+        page: options.page,
+        limit: options.limit,
+        pages: totalPages,
+      },
+    };
+  }
+
+  /**
+   * Retrieves a specific task by ID with project ownership validation
+   * @param supabase - Supabase client instance
+   * @param taskId - ID of the task to retrieve
+   * @param userId - ID of the authenticated user
+   * @returns Task details
+   * @throws TaskError if task doesn't exist or user doesn't have access
+   */
+  async getTaskById(supabase: SupabaseClient, taskId: string, userId: string) {
+    const { data: task, error } = await supabase
+      .from("tasks")
+      .select(
+        `
+        id,
+        project_id,
+        functional_block_id,
+        name,
+        description,
+        priority,
+        estimated_value,
+        estimated_by_ai,
+        ai_confidence_score,
+        ai_suggestion_context,
+        metadata,
+        created_at,
+        updated_at,
+        projects!inner(user_id)
+      `
+      )
+      .eq("id", taskId)
+      .eq("projects.user_id", userId)
+      .is("deleted_at", null)
+      .single();
+
+    if (error || !task) {
+      throw new TaskError("Task not found or access denied", 404, "TASK_NOT_FOUND");
+    }
+
+    return {
+      id: task.id,
+      projectId: task.project_id,
+      functionalBlockId: task.functional_block_id,
+      name: task.name,
+      description: task.description,
+      priority: task.priority,
+      estimatedValue: task.estimated_value,
+      estimatedByAI: task.estimated_by_ai,
+      aiConfidenceScore: task.ai_confidence_score,
+      aiSuggestionContext: task.ai_suggestion_context,
+      metadata: task.metadata,
+      createdAt: task.created_at,
+      updatedAt: task.updated_at,
     };
   }
 }
