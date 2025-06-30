@@ -44,7 +44,7 @@ export const listTasksQuerySchema = z.object({
   priority: z.enum(["low", "medium", "high"]).optional(),
   sort: z
     .string()
-    .regex(/^[a-zA-Z]+:(asc|desc)$/)
+    .regex(/^[a-zA-Z_]+:(asc|desc)$/)
     .optional(),
 });
 

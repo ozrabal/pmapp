@@ -249,7 +249,7 @@ export async function GET({ params, url, locals }: APIContext) {
         }
       );
     }
-
+    console.log("GET TASKS FOR FUNCTIONAL BLOCK", params, url.searchParams);
     // Validate path parameters
     try {
       const validatedParams = listTasksParamsSchema.parse(params);
@@ -257,6 +257,7 @@ export async function GET({ params, url, locals }: APIContext) {
 
       // Parse and validate query parameters
       const searchParams = Object.fromEntries(url.searchParams.entries());
+      console.log("SEARCH PARAMS", searchParams);
       const validatedQuery = listTasksQuerySchema.parse(searchParams);
 
       // Validate project access
@@ -273,6 +274,8 @@ export async function GET({ params, url, locals }: APIContext) {
         functionalBlockId,
         validatedQuery
       );
+
+      console.log("RESULT", result);
 
       return new Response(JSON.stringify(result), {
         status: 200,
@@ -298,7 +301,7 @@ export async function GET({ params, url, locals }: APIContext) {
           }
         );
       }
-
+      console.error("Error:", error);
       // Handle service-specific errors
       const isTaskError =
         error &&

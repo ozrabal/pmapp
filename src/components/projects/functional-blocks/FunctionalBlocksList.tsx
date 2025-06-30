@@ -6,6 +6,7 @@ import type { DragState } from "./types";
 
 interface FunctionalBlocksListProps {
   blocks: FunctionalBlockDto[];
+  projectId: string;
   onReorder: (blocks: FunctionalBlockDto[]) => void;
   onAddBlock: () => void;
   onEditBlock: (blockId: string) => void;
@@ -14,6 +15,7 @@ interface FunctionalBlocksListProps {
 
 export function FunctionalBlocksList({
   blocks,
+  projectId,
   onReorder,
   onAddBlock,
   onEditBlock,
@@ -110,6 +112,7 @@ export function FunctionalBlocksList({
         >
           <FunctionalBlockItem
             block={block}
+            projectId={projectId}
             isSelected={false}
             onEdit={() => onEditBlock(block.id)}
             onDelete={() => onDeleteBlock(block.id)}

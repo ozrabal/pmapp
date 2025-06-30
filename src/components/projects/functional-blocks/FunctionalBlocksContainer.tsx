@@ -97,6 +97,7 @@ export default function FunctionalBlocksContainer({ projectId }: FunctionalBlock
 
       {/* Content */}
       <FunctionalBlocksList
+        projectId={projectId}
         blocks={blocks}
         onReorder={reorderBlocks}
         onAddBlock={handleAddBlock}

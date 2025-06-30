@@ -3,17 +3,27 @@ import { type FunctionalBlockDto } from "../../../types";
 import { BLOCK_CATEGORIES } from "./types";
 import { Button } from "../../ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../../ui/card";
+import { FunctionalBlockTasksContainer } from "@/components/tasks";
 
 interface FunctionalBlockItemProps {
   block: FunctionalBlockDto;
+  projectId: string;
   isSelected: boolean;
   onEdit: () => void;
   onDelete: () => void;
   allBlocks: FunctionalBlockDto[];
 }
 
-export function FunctionalBlockItem({ block, isSelected, onEdit, onDelete, allBlocks }: FunctionalBlockItemProps) {
+export function FunctionalBlockItem({
+  block,
+  projectId,
+  isSelected,
+  onEdit,
+  onDelete,
+  allBlocks,
+}: FunctionalBlockItemProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isTasksExpanded, setIsTasksExpanded] = useState(false);
 
   // Find category for label display
   const category = BLOCK_CATEGORIES.find((cat) => cat.value === block.category) || {
@@ -29,6 +39,11 @@ export function FunctionalBlockItem({ block, isSelected, onEdit, onDelete, allBl
   // Handle expansion toggle
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
+  };
+
+  // Handle tasks expansion toggle
+  const toggleTasksExpanded = () => {
+    setIsTasksExpanded(!isTasksExpanded);
   };
 
   // Confirm block deletion
@@ -141,7 +156,7 @@ export function FunctionalBlockItem({ block, isSelected, onEdit, onDelete, allBl
           <CardDescription className="mb-4 whitespace-pre-wrap">{block.description}</CardDescription>
 
           {dependencies.length > 0 && (
-            <div className="mt-4">
+            <div className="mt-4 mb-6">
               <p className="text-sm font-medium mb-2 text-neutral-700">Dependencies:</p>
               <ul className="space-y-1">
                 {dependencies.map((dep, index) => (
@@ -166,6 +181,20 @@ export function FunctionalBlockItem({ block, isSelected, onEdit, onDelete, allBl
               </ul>
             </div>
           )}
+
+          {/* Tasks section - only show if we have a valid project ID */}
+          <div className="mt-6 border-t pt-4">
+            {projectId && (
+              <FunctionalBlockTasksContainer
+                projectId={projectId}
+                functionalBlockId={block.id}
+                functionalBlockName={block.name}
+                isExpanded={isTasksExpanded}
+                onToggleExpanded={toggleTasksExpanded}
+                estimationUnit="hours"
+              />
+            )}
+          </div>
         </CardContent>
       )}
     </Card>
