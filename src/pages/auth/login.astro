@@ -8,14 +8,15 @@ export const prerender = false;
 // Get redirect URL from query params
 const redirect = Astro.url.searchParams.get("redirect") || "/dashboard";
 
-// If user is already logged in, redirect to dashboard
-// Important: Always use auth.getUser() for secure authentication
-const {
-  data: { user },
-} = await Astro.locals.supabase.auth.getUser();
-if (user) {
-  return Astro.redirect("/dashboard");
-}
+return Astro.redirect("/");
+// // If user is already logged in, redirect to dashboard
+// // Important: Always use auth.getUser() for secure authentication
+// const {
+//   data: { user },
+// } = await Astro.locals.supabase.auth.getUser();
+// if (user) {
+//   return Astro.redirect("/dashboard");
+// }
 ---
 
 <Layout title="Login | Plan My App">

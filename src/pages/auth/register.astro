@@ -4,15 +4,15 @@ import { RegisterForm } from "../../components/auth/RegisterForm";
 
 // Page is rendered server-side
 export const prerender = false;
-
+return Astro.redirect("/");
 // If user is already logged in, redirect to dashboard
 // Important: Always use auth.getUser() for secure authentication
-const {
-  data: { user },
-} = await Astro.locals.supabase.auth.getUser();
-if (user) {
-  return Astro.redirect("/dashboard");
-}
+// const {
+//   data: { user },
+// } = await Astro.locals.supabase.auth.getUser();
+// if (user) {
+//   return Astro.redirect("/dashboard");
+// }
 ---
 
 <Layout title="Rejestracja | Plan My App">
