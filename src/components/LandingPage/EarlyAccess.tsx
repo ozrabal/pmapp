@@ -12,9 +12,13 @@ export default function EarlyAccess() {
   return (
     <Box
       className={cx(
-        " md:max-w-2xl max-w-sm mx-auto",
-        "[background:linear-gradient(45deg,theme(colors.slate.950),theme(colors.slate.900)_100%,theme(colors.slate.800)_100%)_padding-box,conic-gradient(from_var(--border-angle),theme(colors.slate.600/.48)_80%,_theme(colors.indigo.500)_86%,_theme(colors.indigo.300)_90%,_theme(colors.indigo.500)_94%,_theme(colors.slate.600/.48))_border-box] border border-transparent animate-border"
+        "md:max-w-2xl max-w-sm mx-auto border border-transparent animate-border"
+        // "[background:linear-gradient(45deg,theme(colors.slate.950),theme(colors.slate.900)_100%,theme(colors.slate.800)_100%)_padding-box,conic-gradient(from_var(--border-angle),theme(colors.slate.600/.48)_80%,_theme(colors.indigo.500)_86%,_theme(colors.indigo.300)_90%,_theme(colors.indigo.500)_94%,_theme(colors.slate.600/.48))_border-box] border border-transparent animate-border"
       )}
+      style={{
+        background:
+          "linear-gradient(45deg, oklch(0.129 0.042 264.695), oklch(0.208 0.042 265.755) 100%, oklch(0.279 0.041 260.031) 100%) padding-box, conic-gradient(from var(--border-angle), color-mix(in oklab, oklch(0.446 0.043 257.281) 48%, transparent) 80%, oklch(0.585 0.233 277.117) 86%, oklch(0.785 0.115 274.713) 90%, oklch(0.585 0.233 277.117) 94%, color-mix(in oklab, oklch(0.446 0.043 257.281) 48%, transparent)) border-box",
+      }}
     >
       <form className="flex flex-col items-center gap-4 w-full" autoComplete="off" method="POST">
         <h2 className="text-3xl font-semibold tracking-tight text-center font-geist-mono">
