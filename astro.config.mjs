@@ -23,6 +23,8 @@ export default defineConfig({
       OPENAI_API_KEY: envField.string({ context: "server", access: "secret" }),
       OPENAI_DEFAULT_MODEL: envField.string({ context: "server", access: "secret", default: "o4-mini" }),
       OPENAI_FALLBACK_MODEL: envField.string({ context: "server", access: "secret", default: "o4-mini" }),
+      // Resend configuration
+      RESEND_API_KEY: envField.string({ context: "server", access: "secret" }),
     },
   },
   vite: {
@@ -40,7 +42,7 @@ export default defineConfig({
   adapter: cloudflare({
     // Cloudflare specific configuration
     // Pass env vars to the Cloudflare deployment
-    envPrefix: ["PUBLIC_", "SUPABASE_", "OPENAI_", "DATABASE_", "SESSION_"],
+    envPrefix: ["PUBLIC_", "SUPABASE_", "OPENAI_", "DATABASE_", "SESSION_", "RESEND_"],
   }),
   experimental: {
     session: true, // Enable experimental sessions

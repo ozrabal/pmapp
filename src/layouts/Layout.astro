@@ -1,7 +1,6 @@
 ---
 import "../styles/global.css";
 import { NotificationProvider } from "@/components/ui/notification-provider";
-import AppHeader from "@/components/dashboard/AppHeader.astro";
 import { LogoutButton } from "@/components/auth/LogoutButton";
 import { Button } from "@/components/ui/button";
 
@@ -25,27 +24,47 @@ const isAuthenticated = !!user;
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
   </head>
-  <body>
+  <body class="bg-slate-950 text-slate-200">
     <NotificationProvider client:load>
-      <main class="container mx-auto px-4 py-8">
-        <div class="flex justify-between items-center mb-4">
-          <AppHeader />
+      <header
+        class="container w-full flex max-md:flex-col mx-auto px-4 md:px-12 pt-5 pr-6 pb-5 pl-6 max-md:gap-4 max-md:items-start items-center justify-between"
+      >
+        <span class="flex items-center gap-2 text-xl font-semibold tracking-tight font-geist-mono">
+          <span
+            class="inline-block w-5 h-5 bg-gradient-to-br rounded-full mr-2 shadow-lg from-blue-950 to-blue-950 shadow-neutral-800"
+          ></span>
+          <span class="bg-clip-text bg-gradient-to-r font-geist-mono text-white"> Plan My App </span>
+        </span>
 
-          {
-            isAuthenticated && (
-              <div class="flex items-center gap-3">
-                <span class="text-sm text-muted-foreground">{user?.email}</span>
-
-                <a href="/dashboard" class="text-sm hover:underline">
-                  <Button variant="link">Dashboard</Button>
-                </a>
-                <LogoutButton variant="outline" size="sm" client:load />
-              </div>
-            )
-          }
-        </div>
+        {
+          isAuthenticated && (
+            <nav>
+              <ul class="flex gap-8 text-sm font-medium items-center">
+                <li>
+                  <span class="opacity-80 hover:opacity-100 transition font-geist-mono">{user?.email}</span>
+                </li>
+                <li>
+                  <a href="/dashboard" class="opacity-80 hover:opacity-100 transition font-geist-mono">
+                    <Button variant="link">Dashboard</Button>
+                  </a>
+                </li>
+                <li>
+                  <LogoutButton variant="outline" size="sm" client:load />
+                </li>
+              </ul>
+            </nav>
+          )
+        }
+      </header>
+      <main class="container mx-auto px-4 md:px-12">
         <slot />
       </main>
     </NotificationProvider>
+    <footer class="py-8 mt-16">
+      <div class="text-center text-gray-600 dark:text-gray-400">
+        <p>&copy; 2025 Plan My App. All rights reserved.</p>
+        <p>Made with ⚡ by <a href="https://webkowski.com">Webkowski</a></p>
+      </div>
+    </footer>
   </body>
 </html>
