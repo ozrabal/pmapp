@@ -396,7 +396,7 @@ export class ProjectService {
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class ProjectClientService {
-  private static readonly API_BASE_PATH = "/api/projects";
+  private static readonly API_BASE_PATH = "/api/project";
 
   /**
    * Get a list of projects with optional filtering and pagination

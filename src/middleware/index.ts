@@ -16,6 +16,7 @@ const PUBLIC_PATHS = [
   "/api/auth/reset-password",
   "/api/auth/new-password",
   "/api/auth/session",
+  "/api/project",
   // Public pages
   "/",
 ];
