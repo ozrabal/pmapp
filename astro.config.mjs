@@ -44,6 +44,8 @@ export default defineConfig({
     // Cloudflare specific configuration
     // Pass env vars to the Cloudflare deployment
     envPrefix: ["PUBLIC_", "SUPABASE_", "OPENAI_", "DATABASE_", "SESSION_", "RESEND_"],
+    // Enable Node.js compatibility for built-in modules like 'events'
+    compatibilityFlags: ["nodejs_compat"],
   }),
   experimental: {
     session: true, // Enable experimental sessions
