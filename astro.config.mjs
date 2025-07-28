@@ -18,6 +18,7 @@ export default defineConfig({
       // Supabase configuration
       SUPABASE_URL: envField.string({ context: "server", access: "secret" }),
       SUPABASE_KEY: envField.string({ context: "server", access: "secret" }),
+      DATABASE_URL: envField.string({ context: "server", access: "secret" }),
 
       // OpenAI configuration
       OPENAI_API_KEY: envField.string({ context: "server", access: "secret" }),

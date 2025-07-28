@@ -3,8 +3,10 @@ import { projectsSchema } from "./schema";
 import { createErrorResponse } from "../utils";
 import { createSupabaseServerInstance } from "@/db/supabase.client";
 import type { AstroCookies } from "astro";
-import { ProjectService } from "@/lib/services/project.service";
-import type { ListProjectsResponseDto } from "@/types";
+import db from "@/db";
+import { projects } from "@/db/schema";
+import { eq, sql } from "drizzle-orm";
+import { executePaginatedQuery } from "@/lib/utils/pagination";
 
 const app = new Hono();
 
@@ -40,8 +42,21 @@ app.get("/", async (c: Context) => {
       });
     }
 
-    const projectService = new ProjectService(supabase);
-    const response: ListProjectsResponseDto = await projectService.listProjects(user.id, parsedQuery.data);
+    const baseQuery = db.select().from(projects).where(eq(projects.userId, user.id));
+    const countQuery = db
+      .select({ count: sql<number>`count(*)` })
+      .from(projects)
+      .where(eq(projects.userId, user.id));
+
+    // Get paginated result using our utility
+    const response = await executePaginatedQuery<typeof projects.$inferSelect>({
+      baseQuery,
+      countQuery,
+      options: {
+        page: parsedQuery.data.page,
+        limit: parsedQuery.data.limit,
+      },
+    });
 
     return new Response(JSON.stringify(response), {
       status: 200,
