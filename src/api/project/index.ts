@@ -3,7 +3,10 @@ import { projectsSchema } from "./schema";
 import { createErrorResponse } from "../utils";
 import { createSupabaseServerInstance } from "@/db/supabase.client";
 import type { AstroCookies } from "astro";
+// import db from "@/db";
+// import { createDb } from "@/db";
 import db from "@/db";
+
 import { projects } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { executePaginatedQuery } from "@/lib/utils/pagination";
@@ -42,8 +45,10 @@ app.get("/", async (c: Context) => {
       });
     }
 
-    const baseQuery = db.select().from(projects).where(eq(projects.userId, user.id));
-    const countQuery = db
+    // Initialize database connection
+
+    const baseQuery = db().select().from(projects).where(eq(projects.userId, user.id));
+    const countQuery = db()
       .select({ count: sql<number>`count(*)` })
       .from(projects)
       .where(eq(projects.userId, user.id));

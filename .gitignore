@@ -49,6 +49,7 @@ next-env.d.ts
 .output
 .turbo
 .wrangler
+wrangler.toml
 
 # Tailwind
 .turbo
