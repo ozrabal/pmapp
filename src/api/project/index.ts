@@ -77,7 +77,6 @@ app.get("/", async (c: Context) => {
       status: 500,
       message: "Failed to fetch projects",
       code: "server_error",
-      details: { ...error },
     });
   }
 });
