@@ -1,15 +1,12 @@
 import { Hono, type Context } from "hono";
 import { projectsSchema } from "./schema";
-import { createErrorResponse } from "../utils";
-import { createSupabaseServerInstance } from "@/db/supabase.client";
-import type { AstroCookies } from "astro";
-// import db from "@/db";
-// import { createDb } from "@/db";
+import { createErrorResponse, createSuccessResponse } from "../utils/response";
 import db from "@/db";
 
 import { projects } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { executePaginatedQuery } from "@/lib/utils/pagination";
+import { getUserFromRequest } from "../utils/request";
 
 const app = new Hono();
 
@@ -27,15 +24,7 @@ app.get("/", async (c: Context) => {
       });
     }
 
-    const header = new Headers(c.req.header());
-
-    const supabase = createSupabaseServerInstance({
-      cookies: c.req.header("cookie") as unknown as AstroCookies,
-      headers: header,
-    });
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const user = await getUserFromRequest(c.req);
 
     if (!user) {
       return createErrorResponse({
@@ -44,8 +33,6 @@ app.get("/", async (c: Context) => {
         message: "Authentication required",
       });
     }
-
-    // Initialize database connection
 
     const baseQuery = db().select().from(projects).where(eq(projects.userId, user.id));
     const countQuery = db()
@@ -63,12 +50,7 @@ app.get("/", async (c: Context) => {
       },
     });
 
-    return new Response(JSON.stringify(response), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    return createSuccessResponse(response);
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error("Error fetching projects:", error);

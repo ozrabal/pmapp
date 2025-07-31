@@ -50,6 +50,7 @@ next-env.d.ts
 .turbo
 .wrangler
 wrangler.toml
+wrangler.jsonc
 
 # Tailwind
 .turbo
