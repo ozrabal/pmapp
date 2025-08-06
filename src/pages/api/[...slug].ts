@@ -1,10 +1,12 @@
 import { Hono } from "hono";
-import projectRoutes from "@/api/project";
+import projectRoutes from "@/api/modules/project";
+import chatRoutes from "@/api/modules/chat/routes";
 import type { APIRoute } from "astro";
 
 const app = new Hono().basePath("/api");
 
 app.route("/project", projectRoutes);
+app.route("/chat", chatRoutes);
 
 export const maxDuration = 30;
 

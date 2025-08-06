@@ -1,12 +1,12 @@
 import { Hono, type Context } from "hono";
-import { projectsSchema } from "./schema";
-import { createErrorResponse, createSuccessResponse } from "../utils/response";
+import { projectsSchema } from "@/api/modules/project/schema";
+import { createErrorResponse, createSuccessResponse } from "@/api/utils/response";
 import db from "@/db";
 
 import { projects } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { executePaginatedQuery } from "@/lib/utils/pagination";
-import { getUserFromRequest } from "../utils/request";
+import { getUserFromRequest } from "@/api/utils/request";
 
 const app = new Hono();
 
@@ -62,15 +62,5 @@ app.get("/", async (c: Context) => {
     });
   }
 });
-
-// app.post("/", async (c: Context) => {
-//   try {
-//     return c.json({ status: "project post" }, 200);
-//   } catch (err) {
-//     // eslint-disable-next-line no-console
-//     console.error("Error fetching projects:", err);
-//     return c.json({ error: "Failed to fetch projects" }, 500);
-//   }
-// });
 
 export default app;
