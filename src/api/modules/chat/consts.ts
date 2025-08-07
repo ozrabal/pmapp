@@ -1,3 +1,5 @@
+import type { StepPrompts } from "@/api/types/chat";
+
 export enum PlanningStep {
   INTRODUCTION = "introduction",
   PROJECT_TYPE = "project_type",
@@ -23,7 +25,7 @@ export enum ChatActorRole {
   SYSTEM = "system",
 }
 
-export const STEP_ORDER = [
+export const STEP_ORDER: PlanningStep[] = [
   PlanningStep.INTRODUCTION,
   PlanningStep.PROJECT_TYPE,
   PlanningStep.CORE_FEATURES,
@@ -36,7 +38,7 @@ export const STEP_ORDER = [
   PlanningStep.COMPLETION,
 ];
 
-export const STEP_PROMPTS = {
+export const STEP_PROMPTS: StepPrompts = {
   [PlanningStep.INTRODUCTION]: {
     message: `Welcome! I'm here to help you create a detailed plan for your application. Let's start by understanding what you want to build. What type of application do you have in mind?`,
     nextAction: "Tell me about your application idea",
@@ -47,12 +49,14 @@ export const STEP_PROMPTS = {
 1. What type of application is this? (web app, mobile app, desktop, etc.)
 2. What would you like to name your project?
 3. Can you provide a brief description of what your application will do?`,
-    nextAction: "",
+    nextAction: "Define your project type and details",
+    requiredFields: ["projectType", "projectName", "description"],
   },
 
   [PlanningStep.CORE_FEATURES]: {
     message: `Now let's dive into the core features. What are the main functionalities your users will interact with? Please describe at least 3-5 key features that are essential to your application.`,
     nextAction: "List your core features",
+    requiredFields: ["coreFeatures"],
   },
 
   [PlanningStep.TECHNICAL_REQUIREMENTS]: {
@@ -62,11 +66,13 @@ export const STEP_PROMPTS = {
 - Database (PostgreSQL, MongoDB, etc.)
 - Any specific APIs or services?`,
     nextAction: "Specify your technical requirements",
+    requiredFields: ["technicalStack"],
   },
 
   [PlanningStep.USER_PERSONAS]: {
     message: `Who will be using your application? Please describe your target users, including their roles, goals, and any pain points your app will solve for them.`,
     nextAction: "Define your user personas",
+    requiredFields: ["userPersonas"],
   },
 
   [PlanningStep.UI_UX_PREFERENCES]: {
@@ -75,7 +81,8 @@ export const STEP_PROMPTS = {
 - Should it be responsive for mobile devices?
 - Are there accessibility requirements?
 - Any design inspirations or examples?`,
-    nextAction: "Specify your UI/UX preferences",
+    nextAction: "Specify your UI/UX requirements",
+    requiredFields: ["uiUxRequirements"],
   },
 
   [PlanningStep.TIMELINE_BUDGET]: {
@@ -84,11 +91,13 @@ export const STEP_PROMPTS = {
 - Do you have a budget range in mind?
 - Are there any critical deadlines or milestones?`,
     nextAction: "Provide your timeline and budget",
+    requiredFields: ["timeline", "budget"],
   },
 
   [PlanningStep.INTEGRATION_REQUIREMENTS]: {
     message: `Are there any external systems, APIs, or services your application needs to integrate with? (payment systems, authentication providers, third-party APIs, etc.)`,
     nextAction: "Specify your integration requirements",
+    requiredFields: ["integrations"],
   },
 
   [PlanningStep.VALIDATION]: {

@@ -3,6 +3,8 @@ import { createErrorResponse, createSuccessResponse } from "@/api/utils/response
 import { Hono } from "hono";
 import { sessionSchema } from "../schema";
 import { sessions } from "./index"; // Import the in-memory session store
+import { calculateProgress, getCurrentStepIndex } from "../utils";
+import { STEP_ORDER, STEP_PROMPTS } from "../consts";
 
 const chatGetSessionRoute = new Hono();
 
@@ -32,9 +34,22 @@ chatGetSessionRoute.get("/session/:id", async (c: Context) => {
       });
     }
 
+    const overallProgress = calculateProgress(session, STEP_PROMPTS);
+
     return createSuccessResponse({
-      message: "Chat session retrieved successfully",
-      data: session,
+      sessionId: session.id,
+      userId: session.userId,
+      currentStep: session.currentStep,
+      collectedData: session.collectedData,
+      conversationHistory: session.conversationHistory,
+      completionStatus: session.completionStatus,
+      progress: {
+        currentStep: getCurrentStepIndex(session.currentStep) + 1,
+        totalSteps: STEP_ORDER.length,
+        completionPercentage: Math.round(overallProgress),
+      },
+      createdAt: session.createdAt,
+      updatedAt: session.updatedAt,
     });
   } catch (error) {
     // eslint-disable-next-line no-console

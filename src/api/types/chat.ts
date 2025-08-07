@@ -6,6 +6,14 @@ export interface Message {
   timestamp: Date;
 }
 
+export interface StepPrompt {
+  message: string;
+  nextAction: string;
+  requiredFields?: (keyof ProjectData)[];
+}
+
+export type StepPrompts = Record<PlanningStep, StepPrompt>;
+
 export interface ChatSession {
   id: string;
   userId: string;
@@ -22,17 +30,9 @@ export interface ProjectData {
   projectName?: string;
   description?: string;
   coreFeatures?: string[];
-  technicalStack?: {
-    frontend?: string[];
-    backend?: string[];
-    database?: string[];
-    apis?: string[];
-  };
-  uiUxRequirements?: {
-    designStyle?: string;
-    responsiveness?: boolean;
-    accessibility?: boolean;
-  };
+  technicalStack?: string[];
+  uiUxRequirements?: string;
+  userPersonas?: string[];
   timeline?: string;
   budget?: string;
   integrations?: string[];
