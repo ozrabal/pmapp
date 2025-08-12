@@ -25,6 +25,12 @@ export enum ChatActorRole {
   SYSTEM = "system",
 }
 
+export enum AiModel {
+  GPT_4O = "gpt-4o",
+  GPT_4O_MINI = "gpt-4o-mini",
+  GPT_3_5_TURBO = "gpt-3.5-turbo",
+}
+
 export const STEP_ORDER: PlanningStep[] = [
   PlanningStep.INTRODUCTION,
   PlanningStep.PROJECT_TYPE,
@@ -109,4 +115,10 @@ export const STEP_PROMPTS: StepPrompts = {
     message: `Perfect! I have all the information needed to create your comprehensive project specification.`,
     nextAction: "Complete the project setup",
   },
+};
+
+export const PROJEST_SPECIFICATION_PROMPT = {
+  prompt: `Generate a project specification for the following data: `,
+  model: AiModel.GPT_4O_MINI,
+  temperature: 0.5,
 };
