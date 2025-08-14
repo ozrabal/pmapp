@@ -10,6 +10,7 @@ export interface StepPrompt {
   message: string;
   nextAction: string;
   requiredFields?: (keyof ProjectData)[];
+  extractData?: string;
 }
 
 export type StepPrompts = Record<PlanningStep, StepPrompt>;

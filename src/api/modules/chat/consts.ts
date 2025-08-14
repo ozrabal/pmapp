@@ -14,6 +14,7 @@ export enum PlanningStep {
 }
 
 export enum CompletionStatus {
+  INTRODUCTION = "introduction",
   IN_PROGRESS = "in_progress",
   COMPLETED = "completed",
   ABANDONED = "abandoned",
@@ -57,12 +58,14 @@ export const STEP_PROMPTS: StepPrompts = {
 3. Can you provide a brief description of what your application will do?`,
     nextAction: "Define your project type and details",
     requiredFields: ["projectType", "projectName", "description"],
+    extractData: `Extract project type, name, and description from this message. Return the extracted information as JSON. For project type, return {projectType: string, projectName: string, description: string}.`,
   },
 
   [PlanningStep.CORE_FEATURES]: {
     message: `Now let's dive into the core features. What are the main functionalities your users will interact with? Please describe at least 3-5 key features that are essential to your application.`,
     nextAction: "List your core features",
     requiredFields: ["coreFeatures"],
+    extractData: `Extract core features from this message. Return the extracted information as JSON. For core features, return {coreFeatures: string[]}.`,
   },
 
   [PlanningStep.TECHNICAL_REQUIREMENTS]: {
@@ -73,12 +76,14 @@ export const STEP_PROMPTS: StepPrompts = {
 - Any specific APIs or services?`,
     nextAction: "Specify your technical requirements",
     requiredFields: ["technicalStack"],
+    extractData: `Extract technical stack from this message. Return the extracted information as JSON. For technical stack, return {technicalStack: string[]}.`,
   },
 
   [PlanningStep.USER_PERSONAS]: {
     message: `Who will be using your application? Please describe your target users, including their roles, goals, and any pain points your app will solve for them.`,
     nextAction: "Define your user personas",
     requiredFields: ["userPersonas"],
+    extractData: `Extract user personas from this message. Return the extracted information as JSON. For user personas, return {userPersonas: string[]}.`,
   },
 
   [PlanningStep.UI_UX_PREFERENCES]: {
@@ -89,6 +94,7 @@ export const STEP_PROMPTS: StepPrompts = {
 - Any design inspirations or examples?`,
     nextAction: "Specify your UI/UX requirements",
     requiredFields: ["uiUxRequirements"],
+    extractData: `Extract UI/UX requirements from this message. Return the extracted information as JSON. For UI/UX requirements, return {uiUxRequirements: string}.`,
   },
 
   [PlanningStep.TIMELINE_BUDGET]: {
@@ -98,12 +104,14 @@ export const STEP_PROMPTS: StepPrompts = {
 - Are there any critical deadlines or milestones?`,
     nextAction: "Provide your timeline and budget",
     requiredFields: ["timeline", "budget"],
+    extractData: `Extract timeline and budget from this message. Return the extracted information as JSON. For timeline and budget, return {timeline: string, budget: string}.`,
   },
 
   [PlanningStep.INTEGRATION_REQUIREMENTS]: {
     message: `Are there any external systems, APIs, or services your application needs to integrate with? (payment systems, authentication providers, third-party APIs, etc.)`,
     nextAction: "Specify your integration requirements",
     requiredFields: ["integrations"],
+    extractData: `Extract integration requirements from this message. Return the extracted information as JSON. For integration requirements, return {integrations: string[]}.`,
   },
 
   [PlanningStep.VALIDATION]: {

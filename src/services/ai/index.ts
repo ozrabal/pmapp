@@ -5,10 +5,18 @@ import type { LanguageModelUsage } from "ai";
 import { AiModel } from "@/api/modules/chat/consts";
 
 const TextGenerationInputSchema = z.object({
-  prompt: z.string().min(1, "Prompt cannot be empty"),
+  prompt: z.string().optional(),
   system: z.string().optional(),
   model: z.enum([AiModel.GPT_4O, AiModel.GPT_4O_MINI, AiModel.GPT_3_5_TURBO]).default(AiModel.GPT_4O_MINI),
   temperature: z.number().min(0).max(2).optional(),
+  messages: z
+    .array(
+      z.object({
+        role: z.enum(["user", "assistant", "system"]),
+        content: z.string().min(1),
+      })
+    )
+    .optional(),
 });
 
 const ChatInputSchema = z.object({
@@ -32,8 +40,8 @@ export interface AIServiceResponse<T = string> {
   usage?: LanguageModelUsage;
 }
 
-export interface TextGenerationResponse {
-  text: string;
+export interface TextGenerationResponse<T = string> {
+  text: T;
   finishReason: string;
   usage: LanguageModelUsage;
 }

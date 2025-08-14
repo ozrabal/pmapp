@@ -1,10 +1,24 @@
-import { STEP_ORDER, PlanningStep, PROJEST_SPECIFICATION_PROMPT } from "@/api/modules/chat/consts";
+import {
+  STEP_ORDER,
+  PlanningStep,
+  PROJEST_SPECIFICATION_PROMPT,
+  STEP_PROMPTS,
+  AiModel,
+} from "@/api/modules/chat/consts";
 import type { ChatSession, ProjectData, StepPrompt, StepPrompts, ValidationResult } from "@/api/types/chat";
 import { createAIService, type TextGenerationResponse } from "@/services/ai";
 import { OPENAI_API_KEY } from "astro:env/server";
 
 export function getCurrentStepIndex(step: PlanningStep): number {
   return STEP_ORDER.indexOf(step);
+}
+
+export function getNextStep(step: PlanningStep): PlanningStep {
+  const currentIndex = getCurrentStepIndex(step);
+  if (currentIndex === -1 || currentIndex === STEP_ORDER.length - 1) {
+    return STEP_ORDER[STEP_ORDER.length - 1];
+  }
+  return STEP_ORDER[currentIndex + 1];
 }
 
 export function calculateProgress(session: ChatSession, stepPrompts: StepPrompts): number {
@@ -66,4 +80,59 @@ export async function generateProjectSpecification(data: ProjectData): Promise<T
   } catch {
     return null;
   }
+}
+
+export async function extractMessageData(
+  message: string,
+  step: PlanningStep
+): Promise<TextGenerationResponse<ProjectData> | null> {
+  const aiService = createAIService(OPENAI_API_KEY);
+  const prompt = STEP_PROMPTS[step]?.extractData;
+  if (!prompt) {
+    return null;
+  }
+
+  const result = await aiService.generateText({
+    prompt: `${prompt} <message>${message}</message>`,
+    model: AiModel.GPT_4O_MINI,
+    temperature: 0.5,
+  });
+
+  if (!result.success || !result.data) {
+    return null;
+  }
+
+  return result.data as TextGenerationResponse<ProjectData>;
+}
+
+export async function generateAiResponse(
+  session: ChatSession,
+  message: string
+): Promise<TextGenerationResponse<string>> {
+  const systemPrompt = `You are a helpful project planning assistant. Current step: ${session.currentStep}. 
+  ${STEP_PROMPTS[session.currentStep]?.message || ""}
+  
+  Context of collected data: ${JSON.stringify(session.collectedData)}
+  
+  User's latest message: "${message}"
+  
+  Provide a helpful, conversational response that guides the user through this step.`;
+
+  const aiService = createAIService(OPENAI_API_KEY);
+  const result = await aiService.generateText({
+    messages: [
+      {
+        role: "user",
+        content: systemPrompt,
+      },
+    ],
+    model: AiModel.GPT_4O_MINI,
+    temperature: 0.5,
+  });
+
+  if (!result.success || !result.data) {
+    return { text: "" } as TextGenerationResponse<string>;
+  }
+
+  return result.data;
 }
