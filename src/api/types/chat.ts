@@ -1,3 +1,4 @@
+import type z from "zod";
 import type { ChatActorRole, CompletionStatus, PlanningStep } from "../modules/chat/consts";
 
 export interface Message {
@@ -11,6 +12,7 @@ export interface StepPrompt {
   nextAction: string;
   requiredFields?: (keyof ProjectData)[];
   extractData?: string;
+  extractDataSchema?: z.ZodSchema;
 }
 
 export type StepPrompts = Record<PlanningStep, StepPrompt>;

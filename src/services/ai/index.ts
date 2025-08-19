@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { createOpenAI } from "@ai-sdk/openai";
-import { generateText } from "ai";
+import { generateObject, generateText } from "ai";
 import type { LanguageModelUsage } from "ai";
 import { AiModel } from "@/api/modules/chat/consts";
 
@@ -105,6 +105,25 @@ export class AIService {
         },
         usage: result.usage,
       };
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  async generateObjectWithSchema(
+    input: TextGenerationInput,
+    schema: z.ZodSchema
+  ): Promise<AIServiceResponse<z.infer<typeof schema>>> {
+    try {
+      const validatedInput = TextGenerationInputSchema.parse(input);
+
+      const { object } = await generateObject({
+        model: this.openaiClient(validatedInput.model),
+        schema: schema,
+        prompt: validatedInput.prompt,
+      });
+
+      return object;
     } catch (error) {
       return this.handleError(error);
     }

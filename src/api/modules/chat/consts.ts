@@ -1,4 +1,5 @@
 import type { StepPrompts } from "@/api/types/chat";
+import z from "zod";
 
 export enum PlanningStep {
   INTRODUCTION = "introduction",
@@ -59,6 +60,11 @@ export const STEP_PROMPTS: StepPrompts = {
     nextAction: "Define your project type and details",
     requiredFields: ["projectType", "projectName", "description"],
     extractData: `Extract project type, name, and description from this message. Return the extracted information as JSON. For project type, return {projectType: string, projectName: string, description: string}.`,
+    extractDataSchema: z.object({
+      projectType: z.string(),
+      projectName: z.string(),
+      description: z.string(),
+    }),
   },
 
   [PlanningStep.CORE_FEATURES]: {
@@ -66,6 +72,9 @@ export const STEP_PROMPTS: StepPrompts = {
     nextAction: "List your core features",
     requiredFields: ["coreFeatures"],
     extractData: `Extract core features from this message. Return the extracted information as JSON. For core features, return {coreFeatures: string[]}.`,
+    extractDataSchema: z.object({
+      coreFeatures: z.array(z.string()),
+    }),
   },
 
   [PlanningStep.TECHNICAL_REQUIREMENTS]: {
@@ -77,6 +86,9 @@ export const STEP_PROMPTS: StepPrompts = {
     nextAction: "Specify your technical requirements",
     requiredFields: ["technicalStack"],
     extractData: `Extract technical stack from this message. Return the extracted information as JSON. For technical stack, return {technicalStack: string[]}.`,
+    extractDataSchema: z.object({
+      technicalStack: z.array(z.string()),
+    }),
   },
 
   [PlanningStep.USER_PERSONAS]: {
@@ -84,6 +96,9 @@ export const STEP_PROMPTS: StepPrompts = {
     nextAction: "Define your user personas",
     requiredFields: ["userPersonas"],
     extractData: `Extract user personas from this message. Return the extracted information as JSON. For user personas, return {userPersonas: string[]}.`,
+    extractDataSchema: z.object({
+      userPersonas: z.array(z.string()),
+    }),
   },
 
   [PlanningStep.UI_UX_PREFERENCES]: {
@@ -95,6 +110,9 @@ export const STEP_PROMPTS: StepPrompts = {
     nextAction: "Specify your UI/UX requirements",
     requiredFields: ["uiUxRequirements"],
     extractData: `Extract UI/UX requirements from this message. Return the extracted information as JSON. For UI/UX requirements, return {uiUxRequirements: string}.`,
+    extractDataSchema: z.object({
+      uiUxRequirements: z.string(),
+    }),
   },
 
   [PlanningStep.TIMELINE_BUDGET]: {
@@ -105,6 +123,10 @@ export const STEP_PROMPTS: StepPrompts = {
     nextAction: "Provide your timeline and budget",
     requiredFields: ["timeline", "budget"],
     extractData: `Extract timeline and budget from this message. Return the extracted information as JSON. For timeline and budget, return {timeline: string, budget: string}.`,
+    extractDataSchema: z.object({
+      timeline: z.string(),
+      budget: z.string(),
+    }),
   },
 
   [PlanningStep.INTEGRATION_REQUIREMENTS]: {
@@ -112,6 +134,9 @@ export const STEP_PROMPTS: StepPrompts = {
     nextAction: "Specify your integration requirements",
     requiredFields: ["integrations"],
     extractData: `Extract integration requirements from this message. Return the extracted information as JSON. For integration requirements, return {integrations: string[]}.`,
+    extractDataSchema: z.object({
+      integrations: z.array(z.string()),
+    }),
   },
 
   [PlanningStep.VALIDATION]: {

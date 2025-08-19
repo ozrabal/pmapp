@@ -85,11 +85,25 @@ export async function generateProjectSpecification(data: ProjectData): Promise<T
 export async function extractMessageData(
   message: string,
   step: PlanningStep
-): Promise<TextGenerationResponse<ProjectData> | null> {
+): Promise<StepPrompt["extractDataSchema"] | null | string> {
   const aiService = createAIService(OPENAI_API_KEY);
   const prompt = STEP_PROMPTS[step]?.extractData;
   if (!prompt) {
     return null;
+  }
+  //TODO what if there no schema defined?
+
+  if (STEP_PROMPTS[step].extractDataSchema) {
+    const result = await aiService.generateObjectWithSchema(
+      {
+        prompt: `${prompt} <message>${message}</message>`,
+        model: AiModel.GPT_4O_MINI,
+        temperature: 0.5,
+      },
+      STEP_PROMPTS[step].extractDataSchema
+    );
+
+    return result as unknown as StepPrompt["extractDataSchema"] | null;
   }
 
   const result = await aiService.generateText({
@@ -98,11 +112,11 @@ export async function extractMessageData(
     temperature: 0.5,
   });
 
-  if (!result.success || !result.data) {
-    return null;
+  if (result.success && result.data) {
+    return result.data.text;
   }
 
-  return result.data as TextGenerationResponse<ProjectData>;
+  return null;
 }
 
 export async function generateAiResponse(

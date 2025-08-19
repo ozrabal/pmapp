@@ -83,9 +83,9 @@ export default chatMessageRoute.post("/message", async (c) => {
 
     if (session.completionStatus !== CompletionStatus.INTRODUCTION) {
       const extractedData = await extractMessageData(message, session.currentStep);
-
-      if (extractedData && extractedData.text) {
-        const exData = extractedData.text as ProjectData;
+      if (extractedData) {
+        console.log("Extracted data:");
+        const exData = extractedData as ProjectData;
         session.collectedData = deepMerge(session.collectedData, exData);
       }
     }
