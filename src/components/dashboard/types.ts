@@ -32,7 +32,6 @@ export interface ProjectFiltersState {
   status: ProjectStatusType;
   sort: ProjectSortOption;
   page: number;
-  limit: number;
 }
 
 // Parametry zapytania API

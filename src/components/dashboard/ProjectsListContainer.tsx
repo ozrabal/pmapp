@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useRef, useState } from "react";
 import { useProjectsList } from "./hooks/useProjectsList";
 import { useDeleteProject } from "./hooks/useDeleteProject";
 import { ProjectsFilters } from "./ProjectsFilters";
@@ -6,11 +6,14 @@ import { ProjectsList } from "./ProjectsList";
 import { ProjectsLoadingSkeleton } from "./ProjectsLoadingSkeleton";
 import { ProjectsPagination } from "./ProjectsPagination";
 import { DeleteProjectModal } from "./DeleteProjectModal";
-import type { ProjectViewModel } from "./types";
+import { ProjectSortOption, ProjectStatusType, type ProjectViewModel } from "./types";
 import { AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { NotificationProvider } from "@/components/ui/notification-provider";
+import { useProjects } from "../hooks/useProjects";
+import { useQueryParams } from "../hooks/useQueryParams";
+import { useProjectsFilters } from "./hooks/useProjectsFilters";
 
 export function ProjectsListContainer() {
   return (
@@ -20,13 +23,30 @@ export function ProjectsListContainer() {
   );
 }
 
-function ProjectsListContainerContent() {
-  // Reference to the container for focus management
-  const containerRef = useRef<HTMLDivElement>(null);
+const limit = 5;
 
-  // Use custom hooks for state management
-  const { projects, isLoading, error, filters, pagination, updateFilters, resetFilters, goToPage, deleteProject } =
-    useProjectsList();
+function ProjectsListContainerContent() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { setSearchParams, searchParams } = useQueryParams();
+
+  const { deleteProject } = useProjectsList();
+
+  const { filters, updateFilters, resetFilters } = useProjectsFilters({
+    status: ProjectStatusType.ACTIVE,
+    sort: ProjectSortOption.NAME_ASC,
+    page: "1",
+  });
+
+  const [page, setPage] = useState(parseInt(searchParams.get("page") || "1", 10) || 1);
+
+  const setCurrentPage = (page: number) => {
+    setPage(page);
+    setSearchParams("page", page.toString());
+  };
+
+  const { data, error, isLoading } = useProjects({ filters, page, limit });
+
+  const { data: projects = [], pagination } = data || {};
 
   // Hook for delete project modal management
   const {
@@ -46,15 +66,14 @@ function ProjectsListContainerContent() {
   // Memoize the projects count for performance
   // const projectsCount = useMemo(() => pagination.total, [pagination.total]);
 
-  // Focus the container when the delete modal closes
-  useEffect(() => {
-    if (!isOpen && containerRef.current) {
-      // Small delay to ensure the modal transition is complete
+  // Focus the container after modal closes using callbacks
+  const focusContainer = () => {
+    if (containerRef.current) {
       setTimeout(() => {
         containerRef.current?.focus();
       }, 50);
     }
-  }, [isOpen]);
+  };
 
   // Show error state if there's an error loading projects
   if (error && !isLoading) {
@@ -71,7 +90,7 @@ function ProjectsListContainerContent() {
       </div>
     );
   }
-
+  console.log("FILTERS", filters);
   return (
     <div className="w-full" aria-busy={isLoading} ref={containerRef} tabIndex={-1}>
       {/* Filters section */}
@@ -84,8 +103,9 @@ function ProjectsListContainerContent() {
         <ProjectsList projects={projects} onDelete={handleDeleteClick} />
       )}
 
-      {/* Pagination - only show if we have projects and not loading */}
-      {!isLoading && projects.length > 0 && <ProjectsPagination pagination={pagination} onPageChange={goToPage} />}
+      {!isLoading && projects.length > 0 && (
+        <ProjectsPagination pagination={pagination} onPageChange={setCurrentPage} />
+      )}
 
       {/* Delete confirmation modal */}
       <DeleteProjectModal
@@ -93,8 +113,14 @@ function ProjectsListContainerContent() {
         project={projectToDelete}
         isDeleting={isDeleting}
         error={deleteError}
-        onConfirm={confirmDelete}
-        onCancel={cancelDelete}
+        onConfirm={() => {
+          confirmDelete();
+          focusContainer();
+        }}
+        onCancel={() => {
+          cancelDelete();
+          focusContainer();
+        }}
       />
     </div>
   );

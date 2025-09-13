@@ -17,6 +17,6 @@ import { ErrorBoundary } from "@/components/dashboard/ErrorBoundary";
 <Layout title="Dashboard - My Projects | Plan My App">
   <DashboardHeader />
   <ErrorBoundary client:load>
-    <ProjectsListContainer client:load />
+    <ProjectsListContainer client:only="react" />
   </ErrorBoundary>
 </Layout>

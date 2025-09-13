@@ -218,28 +218,28 @@ export function useProjectsList(): UseProjectsListResult {
   }, []);
 
   // Effect to update URL when filters change
-  useEffect(() => {
-    const urlParams = new URLSearchParams();
+  // useEffect(() => {
+  //   const urlParams = new URLSearchParams();
 
-    if (filters.status !== ProjectStatusType.ALL) {
-      urlParams.set("status", filters.status);
-    }
+  //   if (filters.status !== ProjectStatusType.ALL) {
+  //     urlParams.set("status", filters.status);
+  //   }
 
-    if (filters.sort !== ProjectSortOption.NEWEST) {
-      urlParams.set("sort", filters.sort);
-    }
+  //   if (filters.sort !== ProjectSortOption.NEWEST) {
+  //     urlParams.set("sort", filters.sort);
+  //   }
 
-    if (filters.page > 1) {
-      urlParams.set("page", filters.page.toString());
-    }
+  //   if (filters.page > 1) {
+  //     urlParams.set("page", filters.page.toString());
+  //   }
 
-    const newUrl = urlParams.toString()
-      ? `${window.location.pathname}?${urlParams.toString()}`
-      : window.location.pathname;
+  //   const newUrl = urlParams.toString()
+  //     ? `${window.location.pathname}?${urlParams.toString()}`
+  //     : window.location.pathname;
 
-    // Update URL without reload using history API
-    window.history.replaceState({}, "", newUrl);
-  }, [filters]);
+  //   // Update URL without reload using history API
+  //   window.history.replaceState({}, "", newUrl);
+  // }, [filters]);
 
   return {
     projects,

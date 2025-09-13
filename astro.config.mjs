@@ -20,6 +20,9 @@ export default defineConfig({
       SUPABASE_KEY: envField.string({ context: "server", access: "secret" }),
       DATABASE_URL: envField.string({ context: "server", access: "secret" }),
 
+      SUPABASE_CLIENT_URL: envField.string({ context: "client", access: "public" }),
+      SUPABASE_CLIENT_KEY: envField.string({ context: "client", access: "public" }),
+
       // OpenAI configuration
       OPENAI_API_KEY: envField.string({ context: "server", access: "secret" }),
       OPENAI_DEFAULT_MODEL: envField.string({ context: "server", access: "secret", default: "o4-mini" }),

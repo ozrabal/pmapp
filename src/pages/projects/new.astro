@@ -1,14 +1,12 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import CreateProjectForm from "@/components/dashboard/CreateProjectForm";
+// import CreateProjectForm from "@/components/dashboard/CreateProjectForm";
 import { ErrorBoundary } from "@/components/dashboard/ErrorBoundary";
 import { BackToProjectsButton } from "@/components/projects/BackToProjectsButton";
+import NewProjectChat from "@/components/modules/NewProjectChat";
 
-// In a real implementation, check auth state from server context
-const isLoggedIn = true; // Simplified for implementation
-
-// Redirect if not logged in
-if (!isLoggedIn) {
+const user = Astro.locals.user;
+if (!user) {
   return Astro.redirect("/login?redirect=/projects/new");
 }
 
@@ -21,15 +19,14 @@ export const prerender = false;
     <div class="flex justify-between items-center mb-4">
       <BackToProjectsButton client:load />
     </div>
-
     <h2 class="text-xl font-bold tracking-tight">New Project</h2>
   </div>
 
   <section aria-labelledby="edit-project-description-form" class="mt-8">
     <h2 id="edit-project-description-form" class="sr-only">Edit Project Description Form</h2>
-
     <ErrorBoundary client:load>
-      <CreateProjectForm client:load />
+      {/* <CreateProjectForm user={user} client:load /> */}
+      <NewProjectChat client:load />
     </ErrorBoundary>
   </section>
 </Layout>

@@ -1,9 +1,9 @@
 import { useId } from "react";
-import type { ProjectFiltersState } from "./types";
 import { ProjectStatusType, ProjectSortOption } from "./types";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RotateCcwIcon } from "lucide-react";
+import type { ProjectFilters } from "./hooks/useProjectsFilters";
 
 const statusOptions = [
   { value: ProjectStatusType.ALL, label: "All projects" },
@@ -21,8 +21,8 @@ const sortOptions = [
 ];
 
 interface ProjectsFiltersProps {
-  filters: ProjectFiltersState;
-  onUpdateFilters: (newFilters: Partial<ProjectFiltersState>) => void;
+  filters: ProjectFilters;
+  onUpdateFilters: (newFilters: Partial<ProjectFilters>) => void;
   onResetFilters: () => void;
 }
 

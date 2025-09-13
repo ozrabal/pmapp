@@ -12,6 +12,8 @@ interface ImportMetaEnv {
   readonly OPENAI_DEFAULT_MODEL: string;
   readonly OPENAI_FALLBACK_MODEL: string;
   readonly RESEND_API_KEY: string;
+  readonly SUPABASE_CLIENT_URL: string;
+  readonly SUPABASE_CLIENT_KEY: string;
 }
 
 interface ImportMeta {
