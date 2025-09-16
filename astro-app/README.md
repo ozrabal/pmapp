@@ -7,29 +7,14 @@
 
 ## Table of Contents
 
-- [Plan My App](#plan-my-app)
-  - [Table of Contents](#table-of-contents)
-  - [Overview](#overview)
-    - [The Problem](#the-problem)
-    - [How Plan My App Helps](#how-plan-my-app-helps)
-    - [Target Users](#target-users)
-  - [Features](#features)
-    - [MVP Features](#mvp-features)
-  - [Tech Stack](#tech-stack)
-    - [Frontend](#frontend)
-    - [Backend](#backend)
-    - [Testing](#testing)
-    - [AI Integration](#ai-integration)
-    - [CI/CD and Hosting](#cicd-and-hosting)
-  - [Getting Started](#getting-started)
-    - [Prerequisites](#prerequisites)
-    - [Installation](#installation)
-  - [Available Scripts](#available-scripts)
-  - [Project Scope](#project-scope)
-    - [MVP Scope](#mvp-scope)
-    - [Out of MVP Scope](#out-of-mvp-scope)
-  - [Project Status](#project-status)
-  - [License](#license)
+- [Overview](#overview)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+- [Available Scripts](#available-scripts)
+- [Project Scope](#project-scope)
+- [Project Status](#project-status)
+- [License](#license)
 
 ## Overview
 
@@ -97,7 +82,7 @@ Plan My App addresses these challenges by providing:
 ## Tech Stack
 
 ### Frontend
-- **NextJs**: For creating fast, efficient pages
+- **Astro 5**: For creating fast, efficient pages with minimal JavaScript
 - **React 19**: For interactive components
 - **TypeScript 5**: For static typing and improved IDE support
 - **Tailwind 4**: For styling
@@ -124,7 +109,7 @@ Plan My App addresses these challenges by providing:
 
 ### CI/CD and Hosting
 - **GitHub Actions**: For CI/CD pipelines
-- **Cloudflare Pages**: For hosting
+- **DigitalOcean**: For hosting via Docker
 
 ## Getting Started
 
@@ -165,7 +150,8 @@ Plan My App addresses these challenges by providing:
 
 - `npm run dev`: Starts the development server
 - `npm run build`: Builds the project for production
-- `npm start`: Starts the production server
+- `npm run preview`: Previews the production build locally
+- `npm run astro`: Runs Astro CLI commands
 - `npm run lint`: Lints the codebase
 - `npm run lint:fix`: Fixes linting issues automatically
 - `npm run format`: Formats code using Prettier
