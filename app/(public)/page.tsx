@@ -7,7 +7,7 @@ export default function Home() {
     <main>
       <nav>
         <Link href={"/"}>Start</Link>
-        <Link href={"/protected"}>Dashboard</Link>
+        <Link href={"/dashboard"}>Dashboard</Link>
 
         <AuthButton />
       </nav>

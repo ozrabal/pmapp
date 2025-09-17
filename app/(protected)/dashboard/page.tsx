@@ -1,8 +1,9 @@
 import UserProfileCard from "@/components/user-profile-card";
 
-export default async function ProtectedPage() {
+export default function DashboardPage() {
   return (
     <div>
+      Dashboard
       <UserProfileCard />
     </div>
   );
