@@ -25,10 +25,10 @@ export default async function DashboardLayout({
   } = await supabase.auth.getUser();
 
   const headersList = headers();
-  const currentPath = (await headersList).get("x-current-path") || "/";
+  const currentPath = (await headersList).get("x-current-path");
 
   if (!user) {
-    redirect(`/sign-in?source=${currentPath}`);
+    redirect(`/auth/login?source=${currentPath}`);
   }
 
   return (
