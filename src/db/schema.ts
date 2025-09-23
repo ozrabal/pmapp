@@ -26,6 +26,8 @@ export const taskDependencyTypeEnum = pgEnum("task_dependency_type_enum", [
 ]);
 export const taskPriorityEnum = pgEnum("task_priority_enum", ["low", "medium", "high"]);
 
+export const usersInAuth = users;
+
 export const userActivities = pgTable(
   "user_activities",
   {
