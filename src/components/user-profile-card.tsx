@@ -3,7 +3,7 @@
 import { useUser } from "@/hooks/useUser";
 
 export default function UserProfileCard() {
-  const { user, loading, error } = useUser();
+  const { user, token, loading, error } = useUser();
 
   if (loading) {
     return <div className="p-4 border rounded shadow animate-pulse">Loading user data...</div>;
@@ -38,6 +38,9 @@ export default function UserProfileCard() {
         <p>
           <strong>Last Sign In:</strong>{" "}
           {user.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleString() : "N/A"}
+        </p>
+        <p className="break-all">
+          <strong>Token:</strong> {token}
         </p>
         <div className="bg-green-600" title={user.email ?? ""}>
           <pre>{JSON.stringify(user, null, 2)}</pre>

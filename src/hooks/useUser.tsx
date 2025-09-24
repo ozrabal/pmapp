@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { type User } from "@supabase/supabase-js";
+import { type Session, type User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 
 /**
@@ -10,6 +10,7 @@ import { createClient } from "@/lib/supabase/client";
  */
 export function useUser() {
   const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<Session["access_token"] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
   const supabase = createClient();
@@ -19,7 +20,7 @@ export function useUser() {
       try {
         setLoading(true);
         const { data, error } = await supabase.auth.getUser();
-
+        //const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
         if (error) {
           throw error;
         }
@@ -41,8 +42,10 @@ export function useUser() {
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
         setUser(session.user);
+        setToken(session.access_token);
       } else {
         setUser(null);
+        setToken(null);
       }
       setLoading(false);
     });
@@ -53,5 +56,5 @@ export function useUser() {
     };
   }, [supabase.auth]);
 
-  return { user, loading, error };
+  return { user, token, loading, error };
 }

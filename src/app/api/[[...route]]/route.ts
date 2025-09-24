@@ -1,10 +1,28 @@
 import { handle } from "hono/vercel";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
+import { jwt } from "hono/jwt";
+import { type JWTPayload } from "hono/utils/jwt/types";
 import projectRoutes from "@/api/modules/project";
 import { createErrorResponse } from "@/api/utils/response";
+import type { JwtVariables } from "hono/jwt";
 
-const router = new Hono().basePath("/api");
+const router = new Hono<{ Variables: JwtVariables<JWTPayload> }>().basePath("/api");
+
+const jwtMiddleware = jwt({
+  secret: process.env.JWT_SECRET!,
+});
+
+router.use("*", async (c, next) => {
+  try {
+    return await jwtMiddleware(c, next);
+  } catch (error) {
+    throw new HTTPException(401, {
+      message: "Invalid or missing token",
+      cause: { error: error instanceof Error ? error.message : "Token validation failed" },
+    });
+  }
+});
 
 router.onError((error) => {
   if (error instanceof HTTPException) {
