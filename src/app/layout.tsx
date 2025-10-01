@@ -1,6 +1,5 @@
 import { Geist } from "next/font/google";
 
-import { ThemeProvider } from "next-themes";
 import Providers from "@/app/providers";
 import type { Metadata } from "next";
 import "@/app/globals.css";
@@ -27,11 +26,7 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning lang="en">
       <body className={`${geistSans.className} antialiased`}>
-        <Providers>
-          <ThemeProvider disableTransitionOnChange enableSystem attribute="class" defaultTheme="system">
-            {children}
-          </ThemeProvider>
-        </Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

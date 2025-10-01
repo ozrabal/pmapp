@@ -4,25 +4,25 @@ import apiClient from "@/api/utils/client";
 import { type projects } from "@/db/schema";
 import { type PaginatedQuery } from "@/api/utils/pagination";
 
-export type UseProjectParams =
-  | {
-      page?: number;
-      limit?: number;
-    }
-  | undefined;
+export type GetProjectParams = {
+  page?: number;
+  limit?: number;
+};
+
+export type UseProjectParams = GetProjectParams | undefined;
 
 type Project = InferSelectModel<typeof projects>;
 
-export function useProjects({ page = 1, limit = 10 }: UseProjectParams = {}) {
-  const getProjects = async () => {
-    const response = await apiClient.get<PaginatedQuery<Project>>("/project", {
-      params: { page, limit },
-    });
-    return response.data;
-  };
+const getProjects = async ({ page, limit }: GetProjectParams): Promise<PaginatedQuery<Project>> => {
+  const response = await apiClient.get<PaginatedQuery<Project>>("/project", {
+    params: { page, limit },
+  });
+  return response.data;
+};
 
+export function useProjects({ page = 1, limit = 10 }: UseProjectParams = {}) {
   return useQuery({
     queryKey: ["projects", [page, limit]],
-    queryFn: getProjects,
+    queryFn: () => getProjects({ page, limit }),
   });
 }
