@@ -1,5 +1,6 @@
 "use client";
 import { useProjects } from "@/lib/queries/project";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./ui/card";
 
 export function ProjectsList() {
   const page = 1;
@@ -12,13 +13,19 @@ export function ProjectsList() {
   const projects = data?.data;
 
   return (
-    <div>
-      <h1>Projects</h1>
-      <ul>
-        {projects?.map((project) => (
-          <li key={project.id}>{project.name}</li>
-        ))}
-      </ul>
-    </div>
+    <ul>
+      {projects?.map((project) => (
+        <li key={project.id}>
+          <Card>
+            <CardHeader>
+              <CardTitle>{project.name}</CardTitle>
+              <CardDescription></CardDescription>
+            </CardHeader>
+            <CardContent>{project.description}</CardContent>
+            <CardFooter>{project.updatedAt}</CardFooter>
+          </Card>
+        </li>
+      ))}
+    </ul>
   );
 }
