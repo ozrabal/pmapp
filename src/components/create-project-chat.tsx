@@ -28,7 +28,7 @@ export default function CreateProjectChat() {
     }, 2000);
   };
   return (
-    <div className="p-8 w-full">
+    <div className="p-8 w-full max-w-4xl">
       <PromptInput onSubmit={handleSubmit}>
         <PromptInputTextarea
           placeholder="Type your message..."
