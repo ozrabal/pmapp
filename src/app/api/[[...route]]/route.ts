@@ -4,6 +4,7 @@ import { HTTPException } from "hono/http-exception";
 import { jwt } from "hono/jwt";
 import { type JWTPayload } from "hono/utils/jwt/types";
 import projectRoutes from "@/api/modules/project";
+import planningRoutes from "@/api/modules/planning";
 import { createErrorResponse } from "@/api/utils/response";
 import type { JwtVariables } from "hono/jwt";
 
@@ -55,6 +56,7 @@ router.onError((error) => {
 });
 
 router.route("/project", projectRoutes);
+router.route("/planning", planningRoutes);
 
 export const maxDuration = 30;
 
