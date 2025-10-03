@@ -54,7 +54,7 @@ app.post("/start", zValidator("json", startSessionSchema), async (c) => {
     isComplete: false,
   };
 
-  return createResponse({ chatResponse, session });
+  return createResponse(chatResponse);
 });
 
 export default app;
