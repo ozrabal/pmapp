@@ -1,24 +1,15 @@
 import { Hono } from "hono";
-import { z } from "zod";
-import { zValidator } from "@/api/middlewares/validator.middleware";
 import { generateSessionId } from "@/api/utils/session";
 import { type ChatResponse, type ChatSession } from "@/api/types/chat";
 import { createResponse } from "@/api/utils/response";
-import { ChatActorRole, CompletionStatus, PlanningStep, STEP_ORDER, STEP_PROMPTS } from "./consts";
-import { getCurrentStepIndex } from "./utils";
-import { sessions } from ".";
+import { getCurrentStepIndex } from "@/api/modules/planning/utils";
+import { ChatActorRole, CompletionStatus, PlanningStep, STEP_ORDER, STEP_PROMPTS } from "../consts";
+import { sessions } from "..";
 
-export const startSessionSchema = z
-  .object({
-    userId: z.string().uuid(),
-  })
-  .strict();
 const app = new Hono();
 
-app.post("/start", zValidator("json", startSessionSchema), async (c) => {
-  // const { sub: userId } = c.get("jwtPayload");
-
-  const { userId } = c.req.valid("json");
+app.post("/", async (c) => {
+  const { sub: userId } = c.get("jwtPayload");
 
   const sessionId = generateSessionId();
 
