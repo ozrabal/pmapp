@@ -2,7 +2,7 @@
 
 import { PaperclipIcon, MicIcon } from "lucide-react";
 import { useEffect, useState, type FormEventHandler } from "react";
-import { useStartPlanning } from "@/lib/queries/planning";
+import { useSendMessage, useStartPlanning } from "@/lib/queries/planning";
 import { useUser } from "@/hooks/useUser";
 import { type ChatResponse } from "@/api/types/chat";
 import {
@@ -22,47 +22,52 @@ export default function CreateProjectChat() {
   const { user } = useUser();
   const userId = user?.id;
 
+  const [sessionId, setSessionId] = useState<string | null>(null);
+
+  const [conversation, setConversation] = useState<ChatResponse[]>([]);
+
   const [text, setText] = useState<string>("");
   const [status, setStatus] = useState<PromptInputSubmitProps["status"]>("idle");
-  const [planningData, setPlanningData] = useState<ChatResponse | null>(null);
+  // const [planningData, setPlanningData] = useState<ChatResponse | null>(null);
 
   const { mutateAsync: startPlanning } = useStartPlanning({ userId });
+  const { mutateAsync: sendMessage } = useSendMessage({ sessionId });
 
   useEffect(() => {
     async function initializePlanning() {
       if (userId) {
         const chatResponse = await startPlanning({ userId });
-        setPlanningData(chatResponse);
+        setConversation((prev) => [...prev, chatResponse]);
+        setSessionId(chatResponse.sessionId);
       }
     }
     initializePlanning();
   }, [userId, startPlanning]);
 
-  const handleSubmit: FormEventHandler<HTMLFormElement> = (event) => {
+  const handleSubmit: FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
     if (!text) {
       return;
     }
     setStatus("submitted");
-    setTimeout(() => {
-      setStatus("streaming");
-    }, 200);
-    setTimeout(() => {
-      setStatus("idle");
-      setText("");
-    }, 2000);
+
+    const chatResponse = await sendMessage({ message: text });
+    setConversation((prev) => [...prev, chatResponse]);
+    setSessionId(chatResponse.sessionId);
+    setText("");
   };
+
   return (
     <div className="w-full max-w-4xl flex flex-col gap-6">
-      {planningData && (
-        <div className="flex flex-col gap-2">
+      {conversation.map((chatResponse, index) => (
+        <div key={`${chatResponse.sessionId}-${index}`} className="flex flex-col gap-2">
           <Muted>
-            {planningData.progress.currentStep}/{planningData.progress.totalSteps}
+            {chatResponse.progress.currentStep}/{chatResponse.progress.totalSteps}
           </Muted>
-          <Lead>{planningData.message}</Lead>
-          <H3>{planningData.nextActions}</H3>
+          <Lead>{chatResponse.message}</Lead>
+          <H3>{chatResponse.nextActions}</H3>
         </div>
-      )}
+      ))}
 
       <PromptInput onSubmit={handleSubmit}>
         <PromptInputTextarea

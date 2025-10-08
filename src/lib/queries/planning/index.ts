@@ -14,7 +14,28 @@ const startPlanning = async ({ userId }: StartPlanningParams): Promise<ChatRespo
 
 export function useStartPlanning({ userId }: StartPlanningParams): UseMutationResult<ChatResponse> {
   return useMutation({
-    mutationKey: ["planning", userId],
+    mutationKey: ["planning", "start", userId],
     mutationFn: () => startPlanning({ userId }),
+  });
+}
+
+export type SendMessageParams = {
+  sessionId?: string | null;
+  message: string;
+};
+
+const sendMessage = async ({ sessionId, message }: SendMessageParams): Promise<ChatResponse> => {
+  const response = await apiClient.post("/planning/message", { sessionId, message });
+  return response.data;
+};
+
+export function useSendMessage({
+  sessionId,
+}: {
+  sessionId?: string | null;
+}): UseMutationResult<ChatResponse, unknown, { message: string }> {
+  return useMutation({
+    mutationKey: ["planning", "message", sessionId],
+    mutationFn: ({ message }) => sendMessage({ sessionId, message }),
   });
 }
