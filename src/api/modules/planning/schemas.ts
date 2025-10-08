@@ -1,10 +1,10 @@
 import z from "zod";
 
-// export const startSessionSchema = z
-//   .object({
-//     userId: z.uuid(),
-//   })
-//   .strict();
+export const getSessionSchema = z.object({
+  id: z.uuid(),
+});
+
+export const deleteSessionSchema = getSessionSchema;
 
 export const messageSchema = z
   .object({

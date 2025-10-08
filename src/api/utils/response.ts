@@ -13,7 +13,7 @@ export type ErrorResponseDto<T extends ValidationError> = {
 };
 
 export function createResponse<T>(data: T, status = 200, headers: HeadersInit = {}): Response {
-  return new Response(JSON.stringify(data), {
+  return new Response(data ? JSON.stringify(data) : null, {
     status,
     headers: {
       ...DEFAULT_HEADERS,
