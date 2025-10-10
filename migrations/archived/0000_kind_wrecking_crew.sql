@@ -1,7 +1,3 @@
--- Archived original introspected migration
--- The original file was moved to migrations/archived/0000_kind_wrecking_crew.sql
--- This placeholder prevents the migrator from failing when older journal entries reference this filename.
--- No executable SQL in this file.
 -- Migration generated after introspecting the database. Uncommented for execution.
 DO $$
 BEGIN
