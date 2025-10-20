@@ -5,7 +5,7 @@
 project_id = "pmapp"
 
 [api]
-enabled = true
+enabled = false
 # Port to use for the API URL.
 port = 54329
 # Schemas to expose in your API. Tables, views and stored procedures in this schema will get API
@@ -48,6 +48,8 @@ max_client_conn = 100
 [db.migrations]
 # Specifies an ordered list of schema files that describe your database.
 # Supports glob patterns relative to supabase directory: "./schemas/*.sql"
+# Disabled automatic migrations - uncomment and set paths to re-enable
+# schema_paths = []
 schema_paths = []
 
 [db.seed]
@@ -58,7 +60,7 @@ enabled = true
 sql_paths = ["./seed.sql"]
 
 [realtime]
-enabled = true
+enabled = false
 # Bind realtime via either IPv4 or IPv6. (default: IPv4)
 # ip_version = "IPv6"
 # The maximum length in bytes of HTTP request headers. (default: 4096)
@@ -86,7 +88,7 @@ port = 54333
 # sender_name = "Admin"
 
 [storage]
-enabled = true
+enabled = false
 # The maximum file size allowed (e.g. "5MB", "500KB").
 file_size_limit = "50MiB"
 
@@ -289,7 +291,7 @@ deno_version = 1
 # secret_key = "env(SECRET_VALUE)"
 
 [analytics]
-enabled = true
+enabled = false
 port = 54332
 # Configure one of the supported backends: `postgres`, `bigquery`.
 backend = "postgres"

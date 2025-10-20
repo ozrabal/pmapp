@@ -24,6 +24,7 @@
   - [Getting Started](#getting-started)
     - [Prerequisites](#prerequisites)
     - [Installation](#installation)
+  - [Database backup \& restore](#database-backup--restore)
   - [Available Scripts](#available-scripts)
   - [Project Scope](#project-scope)
     - [MVP Scope](#mvp-scope)
@@ -161,6 +162,29 @@ Plan My App addresses these challenges by providing:
 
 5. Open [http://localhost:4321](http://localhost:4321) in your browser to see the application.
 
+## Database backup & restore
+
+If you need to create a backup of your local PostgreSQL database or restore from a custom-format dump, use the commands below. These examples assume a local Postgres instance reachable at port 54330 with user `postgres` and password `postgres`.
+
+Create a custom-format dump (pg_dump):
+
+```bash
+pg_dump --format=custom --file=./db/pmapp-backup.dump "postgresql://postgres:postgres@127.0.0.1:54330/postgres"
+```
+
+Restore from a custom-format dump (pg_restore):
+
+```bash
+pg_restore --verbose --clean --if-exists --no-owner --no-acl --dbname="postgresql://postgres:postgres@127.0.0.1:54330/postgres" ./db/pmapp-backup.dump
+```
+
+Notes on options used:
+
+- `--format=custom`: creates a compressed, non-text dump that supports parallel restore and selective object restoration.
+- `--clean` / `--if-exists`: drop existing database objects before recreating them, but avoid errors if they don't exist.
+- `--no-owner` / `--no-acl`: skip restoring ownership and access control lists to avoid permission issues when restoring into a different environment or user.
+
+
 ## Available Scripts
 
 - `npm run dev`: Starts the development server
@@ -175,6 +199,7 @@ Plan My App addresses these challenges by providing:
 ### MVP Scope
 
 The initial release focuses on core functionality:
+
 - Basic user authentication and project management
 - AI-assisted project definition and functional block division
 - Simple schedule generation
@@ -183,6 +208,7 @@ The initial release focuses on core functionality:
 ### Out of MVP Scope
 
 The following features are planned for future releases:
+
 - Resource allocation for project implementation
 - Budget estimation
 - Detailed schedule creation with precise dates
@@ -195,6 +221,7 @@ The following features are planned for future releases:
 ## Project Status
 
 The project is currently in early development (MVP phase). Key success metrics for the MVP include:
+
 - User adoption rate (target: 10% monthly growth)
 - Active user percentage (target: 40% in the first month)
 - AI suggestion usefulness (target: 70% rated as useful)

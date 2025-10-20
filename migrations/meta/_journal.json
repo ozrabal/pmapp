@@ -8,6 +8,13 @@
       "when": 1758657448695,
       "tag": "0000_kind_wrecking_crew",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1760131099485,
+      "tag": "0001_init_schema",
+      "breakpoints": true
     }
   ]
 }

@@ -1,7 +1,3 @@
--- Archived original introspected migration
--- The original file was moved to migrations/archived/0000_kind_wrecking_crew.sql
--- This placeholder prevents the migrator from failing when older journal entries reference this filename.
--- No executable SQL in this file.
 -- Migration generated after introspecting the database. Uncommented for execution.
 DO $$
 BEGIN
@@ -115,14 +111,62 @@ CREATE TABLE IF NOT EXISTS "task_dependencies" (
 );
 
 ALTER TABLE IF EXISTS "task_dependencies" ENABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS "user_activities" ADD CONSTRAINT "user_activities_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."profiles"("id") ON DELETE no action ON UPDATE no action;
-ALTER TABLE IF EXISTS "ai_suggestion_feedbacks" ADD CONSTRAINT "ai_suggestion_feedbacks_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."profiles"("id") ON DELETE no action ON UPDATE no action;
-ALTER TABLE IF EXISTS "user_sessions" ADD CONSTRAINT "user_sessions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."profiles"("id") ON DELETE no action ON UPDATE no action;
-ALTER TABLE IF EXISTS "profiles" ADD CONSTRAINT "profiles_id_fkey" FOREIGN KEY ("id") REFERENCES "auth"."users"("id") ON DELETE no action ON UPDATE no action;
-ALTER TABLE IF EXISTS "projects" ADD CONSTRAINT "projects_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."profiles"("id") ON DELETE no action ON UPDATE no action;
-ALTER TABLE IF EXISTS "tasks" ADD CONSTRAINT "tasks_project_id_fkey" FOREIGN KEY ("project_id") REFERENCES "public"."projects"("id") ON DELETE cascade ON UPDATE no action;
-ALTER TABLE IF EXISTS "task_dependencies" ADD CONSTRAINT "task_dependencies_predecessor_task_id_fkey" FOREIGN KEY ("predecessor_task_id") REFERENCES "public"."tasks"("id") ON DELETE cascade ON UPDATE no action;
-ALTER TABLE IF EXISTS "task_dependencies" ADD CONSTRAINT "task_dependencies_successor_task_id_fkey" FOREIGN KEY ("successor_task_id") REFERENCES "public"."tasks"("id") ON DELETE cascade ON UPDATE no action;
+-- Add foreign key constraints only if they don't exist
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name = 'user_activities_user_id_fkey' AND table_name = 'user_activities') THEN
+    ALTER TABLE "user_activities" ADD CONSTRAINT "user_activities_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."profiles"("id") ON DELETE no action ON UPDATE no action;
+  END IF;
+END $$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name = 'ai_suggestion_feedbacks_user_id_fkey' AND table_name = 'ai_suggestion_feedbacks') THEN
+    ALTER TABLE "ai_suggestion_feedbacks" ADD CONSTRAINT "ai_suggestion_feedbacks_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."profiles"("id") ON DELETE no action ON UPDATE no action;
+  END IF;
+END $$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name = 'user_sessions_user_id_fkey' AND table_name = 'user_sessions') THEN
+    ALTER TABLE "user_sessions" ADD CONSTRAINT "user_sessions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."profiles"("id") ON DELETE no action ON UPDATE no action;
+  END IF;
+END $$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name = 'profiles_id_fkey' AND table_name = 'profiles') THEN
+    ALTER TABLE "profiles" ADD CONSTRAINT "profiles_id_fkey" FOREIGN KEY ("id") REFERENCES "auth"."users"("id") ON DELETE no action ON UPDATE no action;
+  END IF;
+END $$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name = 'projects_user_id_fkey' AND table_name = 'projects') THEN
+    ALTER TABLE "projects" ADD CONSTRAINT "projects_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."profiles"("id") ON DELETE no action ON UPDATE no action;
+  END IF;
+END $$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name = 'tasks_project_id_fkey' AND table_name = 'tasks') THEN
+    ALTER TABLE "tasks" ADD CONSTRAINT "tasks_project_id_fkey" FOREIGN KEY ("project_id") REFERENCES "public"."projects"("id") ON DELETE cascade ON UPDATE no action;
+  END IF;
+END $$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name = 'task_dependencies_predecessor_task_id_fkey' AND table_name = 'task_dependencies') THEN
+    ALTER TABLE "task_dependencies" ADD CONSTRAINT "task_dependencies_predecessor_task_id_fkey" FOREIGN KEY ("predecessor_task_id") REFERENCES "public"."tasks"("id") ON DELETE cascade ON UPDATE no action;
+  END IF;
+END $$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name = 'task_dependencies_successor_task_id_fkey' AND table_name = 'task_dependencies') THEN
+    ALTER TABLE "task_dependencies" ADD CONSTRAINT "task_dependencies_successor_task_id_fkey" FOREIGN KEY ("successor_task_id") REFERENCES "public"."tasks"("id") ON DELETE cascade ON UPDATE no action;
+  END IF;
+END $$;
 CREATE INDEX IF NOT EXISTS "user_activities_activity_type_idx" ON "user_activities" USING btree ("activity_type");
 CREATE INDEX IF NOT EXISTS "user_activities_user_id_idx" ON "user_activities" USING btree ("user_id");
 CREATE INDEX IF NOT EXISTS "ai_suggestion_feedbacks_context_hash_idx" ON "ai_suggestion_feedbacks" USING btree ("suggestion_context","suggestion_hash");
@@ -145,30 +189,115 @@ CREATE INDEX IF NOT EXISTS "idx_tasks_project_functional_block" ON "tasks" USING
 CREATE INDEX IF NOT EXISTS "idx_tasks_project_id" ON "tasks" USING btree ("project_id");
 CREATE INDEX IF NOT EXISTS "idx_task_dependencies_predecessor" ON "task_dependencies" USING btree ("predecessor_task_id");
 CREATE INDEX IF NOT EXISTS "idx_task_dependencies_successor" ON "task_dependencies" USING btree ("successor_task_id");
-CREATE POLICY "anon users cannot access user_activities" ON "user_activities" AS PERMISSIVE FOR ALL TO "anon" USING (false);
-CREATE POLICY "authenticated users can read own activities" ON "user_activities" AS PERMISSIVE FOR SELECT TO "authenticated";
-CREATE POLICY "authenticated users can insert own activities" ON "user_activities" AS PERMISSIVE FOR INSERT TO "authenticated";
-CREATE POLICY "anon users cannot access ai_suggestion_feedbacks" ON "ai_suggestion_feedbacks" AS PERMISSIVE FOR ALL TO "anon" USING (false);
-CREATE POLICY "authenticated users can read own feedbacks" ON "ai_suggestion_feedbacks" AS PERMISSIVE FOR SELECT TO "authenticated";
-CREATE POLICY "authenticated users can create own feedbacks" ON "ai_suggestion_feedbacks" AS PERMISSIVE FOR INSERT TO "authenticated";
-CREATE POLICY "authenticated users can update own feedbacks" ON "ai_suggestion_feedbacks" AS PERMISSIVE FOR UPDATE TO "authenticated";
-CREATE POLICY "anon users cannot access user_sessions" ON "user_sessions" AS PERMISSIVE FOR ALL TO "anon" USING (false);
-CREATE POLICY "authenticated users can read own sessions" ON "user_sessions" AS PERMISSIVE FOR SELECT TO "authenticated";
-CREATE POLICY "authenticated users can insert own sessions" ON "user_sessions" AS PERMISSIVE FOR INSERT TO "authenticated";
-CREATE POLICY "authenticated users can update own sessions" ON "user_sessions" AS PERMISSIVE FOR UPDATE TO "authenticated";
-CREATE POLICY "anon users cannot access profiles" ON "profiles" AS PERMISSIVE FOR ALL TO "anon" USING (false);
-CREATE POLICY "authenticated users can read own profile" ON "profiles" AS PERMISSIVE FOR SELECT TO "authenticated";
-CREATE POLICY "authenticated users can update own profile" ON "profiles" AS PERMISSIVE FOR UPDATE TO "authenticated";
-CREATE POLICY "anon users cannot access projects" ON "projects" AS PERMISSIVE FOR ALL TO "anon" USING (false);
-CREATE POLICY "authenticated users can read own projects" ON "projects" AS PERMISSIVE FOR SELECT TO "authenticated";
-CREATE POLICY "authenticated users can insert own projects" ON "projects" AS PERMISSIVE FOR INSERT TO "authenticated";
-CREATE POLICY "authenticated users can update own projects" ON "projects" AS PERMISSIVE FOR UPDATE TO "authenticated";
-CREATE POLICY "anon users cannot access tasks" ON "tasks" AS PERMISSIVE FOR SELECT TO "anon" USING (false);
-CREATE POLICY "authenticated users can read own project tasks" ON "tasks" AS PERMISSIVE FOR SELECT TO "authenticated";
-CREATE POLICY "authenticated users can create tasks in own projects" ON "tasks" AS PERMISSIVE FOR INSERT TO "authenticated";
-CREATE POLICY "authenticated users can update own project tasks" ON "tasks" AS PERMISSIVE FOR UPDATE TO "authenticated";
-CREATE POLICY "anon users cannot access task dependencies" ON "task_dependencies" AS PERMISSIVE FOR SELECT TO "anon" USING (false);
-CREATE POLICY "authenticated users can read own project task dependencies" ON "task_dependencies" AS PERMISSIVE FOR SELECT TO "authenticated";
-CREATE POLICY "authenticated users can create task dependencies in own project" ON "task_dependencies" AS PERMISSIVE FOR INSERT TO "authenticated";
-CREATE POLICY "authenticated users can update task dependencies in own project" ON "task_dependencies" AS PERMISSIVE FOR UPDATE TO "authenticated";
-CREATE POLICY "authenticated users can delete task dependencies in own project" ON "task_dependencies" AS PERMISSIVE FOR DELETE TO "authenticated";
+
+-- Create policies only if they don't exist
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'user_activities' AND policyname = 'anon users cannot access user_activities') THEN
+    EXECUTE 'CREATE POLICY "anon users cannot access user_activities" ON "user_activities" AS PERMISSIVE FOR ALL TO "anon" USING (false)';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'user_activities' AND policyname = 'authenticated users can read own activities') THEN
+    EXECUTE 'CREATE POLICY "authenticated users can read own activities" ON "user_activities" AS PERMISSIVE FOR SELECT TO "authenticated"';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'user_activities' AND policyname = 'authenticated users can insert own activities') THEN
+    EXECUTE 'CREATE POLICY "authenticated users can insert own activities" ON "user_activities" AS PERMISSIVE FOR INSERT TO "authenticated"';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'ai_suggestion_feedbacks' AND policyname = 'anon users cannot access ai_suggestion_feedbacks') THEN
+    EXECUTE 'CREATE POLICY "anon users cannot access ai_suggestion_feedbacks" ON "ai_suggestion_feedbacks" AS PERMISSIVE FOR ALL TO "anon" USING (false)';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'ai_suggestion_feedbacks' AND policyname = 'authenticated users can read own feedbacks') THEN
+    EXECUTE 'CREATE POLICY "authenticated users can read own feedbacks" ON "ai_suggestion_feedbacks" AS PERMISSIVE FOR SELECT TO "authenticated"';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'ai_suggestion_feedbacks' AND policyname = 'authenticated users can create own feedbacks') THEN
+    EXECUTE 'CREATE POLICY "authenticated users can create own feedbacks" ON "ai_suggestion_feedbacks" AS PERMISSIVE FOR INSERT TO "authenticated"';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'ai_suggestion_feedbacks' AND policyname = 'authenticated users can update own feedbacks') THEN
+    EXECUTE 'CREATE POLICY "authenticated users can update own feedbacks" ON "ai_suggestion_feedbacks" AS PERMISSIVE FOR UPDATE TO "authenticated"';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'user_sessions' AND policyname = 'anon users cannot access user_sessions') THEN
+    EXECUTE 'CREATE POLICY "anon users cannot access user_sessions" ON "user_sessions" AS PERMISSIVE FOR ALL TO "anon" USING (false)';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'user_sessions' AND policyname = 'authenticated users can read own sessions') THEN
+    EXECUTE 'CREATE POLICY "authenticated users can read own sessions" ON "user_sessions" AS PERMISSIVE FOR SELECT TO "authenticated"';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'user_sessions' AND policyname = 'authenticated users can insert own sessions') THEN
+    EXECUTE 'CREATE POLICY "authenticated users can insert own sessions" ON "user_sessions" AS PERMISSIVE FOR INSERT TO "authenticated"';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'user_sessions' AND policyname = 'authenticated users can update own sessions') THEN
+    EXECUTE 'CREATE POLICY "authenticated users can update own sessions" ON "user_sessions" AS PERMISSIVE FOR UPDATE TO "authenticated"';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'profiles' AND policyname = 'anon users cannot access profiles') THEN
+    EXECUTE 'CREATE POLICY "anon users cannot access profiles" ON "profiles" AS PERMISSIVE FOR ALL TO "anon" USING (false)';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'profiles' AND policyname = 'authenticated users can read own profile') THEN
+    EXECUTE 'CREATE POLICY "authenticated users can read own profile" ON "profiles" AS PERMISSIVE FOR SELECT TO "authenticated"';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'profiles' AND policyname = 'authenticated users can update own profile') THEN
+    EXECUTE 'CREATE POLICY "authenticated users can update own profile" ON "profiles" AS PERMISSIVE FOR UPDATE TO "authenticated"';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'projects' AND policyname = 'anon users cannot access projects') THEN
+    EXECUTE 'CREATE POLICY "anon users cannot access projects" ON "projects" AS PERMISSIVE FOR ALL TO "anon" USING (false)';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'projects' AND policyname = 'authenticated users can read own projects') THEN
+    EXECUTE 'CREATE POLICY "authenticated users can read own projects" ON "projects" AS PERMISSIVE FOR SELECT TO "authenticated"';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'projects' AND policyname = 'authenticated users can insert own projects') THEN
+    EXECUTE 'CREATE POLICY "authenticated users can insert own projects" ON "projects" AS PERMISSIVE FOR INSERT TO "authenticated"';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'projects' AND policyname = 'authenticated users can update own projects') THEN
+    EXECUTE 'CREATE POLICY "authenticated users can update own projects" ON "projects" AS PERMISSIVE FOR UPDATE TO "authenticated"';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'tasks' AND policyname = 'anon users cannot access tasks') THEN
+    EXECUTE 'CREATE POLICY "anon users cannot access tasks" ON "tasks" AS PERMISSIVE FOR SELECT TO "anon" USING (false)';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'tasks' AND policyname = 'authenticated users can read own project tasks') THEN
+    EXECUTE 'CREATE POLICY "authenticated users can read own project tasks" ON "tasks" AS PERMISSIVE FOR SELECT TO "authenticated"';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'tasks' AND policyname = 'authenticated users can create tasks in own projects') THEN
+    EXECUTE 'CREATE POLICY "authenticated users can create tasks in own projects" ON "tasks" AS PERMISSIVE FOR INSERT TO "authenticated"';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'tasks' AND policyname = 'authenticated users can update own project tasks') THEN
+    EXECUTE 'CREATE POLICY "authenticated users can update own project tasks" ON "tasks" AS PERMISSIVE FOR UPDATE TO "authenticated"';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'task_dependencies' AND policyname = 'anon users cannot access task dependencies') THEN
+    EXECUTE 'CREATE POLICY "anon users cannot access task dependencies" ON "task_dependencies" AS PERMISSIVE FOR SELECT TO "anon" USING (false)';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'task_dependencies' AND policyname = 'authenticated users can read own project task dependencies') THEN
+    EXECUTE 'CREATE POLICY "authenticated users can read own project task dependencies" ON "task_dependencies" AS PERMISSIVE FOR SELECT TO "authenticated"';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'task_dependencies' AND policyname = 'authenticated users can create task dependencies in own project') THEN
+    EXECUTE 'CREATE POLICY "authenticated users can create task dependencies in own project" ON "task_dependencies" AS PERMISSIVE FOR INSERT TO "authenticated"';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'task_dependencies' AND policyname = 'authenticated users can update task dependencies in own project') THEN
+    EXECUTE 'CREATE POLICY "authenticated users can update task dependencies in own project" ON "task_dependencies" AS PERMISSIVE FOR UPDATE TO "authenticated"';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'task_dependencies' AND policyname = 'authenticated users can delete task dependencies in own project') THEN
+    EXECUTE 'CREATE POLICY "authenticated users can delete task dependencies in own project" ON "task_dependencies" AS PERMISSIVE FOR DELETE TO "authenticated"';
+  END IF;
+END $$;
