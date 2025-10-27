@@ -14,9 +14,18 @@ import {
   unique,
   check,
   pgEnum,
+  pgSchema,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
-import { authUsers as users } from "drizzle-orm/supabase";
+
+// Reference the auth schema (managed by Supabase, not in migrations)
+const authSchema = pgSchema("auth");
+
+// Reference auth.users table (don't define it, just reference it)
+export const usersInAuth = authSchema.table("users", {
+  id: uuid("id").primaryKey(),
+});
+
 export const estimationUnitEnum = pgEnum("estimation_unit_enum", ["hours", "storypoints"]);
 export const taskDependencyTypeEnum = pgEnum("task_dependency_type_enum", [
   "finish_to_start",
@@ -25,8 +34,6 @@ export const taskDependencyTypeEnum = pgEnum("task_dependency_type_enum", [
   "start_to_finish",
 ]);
 export const taskPriorityEnum = pgEnum("task_priority_enum", ["low", "medium", "high"]);
-
-export const usersInAuth = users;
 
 export const userActivities = pgTable(
   "user_activities",
@@ -165,7 +172,7 @@ export const profiles = pgTable(
     ),
     foreignKey({
       columns: [table.id],
-      foreignColumns: [users.id],
+      foreignColumns: [usersInAuth.id],
       name: "profiles_id_fkey",
     }),
     pgPolicy("anon users cannot access profiles", { as: "permissive", for: "all", to: ["anon"], using: sql`false` }),
@@ -242,7 +249,7 @@ export const tasks = pgTable(
     index("idx_tasks_priority").using("btree", table.priority.asc().nullsLast().op("enum_ops")),
     index("idx_tasks_project_functional_block").using(
       "btree",
-      table.projectId.asc().nullsLast().op("text_ops"),
+      table.projectId.asc().nullsLast().op("uuid_ops"),
       table.functionalBlockId.asc().nullsLast().op("text_ops")
     ),
     index("idx_tasks_project_id").using("btree", table.projectId.asc().nullsLast().op("uuid_ops")),

@@ -21,4 +21,6 @@ export default defineConfig({
   migrations: {
     schema: "public",
   },
+  // Exclude external schemas from migration generation
+  tablesFilter: ["!auth.*"],
 });

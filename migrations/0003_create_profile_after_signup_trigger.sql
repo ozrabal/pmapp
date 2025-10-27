@@ -1,9 +1,7 @@
--- Migration: 20250507000001_create_profile_trigger.sql
+-- Migration: 0003_create_profile_after_signup_trigger
 -- Description: Creates a trigger that automatically creates a user profile after signup
 
 -- Create the function that will be triggered after user signup
-
-
 create function public.handle_new_user()
 returns trigger
 language plpgsql

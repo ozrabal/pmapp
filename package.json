@@ -9,7 +9,11 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write \"**/*.{js,ts,tsx,jsx,json,md}\"",
-    "format:check": "prettier --check \"**/*.{js,ts,tsx,jsx,json,md}\""
+    "format:check": "prettier --check \"**/*.{js,ts,tsx,jsx,json,md}\"",
+    "db:generate": "drizzle-kit generate && ./scripts/fix-drizzle-migration.sh",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
     "@ai-sdk/openai": "^2.0.42",

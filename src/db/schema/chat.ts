@@ -1,6 +1,24 @@
-import { pgTable, uuid, text, jsonb, timestamp, integer, boolean, foreignKey, index } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  uuid,
+  text,
+  jsonb,
+  timestamp,
+  integer,
+  boolean,
+  foreignKey,
+  index,
+  pgSchema,
+} from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
-import { authUsers } from "drizzle-orm/supabase";
+
+// Reference the auth schema (managed by Supabase, not in migrations)
+const authSchema = pgSchema("auth");
+
+// Reference auth.users table (don't define it, just reference it)
+const authUsers = authSchema.table("users", {
+  id: uuid("id").primaryKey(),
+});
 
 /**
  * Drizzle schema for normalized chat sessions and messages.
@@ -23,6 +41,8 @@ export const chatSessions = pgTable(
     currentStep: text("current_step").notNull(),
     collectedData: jsonb("collected_data"),
     completionStatus: text("completion_status").notNull(),
+    isDeleted: boolean("is_deleted").default(false),
+    deletedAt: timestamp("deleted_at", { withTimezone: true, mode: "string" }),
     createdAt: timestamp("created_at", { withTimezone: true, mode: "string" }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" }).defaultNow().notNull(),
   },
@@ -37,6 +57,8 @@ export const chatSessions = pgTable(
     index("idx_chat_sessions_user_updated").on(table.userId, table.updatedAt.desc()),
   ]
 );
+
+export type ChatSession = typeof chatSessions.$inferSelect;
 
 export const chatMessages = pgTable(
   "chat_messages",
@@ -58,6 +80,7 @@ export const chatMessages = pgTable(
     // optional token accounting or flags could be added here
     tokenCount: integer("token_count").default(0),
     isDeleted: boolean("is_deleted").default(false),
+    deletedAt: timestamp("deleted_at", { withTimezone: true, mode: "string" }),
   },
   (table) => [
     // Foreign key reference to chat_sessions

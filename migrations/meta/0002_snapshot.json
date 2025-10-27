@@ -1,6 +1,6 @@
 {
-  "id": "f7d668d4-0ac2-4b16-aa5f-6e3d36e73167",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "e908e6b3-6e55-4139-916e-64928636cad7",
+  "prevId": "fa963c53-9ade-4e34-8438-517135d7db8d",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -66,6 +66,12 @@
           "primaryKey": false,
           "notNull": false,
           "default": false
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {
@@ -168,6 +174,12 @@
           "primaryKey": false,
           "notNull": false,
           "default": false
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",
