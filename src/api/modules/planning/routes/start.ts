@@ -1,39 +1,29 @@
 import { Hono } from "hono";
-import { generateSessionId } from "@/api/utils/session";
-import { type ChatResponse, type ChatSession } from "@/api/types/chat";
+import { type ChatResponse } from "@/api/types/chat";
 import { createResponse } from "@/api/utils/response";
 import { getCurrentStepIndex } from "@/api/modules/planning/utils";
+import { chatSessionService } from "@/lib/services/chatSession.service";
 import { ChatActorRole, CompletionStatus, PlanningStep, STEP_ORDER, STEP_PROMPTS } from "../consts";
-import { sessions } from "..";
 
 const app = new Hono();
 
 app.post("/", async (c) => {
   const { sub: userId } = c.get("jwtPayload");
 
-  const sessionId = generateSessionId();
-
-  const session: ChatSession = {
-    id: sessionId,
+  const session = await chatSessionService.createSession({
     userId,
     currentStep: PlanningStep.INTRODUCTION,
     collectedData: {},
-    conversationHistory: [
-      {
-        role: ChatActorRole.ASSISTANT,
-        content: STEP_PROMPTS[PlanningStep.INTRODUCTION].message,
-        timestamp: new Date(),
-      },
-    ],
     completionStatus: CompletionStatus.IN_PROGRESS,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  };
-
-  sessions.set(sessionId, session);
+    initialMessage: {
+      role: ChatActorRole.ASSISTANT,
+      content: STEP_PROMPTS[PlanningStep.INTRODUCTION].message,
+      timestamp: new Date(),
+    },
+  });
 
   const chatResponse: ChatResponse = {
-    sessionId,
+    sessionId: session.id,
     currentStep: PlanningStep.INTRODUCTION,
     message: STEP_PROMPTS[PlanningStep.INTRODUCTION].message,
     progress: {
