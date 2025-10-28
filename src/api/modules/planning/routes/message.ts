@@ -3,8 +3,8 @@ import { zValidator } from "@/api/middlewares/validator.middleware";
 import { createErrorResponse, createResponse } from "@/api/utils/response";
 import { type ValidationResult, type ProjectData } from "@/api/types/chat";
 import { deepMerge } from "@/lib/utils";
+import { chatSessionService } from "@/lib/services/chatSession.service";
 import { messageSchema } from "../schemas";
-import { sessions } from "..";
 import { CompletionStatus, PlanningStep, STEP_ORDER, STEP_PROMPTS } from "../consts";
 import {
   calculateProgress,
@@ -22,8 +22,8 @@ export default app.post("/", zValidator("json", messageSchema), async (c) => {
   // const { sub: userId } = c.get("jwtPayload");
   const { sessionId, message } = c.req.valid("json");
 
-  const session = sessions.get(sessionId);
   // @TODO: check if session.userId === userId to ensure the user owns the session
+  const session = await chatSessionService.getSessionById(sessionId);
 
   if (!session) {
     return createResponse({ error: "Session not found" }, 404);
@@ -37,10 +37,11 @@ export default app.post("/", zValidator("json", messageSchema), async (c) => {
     });
   }
 
-  session.conversationHistory.push({
+  // Add user message to the session
+  await chatSessionService.addMessage({
+    sessionId,
     role: "user",
     content: message,
-    timestamp: new Date(),
   });
 
   if (session.completionStatus !== CompletionStatus.INTRODUCTION) {
@@ -49,7 +50,15 @@ export default app.post("/", zValidator("json", messageSchema), async (c) => {
       // eslint-disable-next-line no-console
       console.log("Extracted data:");
       const exData = extractedData as ProjectData;
-      session.collectedData = deepMerge(session.collectedData, exData);
+      const updatedCollectedData = deepMerge(session.collectedData, exData);
+
+      // Update session with new collected data
+      await chatSessionService.updateSession(sessionId, {
+        collectedData: updatedCollectedData,
+      });
+
+      // Update local session object for subsequent operations
+      session.collectedData = updatedCollectedData;
     }
   }
 
@@ -68,15 +77,31 @@ export default app.post("/", zValidator("json", messageSchema), async (c) => {
   // Check if we should advance to next step
   if (session.currentStep !== PlanningStep.INTRODUCTION || validation.isComplete) {
     const nextStep = getNextStep(session.currentStep);
-    session.currentStep = nextStep;
 
     if (nextStep === PlanningStep.COMPLETION) {
       // Generate final project specification
       const specification = generateProjectSpecification(session.collectedData);
       aiResponse = `Great! I have all the information needed. Here's your comprehensive project specification:\n\n${specification}`;
+
+      // Update session to completion
+      await chatSessionService.updateSession(sessionId, {
+        currentStep: nextStep,
+        completionStatus: CompletionStatus.COMPLETED,
+      });
+
+      // Update local session object for subsequent operations
+      session.currentStep = nextStep;
       session.completionStatus = CompletionStatus.COMPLETED;
     } else {
       aiResponse = STEP_PROMPTS[nextStep]?.message;
+
+      // Update session with new step
+      await chatSessionService.updateSession(sessionId, {
+        currentStep: nextStep,
+      });
+
+      // Update local session object for subsequent operations
+      session.currentStep = nextStep;
     }
   } else {
     // Generate follow-up questions for incomplete step
@@ -99,12 +124,12 @@ export default app.post("/", zValidator("json", messageSchema), async (c) => {
     }
   }
 
-  session.conversationHistory.push({
+  // Add AI response to the session
+  await chatSessionService.addMessage({
+    sessionId,
     role: "assistant",
     content: aiResponse,
-    timestamp: new Date(),
   });
-  session.updatedAt = new Date();
 
   const overallProgress = calculateProgress(session, STEP_PROMPTS);
 
