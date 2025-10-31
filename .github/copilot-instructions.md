@@ -1,158 +1,196 @@
-# AI Rules for {{project-name}}
+# Plan My App - AI Coding Agent Instructions
 
-{{project-description}}
+## Project Overview
 
-## CODING_PRACTICES
+Plan My App is an **AI-powered project planning tool** built with Next.js 15 App Router, React 19, TypeScript, Supabase, and Drizzle ORM. It helps project managers and developers structure projects by generating functional blocks, schedules, and tasks through AI-assisted conversations.
 
-### Guidelines for SUPPORT_LEVEL
+**Key Technologies:** Next.js App Router, React 19, TypeScript 5, Hono (API), Drizzle ORM, Supabase Auth, Vercel AI SDK, TanStack Query, shadcn/ui, Tailwind CSS 4
 
-#### SUPPORT_EXPERT
+## Critical Architecture Patterns
 
-- Favor elegant, maintainable solutions over verbose code. Assume understanding of language idioms and design patterns.
-- Highlight potential performance implications and optimization opportunities in suggested code.
-- Frame solutions within broader architectural contexts and suggest design alternatives when appropriate.
-- Focus comments on 'why' not 'what' - assume code readability through well-named functions and variables.
-- Proactively address edge cases, race conditions, and security considerations without being prompted.
-- When debugging, provide targeted diagnostic approaches rather than shotgun solutions.
-- Suggest comprehensive testing strategies rather than just example tests, including considerations for mocking, test organization, and coverage.
+### Dual-Client Supabase Pattern
+The app uses **two separate Supabase client patterns** - mixing them causes auth failures:
 
+1. **Server Components/Actions** (`src/lib/supabase/server.ts`):
+   ```typescript
+   const supabase = await createClient(); // Server-side with cookies
+   ```
 
-### Guidelines for DOCUMENTATION
+2. **Client Components** (`src/lib/supabase/client.ts`):
+   ```typescript
+   const supabase = createClient(); // Browser-side
+   ```
 
-#### DOC_UPDATES
+**Critical:** Never import server client in Client Components or vice versa. The middleware (`src/middleware.ts`) handles session refresh for all routes.
 
-- Update relevant documentation in /docs when modifying features
-- Keep README.md in sync with new capabilities
-- Maintain changelog entries in CHANGELOG.md
+### Hybrid API Architecture
+The app uses **Hono for API routes** + **Server Components for page rendering**, not Next.js API routes:
 
+- **API Routes:** `/api/*` → Hono router at `src/app/api/[[...route]]/route.ts`
+- **All API routes** require JWT authentication (from Supabase access_token)
+- **API modules** live in `src/api/modules/{feature}/` (e.g., `planning/`, `project/`)
+- **Client-side API calls** use `src/api/utils/client.ts` (axios with auto token injection)
 
-### Guidelines for VERSION_CONTROL
+Example API module structure:
+```
+src/api/modules/planning/
+  ├── index.ts           # Hono router setup
+  ├── routes/            # Route handlers
+  ├── schemas/           # Zod validation schemas
+  ├── consts/            # Step definitions, prompts
+  └── utils.ts           # Business logic
+```
 
-#### GIT
+### Database Layer - Drizzle with Supabase Constraints
 
-- Use conventional commits to create meaningful commit messages
-- Use feature branches with descriptive names following {{branch_naming_convention}}
-- Write meaningful commit messages that explain why changes were made, not just what
-- Keep commits focused on single logical changes to facilitate code review and bisection
-- Use interactive rebase to clean up history before merging feature branches
-- Leverage git hooks to enforce code quality checks before commits and pushes
+**Critical migration workflow** (Drizzle generates references to `auth.users` which Supabase manages):
 
-#### GITHUB
+1. Define schema in `src/db/schema/`
+2. Run `npm run db:generate` (includes `fix-drizzle-migration.sh` to remove `auth.users` creation)
+3. Run `npm run db:migrate`
 
-- Use pull request templates to standardize information provided for code reviews
-- Implement branch protection rules for {{protected_branches}} to enforce quality checks
-- Configure required status checks to prevent merging code that fails tests or linting
-- Use GitHub Actions for CI/CD workflows to automate testing and deployment
-- Implement CODEOWNERS files to automatically assign reviewers based on code paths
-- Use GitHub Projects for tracking work items and connecting them to code changes
+**Database patterns:**
+- Use `foreignKey()` helper to reference `auth.users` (see `src/db/schema/chat.ts`)
+- Single DB connection for serverless (`max: 1, prepare: false` in `src/db/service.ts`)
+- Always use `db()` as a function, not `db` directly (lazy initialization)
+- Schema uses `snake_case` casing (configured in Drizzle)
 
-#### CONVENTIONAL_COMMITS
+### AI Service Pattern
+`src/lib/services/ai/index.ts` provides a singleton `AIService` class:
 
-- Follow the format: type(scope): description for all commit messages
-- Use consistent types (feat, fix, docs, style, refactor, test, chore) across the project
-- Define clear scopes based on {{project_modules}} to indicate affected areas
-- Include issue references in commit messages to link changes to requirements
-- Use breaking change footer (!: or BREAKING CHANGE:) to clearly mark incompatible changes
-- Configure commitlint to automatically enforce conventional commit format
+- Use `aiService.generateText()` for text generation with full control
+- Use `aiService.generateObjectWithSchema()` for structured outputs with Zod schemas
+- Use `aiService.quickGenerate()` for simple prompts
+- **Default model:** `GPT_4O_MINI` (cost-effective)
+- Error handling covers quota limits, rate limits, invalid keys
 
+AI integration lives in planning routes (`src/api/modules/planning/`) where it drives conversational project definition.
 
-### Guidelines for ARCHITECTURE
+### Chat Session State Management
+Chat sessions use a **normalized database design**:
+- `chat_sessions` table stores session metadata + `collectedData` (JSONB)
+- `chat_messages` table stores conversation history (user/assistant messages)
+- Service layer: `src/lib/services/chatSession.service.ts` handles CRUD operations
+- In-memory `Map` at `src/api/modules/planning/index.ts` for legacy compatibility (being phased out)
 
-#### ADR
+**Pattern:** Multi-step conversational flow defined in `src/api/modules/planning/consts.ts` with step validation and progress tracking.
 
-- Create ADRs in /docs/adr/{name}.md for:
-- 1) Major dependency changes
-- 2) Architectural pattern changes
-- 3) New integration patterns
-- 4) Database schema changes
+## Development Workflows
 
+### Running the App
+```bash
+npm run dev          # Start dev server with Turbopack
+npm run build        # Production build
+npm run lint         # ESLint check
+npm run format       # Prettier format all files
+```
 
-### Guidelines for STATIC_ANALYSIS
+### Database Operations
+```bash
+npm run db:generate  # Generate migration (auto-fixes auth.users issue)
+npm run db:migrate   # Apply migrations
+npm run db:push      # Push schema directly (dev only)
+npm run db:studio    # Open Drizzle Studio GUI
+```
 
-#### ESLINT
+**Local Supabase:** Port 54330, credentials in `.env.local`
 
-- Configure project-specific rules in eslint.config.js to enforce consistent coding standards
-- Use shareable configs like eslint-config-airbnb or eslint-config-standard as a foundation
-- Implement custom rules for {{project_specific_patterns}} to maintain codebase consistency
-- Configure integration with Prettier to avoid rule conflicts for code formatting
-- Use the --fix flag in CI/CD pipelines to automatically correct fixable issues
-- Implement staged linting with husky and lint-staged to prevent committing non-compliant code
+### Environment Variables Required
+```
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_OR_ANON_KEY
+DATABASE_URL
+JWT_SECRET
+OPENAI_API_KEY
+```
 
-#### PRETTIER
+## Project-Specific Conventions
 
-- Define a consistent .prettierrc configuration across all {{project_repositories}}
-- Configure editor integration to format on save for immediate feedback
-- Use .prettierignore to exclude generated files, build artifacts, and {{specific_excluded_patterns}}
-- Set printWidth based on team preferences (80-120 characters) to improve code readability
-- Configure consistent quote style and semicolon usage to match team conventions
-- Implement CI checks to ensure all committed code adheres to the defined style
+### Version Control
+- **Branch naming:** Use prefixes `feature/`, `fix/`, `chore/`, `docs/`, `refactor/` (e.g., `feature/chat-session-persistence`)
+- **Commits:** Follow conventional commits format: `type(scope): description`
+  - Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
+  - Example: `feat(planning): add AI validation for project assumptions`
 
-## FRONTEND
+### Code Quality Rules (ESLint)
+- **NO console.log** - use structured logging or remove (enforced as error)
+- **Inline type imports** - `import { type User }` not `import type { User }`
+- **Import order** - builtin → external → `@/*` → internal → parent/sibling
+- **JSX prop sorting** - callbacks last, shorthand first, `key` reserved first
 
-### Guidelines for REACT
+### File Structure Patterns
+```
+src/
+├── api/              # Backend: Hono modules, middleware, utils
+├── app/              # Frontend: Next.js App Router pages
+│   ├── (protected)/  # Requires authentication (wrapped in Guard)
+│   ├── (public)/     # Public routes
+│   └── api/          # API route handlers (Hono integration)
+├── components/       # React components
+│   └── ui/           # shadcn/ui primitives
+├── db/               # Database: Drizzle schema, queries, service
+├── lib/              # Utilities, services, Supabase clients
+└── hooks/            # Custom React hooks
+```
 
-#### NEXT_JS
+### Route Protection Pattern
+Protected routes use `src/components/guard.tsx`:
+```tsx
+<Guard>  {/* Checks auth, redirects to /auth/login if not authenticated */}
+  <YourProtectedContent />
+</Guard>
+```
 
-- Use App Router and Server Components for improved performance and SEO
-- Implement route handlers for API endpoints instead of the pages/api directory
-- Use server actions for form handling and data mutations from Server Components
-- Leverage Next.js Image component with proper sizing for core web vitals optimization
-- Implement the Metadata API for dynamic SEO optimization
-- Use React Server Components for {{data_fetching_operations}} to reduce client-side JavaScript
-- Implement Streaming and Suspense for improved loading states
-- Use the new Link component without requiring a child <a> tag
-- Leverage parallel routes for complex layouts and parallel data fetching
-- Implement intercepting routes for modal patterns and nested UIs
+Middleware (`src/middleware.ts`) sets `x-current-path` header for post-login redirects.
 
-#### REACT_CODING_STANDARDS
+### Component Patterns (shadcn/ui)
+- **New York style** with CSS variables for theming
+- Components in `src/components/ui/` are auto-generated (don't manually edit)
+- Custom components extend ui primitives (e.g., `src/components/app-sidebar.tsx`)
+- Use `cn()` utility (`src/lib/utils.ts`) to merge Tailwind classes
 
-- Use functional components with hooks instead of class components
-- Implement React.memo() for expensive components that render often with the same props
-- Utilize React.lazy() and Suspense for code-splitting and performance optimization
-- Use the useCallback hook for event handlers passed to child components to prevent unnecessary re-renders
-- Prefer useMemo for expensive calculations to avoid recomputation on every render
-- Implement useId() for generating unique IDs for accessibility attributes
-- Use the new use hook for data fetching in React 19+ projects
-- Leverage Server Components for {{data_fetching_heavy_components}} when using React with Next.js or similar frameworks
-- Consider using the new useOptimistic hook for optimistic UI updates in forms
-- Use useTransition for non-urgent state updates to keep the UI responsive
+### State Management
+- **Server state:** TanStack Query (configured in `src/app/providers.tsx`)
+- **Client state:** React hooks (useState, useReducer)
+- **Auth state:** `useUser()` hook (`src/hooks/useUser.tsx`) wraps Supabase auth listener
 
-#### REACT_QUERY
+## Key Gotchas & Best Practices
 
-- Use TanStack Query (formerly React Query) with appropriate staleTime and gcTime based on data freshness requirements
-- Implement the useInfiniteQuery hook for pagination and infinite scrolling
-- Use optimistic updates for mutations to make the UI feel more responsive
-- Leverage queryClient.setQueryDefaults to establish consistent settings for query categories
-- Use suspense mode with <Suspense> boundaries for a more declarative data fetching approach
-- Implement retry logic with custom backoff algorithms for transient network issues
-- Use the select option to transform and extract specific data from query results
-- Implement mutations with onMutate, onError, and onSettled for robust error handling
-- Use Query Keys structuring pattern ([entity, params]) for better organization and automatic refetching
-- Implement query invalidation strategies to keep data fresh after mutations
+1. **Always create new Supabase clients** in server functions (not global) - see `src/lib/supabase/server.ts` comment
+2. **API authentication:** Hono JWT middleware validates Supabase `access_token`, not custom tokens
+3. **Drizzle migrations:** ALWAYS run `npm run db:generate` (includes fix script), never `drizzle-kit generate` directly
+4. **Type imports:** Use inline style (`import { type T }`) per ESLint config
+5. **Soft deletes:** Tables have `isDeleted`/`deletedAt` fields (see `chat_messages` schema) - filter in queries
+6. **JSONB data:** `collectedData` in `chat_sessions` stores flexible project definition data
+7. **Zod validation:** Use `@hono/zod-validator` for API request validation (see `src/api/modules/planning/routes/message.ts`)
 
+## Testing (In Progress)
 
-### Guidelines for STYLING
+### Unit Testing (Vitest + React Testing Library)
+- Test files: `*.test.ts`, `*.test.tsx` co-located with source files
+- Focus on testing business logic, utilities, and component behavior
+- Mock Supabase clients and API calls in tests
+- Use React Testing Library for component tests (user-centric queries)
 
-#### TAILWIND
+### E2E Testing (Playwright)
+- E2E tests for critical user flows: auth, project creation, chat sessions
+- Test against local Supabase instance (port 54330)
+- Mock AI service calls to avoid API costs in tests
 
-- Use the @layer directive to organize styles into components, utilities, and base layers
-- Implement Just-in-Time (JIT) mode for development efficiency and smaller CSS bundles
-- Use arbitrary values with square brackets (e.g., w-[123px]) for precise one-off designs
-- Leverage the @apply directive in component classes to reuse utility combinations
-- Implement the Tailwind configuration file for customizing theme, plugins, and variants
-- Use component extraction for repeated UI patterns instead of copying utility classes
-- Leverage the theme() function in CSS for accessing Tailwind theme values
-- Implement dark mode with the dark: variant
-- Use responsive variants (sm:, md:, lg:, etc.) for adaptive designs
-- Leverage state variants (hover:, focus:, active:, etc.) for interactive elements
+### Best Practices
+- Write tests for new features before marking PRs ready
+- Test error states and edge cases (auth failures, network errors)
+- Use factories/fixtures for test data (especially for chat sessions with complex state)
+- Snapshot test Zod schemas to catch unintended validation changes
 
-## DATABASE
+## Related Documentation
+- **PRD:** `docs/prd.md` (detailed user stories, success metrics)
+- **Tech Stack:** `docs/tech-stack.md` (comprehensive dependency documentation)
+- **Drizzle-Supabase:** `docs/drizzle-supabase-integration.md`
 
-### Guidelines for SQL
-
-#### POSTGRES
-
-- Use connection pooling to manage database connections efficiently
-- Implement JSONB columns for semi-structured data instead of creating many tables for {{flexible_data}}
-- Use materialized views for complex, frequently accessed read-only data
-
+## AI Agent Guidelines
+- **Assume expert-level understanding** - focus on "why" over "what"
+- **Proactively handle** edge cases, security (RLS policies), race conditions
+- **Update docs** in `/docs` when changing features
+- **Use conventional commits** (feat/fix/docs/refactor/test/chore)
+- **Consider performance** - serverless constraints (cold starts, connection limits)

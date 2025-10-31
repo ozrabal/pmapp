@@ -98,6 +98,7 @@ Plan My App addresses these challenges by providing:
 ## Tech Stack
 
 ### Frontend
+
 - **NextJs**: For creating fast, efficient pages
 - **React 19**: For interactive components
 - **TypeScript 5**: For static typing and improved IDE support
@@ -105,25 +106,29 @@ Plan My App addresses these challenges by providing:
 - **Shadcn/ui**: For accessible React components
 
 ### Backend
+
 - **Supabase**: As a comprehensive backend solution
   - PostgreSQL database
   - Built-in authentication
   - Open-source BaaS (Backend-as-a-Service)
 
 ### Testing
-- **Unit Testing**: 
+
+- **Unit Testing**:
   - Vitest: Fast Vite-native test runner
   - React Testing Library: For testing React components
 - **End-to-End Testing**:
   - Playwright: For browser automation and E2E testing
 
 ### AI Integration
+
 - **Vercel AI SDK**: For communication with AI models
   - Access to various models (OpenAI, Anthropic, Google, etc.)
   - Support for local AI models
   - Framework-agnostic integration
 
 ### CI/CD and Hosting
+
 - **GitHub Actions**: For CI/CD pipelines
 - **Cloudflare Pages**: For hosting
 
@@ -137,18 +142,21 @@ Plan My App addresses these challenges by providing:
 ### Installation
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/ozrabal/pmapp.git
    cd pmapp
    ```
 
 2. Install dependencies:
+
    ```bash
    npm install
    ```
 
 3. Set up environment variables:
    Create a `.env` file in the root directory with the following variables:
+
    ```
    PUBLIC_SUPABASE_URL=your_supabase_url
    PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
@@ -156,6 +164,7 @@ Plan My App addresses these challenges by providing:
    ```
 
 4. Start the development server:
+
    ```bash
    npm run dev
    ```
@@ -183,7 +192,6 @@ Notes on options used:
 - `--format=custom`: creates a compressed, non-text dump that supports parallel restore and selective object restoration.
 - `--clean` / `--if-exists`: drop existing database objects before recreating them, but avoid errors if they don't exist.
 - `--no-owner` / `--no-acl`: skip restoring ownership and access control lists to avoid permission issues when restoring into a different environment or user.
-
 
 ## Available Scripts
 

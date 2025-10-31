@@ -1,6 +1,7 @@
 # Drizzle ORM + Supabase Integration Guide
 
 ## Problem
+
 When using Drizzle ORM with Supabase, you may encounter permission errors when trying to create tables in the `auth` schema:
 
 ```
@@ -8,6 +9,7 @@ DrizzleQueryError: permission denied for schema auth
 ```
 
 This occurs because:
+
 1. The `auth` schema in Supabase is managed by Supabase Auth
 2. Your database user doesn't have permissions to create/modify tables in the `auth` schema
 3. Drizzle tries to generate migrations that include the `auth.users` table definition
@@ -101,12 +103,14 @@ Add helpful scripts to your `package.json`:
 ### Issue: Operator class mismatch in indexes
 
 **Error:**
+
 ```
 operator class "text_ops" does not accept data type uuid
 ```
 
 **Solution:**
 Make sure your indexes use the correct operator class for the column type:
+
 - UUID columns: use `uuid_ops`
 - Text columns: use `text_ops`
 - Enum columns: use `enum_ops`
@@ -114,12 +118,13 @@ Make sure your indexes use the correct operator class for the column type:
 - Timestamp columns: use `timestamptz_ops`
 
 Example:
+
 ```typescript
 index("idx_tasks_project_functional_block").using(
   "btree",
   table.projectId.asc().nullsLast().op("uuid_ops"), // ✓ Correct
   table.functionalBlockId.asc().nullsLast().op("text_ops")
-)
+);
 ```
 
 ### Issue: Foreign key references to auth.users
@@ -127,8 +132,8 @@ index("idx_tasks_project_functional_block").using(
 This is fine! Your migrations can include foreign key constraints that reference `auth.users`:
 
 ```sql
-ALTER TABLE "profiles" ADD CONSTRAINT "profiles_id_fkey" 
-  FOREIGN KEY ("id") REFERENCES "auth"."users"("id") 
+ALTER TABLE "profiles" ADD CONSTRAINT "profiles_id_fkey"
+  FOREIGN KEY ("id") REFERENCES "auth"."users"("id")
   ON DELETE cascade;
 ```
 
@@ -153,19 +158,23 @@ export const usersInAuth = authSchema.table("users", {
 });
 
 // Your profiles table
-export const profiles = pgTable("profiles", {
-  id: uuid().primaryKey().notNull(),
-  firstName: varchar("first_name", { length: 100 }).notNull(),
-  lastName: varchar("last_name", { length: 100 }),
-  // ... other fields
-}, (table) => [
-  foreignKey({
-    columns: [table.id],
-    foreignColumns: [usersInAuth.id],
-    name: "profiles_id_fkey",
-  }),
-  // ... policies and indexes
-]);
+export const profiles = pgTable(
+  "profiles",
+  {
+    id: uuid().primaryKey().notNull(),
+    firstName: varchar("first_name", { length: 100 }).notNull(),
+    lastName: varchar("last_name", { length: 100 }),
+    // ... other fields
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.id],
+      foreignColumns: [usersInAuth.id],
+      name: "profiles_id_fkey",
+    }),
+    // ... policies and indexes
+  ]
+);
 ```
 
 ## Useful Commands
