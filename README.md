@@ -3,7 +3,7 @@
 ![Version](https://img.shields.io/badge/version-0.0.1-blue.svg)
 ![License](https://img.shields.io/badge/license-GNU_AFFERO_GPL-green.svg)
 
-> AI-powered application planning tool that simplifies project organization and management
+> AI-powered project planning tool that streamlines application development planning through structured workflows, intelligent automation, and conversational AI assistance
 
 ## Table of Contents
 
@@ -11,126 +11,127 @@
   - [Table of Contents](#table-of-contents)
   - [Overview](#overview)
     - [The Problem](#the-problem)
-    - [How Plan My App Helps](#how-plan-my-app-helps)
+    - [The Solution](#the-solution)
     - [Target Users](#target-users)
   - [Features](#features)
-    - [MVP Features](#mvp-features)
+    - [Core Capabilities (MVP)](#core-capabilities-mvp)
   - [Tech Stack](#tech-stack)
     - [Frontend](#frontend)
     - [Backend](#backend)
-    - [Testing](#testing)
-    - [AI Integration](#ai-integration)
-    - [CI/CD and Hosting](#cicd-and-hosting)
+    - [Development \& Quality](#development--quality)
   - [Getting Started](#getting-started)
     - [Prerequisites](#prerequisites)
     - [Installation](#installation)
   - [Database backup \& restore](#database-backup--restore)
   - [Available Scripts](#available-scripts)
-  - [Project Scope](#project-scope)
-    - [MVP Scope](#mvp-scope)
-    - [Out of MVP Scope](#out-of-mvp-scope)
-  - [Project Status](#project-status)
+    - [Development](#development)
+    - [Database Operations](#database-operations)
+    - [Code Quality](#code-quality)
+  - [Architecture Highlights](#architecture-highlights)
+    - [Hybrid API Pattern](#hybrid-api-pattern)
+    - [Database Design](#database-design)
+    - [AI Integration](#ai-integration)
+    - [Key Patterns](#key-patterns)
+  - [Documentation](#documentation)
+    - [Product Documentation](#product-documentation)
+    - [Technical Documentation](#technical-documentation)
+  - [Contributing](#contributing)
   - [License](#license)
 
 ## Overview
 
-Plan My App is an AI-assisted application that streamlines the process of planning software projects by providing structure, guidance, and automation of planning elements. The application helps project managers and independent developers overcome the challenges of project planning through AI-powered suggestions and structured workflows.
+Plan My App is an AI-powered application designed to streamline software project planning by providing structure, guidance, and automation. Built with Next.js 15, React 19, and OpenAI integration, it enables project managers and independent developers to define project assumptions, generate functional blocks, create schedules, and manage tasks through conversational AI assistance.
 
 ### The Problem
 
-Many software projects fail to meet deadlines and budgets due to poor planning. Common challenges include:
+Software projects often fail to meet deadlines and budgets due to inadequate planning:
 
-- Lack of structure in project planning
-- Difficulties dividing functionality into logical implementation blocks
-- Problems estimating time required for various elements
-- Uncertainty about task sequences and dependencies
-- Limited access to project management expertise
+- **Lack of structure** - Users don't know where to start or how to organize work
+- **Poor decomposition** - Difficulty dividing functionality into logical implementation blocks
+- **Estimation challenges** - Problems estimating time and effort for project elements
+- **Dependency confusion** - Uncertainty about task sequences and dependencies
+- **Limited expertise** - No access to project management best practices
 
-### How Plan My App Helps
+### The Solution
 
-Plan My App addresses these challenges by providing:
+Plan My App provides AI-driven planning assistance:
 
-- Structured project definition templates
-- AI-assisted validation of project requirements
-- Automated division of projects into functional blocks
-- Simple schedule generation based on functional blocks
-- Feedback collection to continuously improve AI suggestions
+- **Structured workflows** - Guided project definition through conversational AI
+- **Smart validation** - AI checks completeness, consistency, and realism of project assumptions
+- **Automated decomposition** - AI-generated division into functional blocks with descriptions
+- **Schedule generation** - Simple project schedules with milestones and dependencies
+- **Task management** - Detailed task creation with AI-assisted estimation and dependency tracking
+- **Continuous improvement** - User feedback collection to enhance AI suggestions
 
 ### Target Users
 
-- Project managers looking for efficient planning tools
-- Independent developers building applications on their own
-- Teams seeking to standardize their project planning process
+- **Project managers** seeking efficient, AI-assisted planning tools
+- **Independent developers** building applications without PM support
+- **Small teams** needing standardized project planning workflows
 
 ## Features
 
-### MVP Features
+### Core Capabilities (MVP)
 
-- **User Account System**
-  - Registration and login
-  - User profile management
-  - GDPR-compliant personal data storage
+- **Conversational Project Planning**
+  - Multi-step AI-guided workflow for defining project assumptions
+  - Natural language interaction with context-aware responses
+  - Real-time validation and suggestions
+
+- **AI-Powered Analysis**
+  - Completeness and consistency checking of project requirements
+  - Intelligent division into functional blocks
+  - Automatic task generation from functional block descriptions
+  - AI-assisted time/effort estimation with justification
 
 - **Project Management**
-  - Create new projects
-  - View, edit and delete existing projects
-  - Basic project information management
+  - Create, view, edit, and delete projects
+  - Export projects to JSON format
+  - GDPR-compliant data handling
 
-- **Project Requirements Definition**
-  - Structured forms for entering project assumptions
-  - AI validation of entered data
-  - AI-powered suggestions for project definition
+- **Task Management**
+  - Create and organize tasks within functional blocks
+  - Define task dependencies (predecessor/successor relationships)
+  - Circular dependency detection
+  - Estimation in hours or story points (configurable)
 
-- **Functional Block Division**
-  - AI-generated division into functional blocks
-  - Customizable predefined categories
-  - Modification capabilities for user adjustments
+- **Schedule Generation**
+  - AI-generated project schedules with milestones
+  - Dependency tracking between project stages
+  - Visual presentation of project timeline
 
-- **Simple Schedule Creation**
-  - AI-generated simple project schedule
-  - Definition of key project stages
-  - Establishing dependencies between stages
-
-- **AI Suggestion Rating**
-  - "Useful/Not useful" rating system for AI suggestions
-  - User feedback collection for algorithm improvement
+- **Feedback & Improvement**
+  - Rate AI suggestions (helpful/not helpful)
+  - Report inadequate suggestions with comments
+  - Continuous algorithm improvement through user feedback
 
 ## Tech Stack
 
 ### Frontend
 
-- **NextJs**: For creating fast, efficient pages
-- **React 19**: For interactive components
-- **TypeScript 5**: For static typing and improved IDE support
-- **Tailwind 4**: For styling
-- **Shadcn/ui**: For accessible React components
+- **Next.js (latest)** - App Router with Server Components, Turbopack for dev builds
+- **React 19** - Functional components with modern hooks, Server/Client Component patterns
+- **TypeScript 5** - Strict mode, path aliases (`@/*`), incremental compilation
+- **Tailwind CSS 4** - Utility-first styling with JIT compilation, CSS variables for theming
+- **shadcn/ui** - Accessible component primitives (New York style) built on Radix UI
+- **TanStack Query 5** - Server state management with automatic refetching and caching
 
 ### Backend
 
-- **Supabase**: As a comprehensive backend solution
-  - PostgreSQL database
-  - Built-in authentication
-  - Open-source BaaS (Backend-as-a-Service)
+- **Node.js 22.14.0** - ES Modules, managed via nvm
+- **Hono 4** - Lightweight web framework for API routes with JWT auth and Zod validation
+- **Drizzle ORM 0.44** - Type-safe PostgreSQL ORM with migration management
+- **Supabase** - PostgreSQL 15 database, authentication (JWT), and user management
+- **Vercel AI SDK 5** - Framework-agnostic AI integration with streaming support
+- **OpenAI API** - GPT-4o-mini (default), GPT-4o, GPT-3.5-turbo models
 
-### Testing
+### Development & Quality
 
-- **Unit Testing**:
-  - Vitest: Fast Vite-native test runner
-  - React Testing Library: For testing React components
-- **End-to-End Testing**:
-  - Playwright: For browser automation and E2E testing
-
-### AI Integration
-
-- **Vercel AI SDK**: For communication with AI models
-  - Access to various models (OpenAI, Anthropic, Google, etc.)
-  - Support for local AI models
-  - Framework-agnostic integration
-
-### CI/CD and Hosting
-
-- **GitHub Actions**: For CI/CD pipelines
-- **Cloudflare Pages**: For hosting
+- **ESLint 9** - Strict linting (no console.log, inline type imports, import ordering)
+- **Prettier 3** - Consistent formatting (120 char width, Tailwind class sorting)
+- **Vitest** - Fast unit testing (planned)
+- **Playwright** - E2E browser automation (planned)
+- **Drizzle Studio** - Visual database management tool
 
 ## Getting Started
 
@@ -155,21 +156,29 @@ Plan My App addresses these challenges by providing:
    ```
 
 3. Set up environment variables:
-   Create a `.env` file in the root directory with the following variables:
+   Create a `.env.local` file in the root directory with required variables:
 
-   ```
-   PUBLIC_SUPABASE_URL=your_supabase_url
-   PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-   AI_API_KEY=your_ai_service_key
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_OR_ANON_KEY=your_supabase_anon_key
+   DATABASE_URL=your_postgresql_connection_string
+   JWT_SECRET=your_jwt_secret_for_api_auth
+   OPENAI_API_KEY=your_openai_api_key
    ```
 
-4. Start the development server:
+4. Run database migrations:
+
+   ```bash
+   npm run db:migrate
+   ```
+
+5. Start the development server:
 
    ```bash
    npm run dev
    ```
 
-5. Open [http://localhost:4321](http://localhost:4321) in your browser to see the application.
+6. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
 
 ## Database backup & restore
 
@@ -195,46 +204,84 @@ Notes on options used:
 
 ## Available Scripts
 
-- `npm run dev`: Starts the development server
-- `npm run build`: Builds the project for production
-- `npm start`: Starts the production server
-- `npm run lint`: Lints the codebase
-- `npm run lint:fix`: Fixes linting issues automatically
-- `npm run format`: Formats code using Prettier
+### Development
 
-## Project Scope
+- `npm run dev` - Start Next.js development server with Turbopack
+- `npm run build` - Create production build
+- `npm start` - Start production server
 
-### MVP Scope
+### Database Operations
 
-The initial release focuses on core functionality:
+- `npm run db:generate` - Generate Drizzle migrations (includes Supabase auth.users fix)
+- `npm run db:migrate` - Apply migrations to database
+- `npm run db:push` - Push schema directly (dev only, skips migration generation)
+- `npm run db:studio` - Open Drizzle Studio visual database management
 
-- Basic user authentication and project management
-- AI-assisted project definition and functional block division
-- Simple schedule generation
-- User feedback collection for AI improvement
+### Code Quality
 
-### Out of MVP Scope
+- `npm run lint` - Run ESLint checks
+- `npm run format` - Format code with Prettier
+- `npm run format:check` - Check code formatting without changes
 
-The following features are planned for future releases:
+## Architecture Highlights
 
-- Resource allocation for project implementation
-- Budget estimation
-- Detailed schedule creation with precise dates
-- Detailed time estimation for functional blocks
-- Project sharing with other users
-- Organization creation and project assignment
-- Technology selection guidance
-- Integration with project management tools and calendars
+### Hybrid API Pattern
 
-## Project Status
+- **Hono** for API routes (`/api/*`) with JWT authentication
+- **Next.js App Router** for page rendering with Server Components
+- **Dual Supabase clients**: Separate client/server implementations for auth
 
-The project is currently in early development (MVP phase). Key success metrics for the MVP include:
+### Database Design
 
-- User adoption rate (target: 10% monthly growth)
-- Active user percentage (target: 40% in the first month)
-- AI suggestion usefulness (target: 70% rated as useful)
-- User satisfaction (target: minimum 4.5/5 rating)
+- **Drizzle ORM** with snake_case naming convention
+- **Normalized chat schema**: Sessions table + messages table
+- **Soft deletes**: `isDeleted`/`deletedAt` fields for data retention
+- **JSONB storage**: Flexible `collectedData` field for project definitions
+
+### AI Integration
+
+- **Singleton AIService**: Centralized OpenAI API management
+- **Structured output**: Zod schema validation for AI responses
+- **Error handling**: Quota limits, rate limits, and invalid key detection
+- **Cost optimization**: GPT-4o-mini as default model
+
+### Key Patterns
+
+- Always use `await createClient()` for server-side Supabase (never global)
+- Database migrations via `npm run db:generate` (auto-fixes Supabase auth.users)
+- Protected routes wrapped in `<Guard>` component with automatic redirect
+- Inline type imports: `import { type User }` per ESLint config
+
+## Documentation
+
+### Product Documentation
+
+- **[Product Requirements Document](docs/prd.md)** - Detailed user stories, acceptance criteria, and functional requirements
+- **[Project Scope](docs/project-scope.md)** - MVP scope definition, feature boundaries, and future roadmap
+- **[Success Metrics](docs/success-metrics.md)** - KPIs, measurement strategy, and success criteria
+
+### Technical Documentation
+
+- **[Technology Stack](docs/tech-stack.md)** - Comprehensive documentation of all dependencies and architecture decisions
+- **[Drizzle-Supabase Integration](docs/drizzle-supabase-integration.md)** - Database setup and migration patterns
+- **[AI Coding Agent Instructions](.github/copilot-instructions.md)** - Guidelines for AI-assisted development
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/your-feature-name`
+3. Commit changes using conventional commits: `feat(scope): description`
+4. Push to branch and open a Pull Request
+5. Ensure all ESLint checks pass and code is formatted with Prettier
+
+**Branch naming convention**: `feature/`, `fix/`, `chore/`, `docs/`, `refactor/`
 
 ## License
 
-This project is licensed under the GNU AFFERO GPL License - see the LICENSE file for details.
+This project is licensed under the **GNU Affero General Public License v3.0** (AGPL-3.0). See the LICENSE file for details.
+
+---
+
+**Version**: 0.0.1 (MVP in development)  
+**Node.js**: 22.14.0  
+**Last Updated**: November 1, 2025
