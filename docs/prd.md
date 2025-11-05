@@ -41,13 +41,14 @@ Plan My App addresses these challenges by providing structure, AI support and au
 - User registration and login
 - User profile management
 - Storage of personal data and project information in compliance with GDPR
+- Viewing an authenticated account summary (email, identifier, last sign-in, active token) from the dashboard
 
 ### 3.2 Project Management
 
-- Creating new projects
-- Saving, reading, and editing basic project assumptions
-- Browsing the user's project list
-- Deleting projects
+- Browsing the user's project list (implemented as a paginated, read-only view)
+- Creating new projects *(planned enhancement)*
+- Saving, reading, and editing basic project assumptions *(planned enhancement)*
+- Deleting projects *(planned enhancement)*
 
 ### 3.3 Defining Project Assumptions
 
@@ -83,6 +84,22 @@ Plan My App addresses these challenges by providing structure, AI support and au
 - AI validation of estimation realism, description completeness, and consistency with functional blocks
 - Exporting tasks along with the project in JSON format
 - Integration of tasks with the project schedule
+
+### 3.8 Conversational Planning Sessions
+
+- Automatic creation of a planning session when a user launches the AI assistant flow
+- Persistence of conversation history, collected project data, and current step per session
+- AI-guided progression through predefined planning steps with progress indicators for current/total steps
+- Ability to submit additional messages that refine collected data and trigger validation of required fields
+- Server-side generation of a project specification when the final step is reached
+- Session retrieval and deletion endpoints for resuming or terminating an in-progress plan
+
+### 3.9 Protected Routing and Session Handling
+
+- Middleware refreshes Supabase sessions on every request and propagates the originating path
+- Server-side guard verifies authentication before rendering protected routes
+- Automatic redirection of unauthenticated users to the login screen with return-path context
+- Client-side logout clears the Supabase session and redirects to `/auth/login`
 
 ## 4. Product Boundaries
 
@@ -464,6 +481,55 @@ Plan My App addresses these challenges by providing structure, AI support and au
   4. After confirmation, account is permanently deleted along with all user data
   5. Data is deleted in compliance with GDPR requirements
   6. Functionality is not available without logging into the system (US-002)
+
+### Dashboard and Access Control
+
+#### US-032: Viewing Account Summary
+
+- As a logged-in user, I want to see my session details so that I can confirm which account is active
+- Acceptance criteria:
+  1. Dashboard displays the authenticated user's email, unique identifier, and last sign-in timestamp
+  2. A redacted or clearly labeled access token is shown for debugging purposes
+  3. Loading and error states are presented while user information is being fetched
+  4. View is only available to authenticated users (US-002)
+
+#### US-033: Redirecting Unauthenticated Visitors
+
+- As an unauthenticated visitor, I want to be guided to the login page so that access to protected content remains secure
+- Acceptance criteria:
+  1. Middleware persists the originally requested path in a header or query parameter
+  2. Protected routes invoke a server-side guard that checks the Supabase session
+  3. If no authenticated session exists, the user is redirected to `/auth/login` with the original path as a `source` parameter
+  4. After successful login, the user is returned to the requested destination
+
+### Planning Sessions
+
+#### US-034: Starting a Planning Session
+
+- As a logged-in user, I want to launch an AI-guided planning session to structure my project
+- Acceptance criteria:
+  1. Selecting “Create Project” initiates a new planning session and returns a session identifier
+  2. The assistant sends the introduction prompt automatically
+  3. Session metadata stores the current planning step, progress, and collected data
+  4. Functionality is not available without logging into the system (US-002)
+
+#### US-035: Continuing a Planning Conversation
+
+- As a logged-in user, I want to send additional messages within an existing planning session to refine my project brief
+- Acceptance criteria:
+  1. Each message is appended to the session history along with an AI response
+  2. Required fields for the active step are validated, and missing data is highlighted in the assistant reply
+  3. Progress indicators update to reflect the number of completed steps
+  4. Collected data is merged and persisted after each interaction
+
+#### US-036: Completing a Planning Session
+
+- As a logged-in user, I want to receive a project specification once the planning steps are complete
+- Acceptance criteria:
+  1. When all required fields are provided, the assistant advances to the completion step
+  2. A project specification is generated on the server and returned in the assistant’s response
+  3. Completion status is saved so closed sessions cannot accept additional messages
+  4. Users may fetch or delete their finished sessions via session endpoints
 
 ## 6. Success Metrics
 

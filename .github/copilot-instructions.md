@@ -191,6 +191,8 @@ Middleware (`src/middleware.ts`) sets `x-current-path` header for post-login red
 ## AI Agent Guidelines
 - **Assume expert-level understanding** - focus on "why" over "what"
 - **Proactively handle** edge cases, security (RLS policies), race conditions
+- **Create docs** in `/docs` for complex features or patterns
 - **Update docs** in `/docs` when changing features
 - **Use conventional commits** (feat/fix/docs/refactor/test/chore)
+- **Create descriptive commit messages** with context
 - **Consider performance** - serverless constraints (cold starts, connection limits)
