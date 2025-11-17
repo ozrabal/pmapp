@@ -48,8 +48,13 @@ export const STEP_ORDER: PlanningStep[] = [
 
 export const STEP_PROMPTS: StepPrompts = {
   [PlanningStep.INTRODUCTION]: {
-    message: `Welcome! I'm here to help you create a detailed plan for your application. Let's start by understanding what you want to build. What type of application do you have in mind?`,
+    message: `Welcome! I'm here to help you create a detailed plan for your application. Let's start by understanding what you want to build. Please describe your application idea in a few sentences. What problem does it solve, and who is it for?`,
     nextAction: "Tell me about your application idea",
+    requiredFields: ["applicationGeneralDescription"],
+    extractData: `Extract application general description from this message. Return the extracted information as JSON. For application general description, return {applicationGeneralDescription: string}.`,
+    extractDataSchema: z.object({
+      applicationGeneralDescription: z.string(),
+    }),
   },
 
   [PlanningStep.PROJECT_TYPE]: {

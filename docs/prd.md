@@ -168,13 +168,13 @@ Plan My App addresses these challenges by providing structure, AI support and au
 
 #### US-004: Creating a New Project
 
-- As a logged-in user, I want to create a new project to start planning my application
+- As a logged-in user, I want to walk through a guided AI chat that captures everything needed to spin up a new project
 - Acceptance criteria:
-  1. From the project list view, user can select the option to create a new project
-  2. System presents a form with basic fields (name, description)
-  3. After filling in the required fields, project is saved in the system
-  4. New project appears on the user's project list
-  5. Functionality is not available without logging into the system (US-002)
+  1. Selecting “Create project” from the list view launches the `CreateProjectChat` flow which immediately calls `POST /planning/start` to open a planning session and show the assistant’s introductory message plus progress (current step/total).
+  2. The client keeps the returned `sessionId` and sends every user reply through `POST /planning/message`, appending the assistant’s response—progress updates, required next actions, and collected data—to the visible conversation.
+  3. The server validates each step against `STEP_PROMPTS`/`requiredFields`, persists messages and partial project data in the chat session, and only advances to the next step when validation succeeds.
+  4. When the final step is reached the API generates a full project specification, marks the session `COMPLETED`, and returns the structured data so the UI can surface the finished spec and add the project to the user’s list.
+  5. The flow is available only to authenticated users (US-002); attempting to reuse a completed session or an unknown `sessionId` results in an error response.
 
 #### US-005: Browsing Project List
 

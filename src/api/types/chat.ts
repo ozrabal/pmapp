@@ -40,6 +40,7 @@ export interface ProjectData {
   budget?: string;
   integrations?: string[];
   additionalRequirements?: string[];
+  applicationGeneralDescription?: string;
 }
 
 export interface ValidationResult {
