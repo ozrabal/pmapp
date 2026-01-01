@@ -48,7 +48,7 @@ export default app.post("/", zValidator("json", messageSchema), async (c) => {
     const extractedData = await extractMessageData(message, session.currentStep);
     if (extractedData) {
       // eslint-disable-next-line no-console
-      console.log("Extracted data:");
+      console.log("Extracted data:", extractedData);
       const exData = extractedData as ProjectData;
       const updatedCollectedData = deepMerge(session.collectedData, exData);
 
@@ -62,20 +62,35 @@ export default app.post("/", zValidator("json", messageSchema), async (c) => {
     }
   }
 
-  let validation: ValidationResult = {
-    isComplete: true,
-    missingFields: [],
-    incompleteFields: [],
-    completionPercentage: 100,
-  };
+  // Confidence threshold for step advancement
+  const CONFIDENCE_THRESHOLD = 70;
 
-  if (session.currentStep !== PlanningStep.INTRODUCTION || validation.isComplete) {
-    validation = validateStepData(session.collectedData, STEP_PROMPTS[session.currentStep]?.requiredFields || []);
+  // Determine if we should validate and potentially advance
+  let shouldAdvance = false;
+  let validation: ValidationResult | null = null;
+
+  if (session.currentStep === PlanningStep.INTRODUCTION) {
+    // Always advance from introduction after any message
+    shouldAdvance = true;
+  } else if (session.currentStep === PlanningStep.COMPLETION) {
+    // Already at completion, no advancement
+    shouldAdvance = false;
+  } else {
+    // Validate current step data with enhanced validation
+    validation = await validateStepData(
+      session.collectedData,
+      STEP_PROMPTS[session.currentStep]?.requiredFields || [],
+      session.currentStep
+    );
+
+    // Advance only if validation is complete AND confidence meets threshold
+    shouldAdvance = validation.isComplete && (validation.confidence || 0) >= CONFIDENCE_THRESHOLD;
   }
 
   let aiResponse = "";
-  // Check if we should advance to next step
-  if (session.currentStep !== PlanningStep.INTRODUCTION || validation.isComplete) {
+
+  if (shouldAdvance) {
+    // Advance to next step
     const nextStep = getNextStep(session.currentStep);
 
     if (nextStep === PlanningStep.COMPLETION) {
@@ -104,23 +119,35 @@ export default app.post("/", zValidator("json", messageSchema), async (c) => {
       session.currentStep = nextStep;
     }
   } else {
-    // Generate follow-up questions for incomplete step
-    const missingFieldsText =
-      validation.missingFields.length > 0
-        ? `I still need the following information to complete this step:\n- ${validation.missingFields.join("\n- ")}`
-        : "You're almost there! Just a bit more information needed.";
-    const incompleteFieldsText =
-      validation.incompleteFields.length > 0
-        ? `I still need the following information to complete this step:\n- ${validation.incompleteFields.join("\n- ")}`
-        : "You're almost there! Just a bit more information needed.";
+    // Stay on current step, request clarification
+    if (validation && validation.suggestions && validation.suggestions.length > 0) {
+      // Use AI-generated suggestions from semantic validation
+      aiResponse = "Thank you for the information! To create a better plan, I need some clarification:\n\n";
+      aiResponse += validation.suggestions.join("\n\n");
+    } else if (validation && (validation.missingFields.length > 0 || validation.incompleteFields.length > 0)) {
+      // Fallback to field-based messages
+      const missingFieldsText =
+        validation.missingFields.length > 0
+          ? `I still need the following information:\n- ${validation.missingFields.join("\n- ")}`
+          : "";
+      const incompleteFieldsText =
+        validation.incompleteFields.length > 0
+          ? `Please provide more detail for:\n- ${validation.incompleteFields.join("\n- ")}`
+          : "";
 
-    const response = await generateAiResponse(session, aiResponse);
-    if (response.text) {
-      aiResponse = response.text;
-    }
-
-    if (missingFieldsText || incompleteFieldsText) {
-      aiResponse += `\n\n${missingFieldsText}\n\n${incompleteFieldsText}`;
+      aiResponse = "Thank you! To complete this step, I need a bit more information.\n\n";
+      if (missingFieldsText) {
+        aiResponse += `${missingFieldsText}\n\n`;
+      }
+      if (incompleteFieldsText) {
+        aiResponse += incompleteFieldsText;
+      }
+    } else {
+      // Generate conversational response
+      const response = await generateAiResponse(session, message);
+      if (response.text) {
+        aiResponse = response.text;
+      }
     }
   }
 

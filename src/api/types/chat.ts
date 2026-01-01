@@ -1,5 +1,6 @@
 import type z from "zod";
 import type { ChatActorRole, CompletionStatus, PlanningStep } from "../modules/planning/consts";
+import type { ValidationIssue } from "../modules/planning/validation/types";
 
 export interface Message {
   role: Omit<ChatActorRole, "system">; // Exclude system role for messages
@@ -48,7 +49,14 @@ export interface ValidationResult {
   missingFields: string[];
   incompleteFields: string[];
   completionPercentage: number;
+  // Enhanced validation fields (Phase 1)
+  confidence?: number;
+  issues?: ValidationIssue[];
+  suggestions?: string[];
 }
+
+// Re-export enhanced validation types
+export type { ValidationIssue };
 
 export interface StepValidator {
   requiredFields: string[];

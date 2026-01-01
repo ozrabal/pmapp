@@ -1,12 +1,15 @@
 import {
-  type ValidationResult,
+  type ChatSession,
   type ProjectData,
   type StepPrompt,
-  type ChatSession,
   type StepPrompts,
+  type ValidationResult,
 } from "@/api/types/chat";
 import { createAIService, type TextGenerationResponse } from "@/lib/services/ai";
 import { AiModel, PlanningStep, PROJEST_SPECIFICATION_PROMPT, STEP_ORDER, STEP_PROMPTS } from "./consts";
+import { fieldRequirementsManager } from "./validation/field-requirements";
+import { validationOrchestrator } from "./validation/orchestrator";
+import type { ValidationContext } from "./validation/types";
 
 export function getCurrentStepIndex(step: PlanningStep): number {
   return STEP_ORDER.indexOf(step);
@@ -49,7 +52,76 @@ export async function extractMessageData(
   return null;
 }
 
-export function validateStepData(data: ProjectData, requiredFields: StepPrompt["requiredFields"]): ValidationResult {
+/**
+ * Enhanced validation function using the new multi-layer system
+ * Maintains backward compatibility with the old ValidationResult interface
+ */
+export async function validateStepData(
+  data: ProjectData,
+  requiredFields: StepPrompt["requiredFields"],
+  step: PlanningStep,
+  context?: Partial<ValidationContext>
+): Promise<ValidationResult> {
+  // Get dynamic required fields from FieldRequirementsManager
+  const dynamicRequiredFields = fieldRequirementsManager.getRequiredFieldNames(step, data);
+  const allRequiredFields = requiredFields || dynamicRequiredFields;
+
+  // Initialize orchestrator with default layers if not already done
+  if (validationOrchestrator["layers"].length === 0) {
+    validationOrchestrator.registerDefaultLayers();
+  }
+
+  // Build validation context
+  const validationContext: ValidationContext = {
+    step,
+    previousData: data,
+    attemptCount: context?.attemptCount || 1,
+    userProfile: context?.userProfile,
+  };
+
+  // Execute enhanced validation
+  const enhancedResult = await validationOrchestrator.validate(data, allRequiredFields, validationContext);
+
+  // Calculate completion percentage based on dynamic field requirements
+  const totalFields = fieldRequirementsManager.getTotalFieldCount(step, data);
+  const errorCount = enhancedResult.issues.filter((i) => i.severity === "error").length;
+  const completedFields = Math.max(0, totalFields - errorCount);
+  const completionPercentage = totalFields > 0 ? (completedFields / totalFields) * 100 : 100;
+
+  // Convert to backward-compatible format
+  const missing: string[] = [];
+  const incomplete: string[] = [];
+
+  enhancedResult.issues.forEach((issue) => {
+    if (issue.severity === "error") {
+      if (issue.message.includes("missing")) {
+        missing.push(issue.field);
+      } else {
+        incomplete.push(issue.field);
+      }
+    }
+  });
+
+  return {
+    isComplete: enhancedResult.isComplete,
+    missingFields: missing,
+    incompleteFields: incomplete,
+    completionPercentage,
+    // Add enhanced fields
+    confidence: enhancedResult.confidence,
+    issues: enhancedResult.issues,
+    suggestions: enhancedResult.suggestions,
+  };
+}
+
+/**
+ * Legacy validation function for backward compatibility
+ * Use validateStepData instead
+ */
+export function validateStepDataSync(
+  data: ProjectData,
+  requiredFields: StepPrompt["requiredFields"]
+): ValidationResult {
   const missing: string[] = [];
   const incomplete: string[] = [];
 
@@ -61,14 +133,14 @@ export function validateStepData(data: ProjectData, requiredFields: StepPrompt["
     }
   });
 
-  const totalFields = 3;
+  const totalFields = requiredFields?.length || 0;
   const completedFields = totalFields - missing.length - incomplete.length;
 
   return {
     isComplete: missing.length === 0 && incomplete.length === 0,
     missingFields: missing,
     incompleteFields: incomplete,
-    completionPercentage: (completedFields / totalFields) * 100,
+    completionPercentage: totalFields > 0 ? (completedFields / totalFields) * 100 : 0,
   };
 }
 
@@ -139,7 +211,7 @@ export function calculateProgress(session: ChatSession, stepPrompts: StepPrompts
 
     const prompt = stepPrompts[step];
     if (prompt.requiredFields) {
-      const validation = validateStepData(session.collectedData, prompt.requiredFields);
+      const validation = validateStepDataSync(session.collectedData, prompt.requiredFields);
       totalCompletion += validation.completionPercentage;
       validatedSteps++;
     }
@@ -149,3 +221,6 @@ export function calculateProgress(session: ChatSession, stepPrompts: StepPrompts
 
   return Math.round(progress);
 }
+
+// Re-export validation utilities
+export { fieldRequirementsManager, validationOrchestrator };
